@@ -1,1 +1,74 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --accent-red: #FF3B30;
+  // --accent-orange: #FF9500;
+  // --accent-orange: #fd7f06;
+  // --accent-orange: #edc041;
+  --accent-orange: #E4971B;
+  --accent-yellow: #FFCC00;
+  --accent-green: #34C759;
+  --accent-teal: #5AC8FA;
+  // --accent-blue: #007AFF;
+  // --accent-blue: #015a8d;
+  // --accent-blue: #017AC0;
+  --accent-blue: #1b68e4;
+  --accent-indigo: #5856D6;
+  --accent-purple: #AF52DE;
+  // --accent-pink: #FF2D55;
+  --accent-pink: #E4321B;
+  --light-01: #FFFFFF;
+  --light-02: #EFEFF4;
+  --light-03: rgba(239, 239, 244, 0.3);
+  --light-24: rgba(255, 255, 255, 0.24);
+  --dark-100: #2C2C2E;
+  --grey-01: #8F8F94;
+  --grey-02: #AEAEB2;
+  --grey-03: #C7C7CC;
+  --grey-04: #D1D1D6;
+  --disabled-100: #999999;
+  --disabled-24: rgba(153, 153, 153, 0.24);
+  --label-primary: #1C1C1E;
+  --label-secondary: rgba(60, 60, 67, 0.6);
+  --label-tetriary: rgba(60, 60, 67, 0.3);
+  --label-quarternary: rgba(60, 60, 67, 0.18);
+}
+
+// Fonts
+
+/* ubuntu-300 - cyrillic_latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Ubuntu Light'), local('Ubuntu-Light'),
+    url('/assets/fonts/ubuntu/ubuntu-v13-cyrillic_latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+    url('/assets/fonts/ubuntu/ubuntu-v13-cyrillic_latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* ubuntu-regular - cyrillic_latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Ubuntu Regular'), local('Ubuntu-Regular'),
+    url('/assets/fonts/ubuntu/ubuntu-v13-cyrillic_latin-regular.woff2') format('woff2'),
+    url('/assets/fonts/ubuntu/ubuntu-v13-cyrillic_latin-regular.woff') format('woff');
+}
+
+// Common
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.3;
+}
