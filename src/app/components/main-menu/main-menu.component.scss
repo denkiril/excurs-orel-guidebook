@@ -8,9 +8,23 @@
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
+
+  &:hover {
+    color: var(--accent-blue);
+  }
 }
 
 .indicator {
   width: 56px;
+  height: 32px;
   text-align: center;
+
+  .mat-icon {
+    height: 32px;
+    width: 32px;
+
+    // svg {
+    //   fill: currentColor;
+    // }
+  }
 }

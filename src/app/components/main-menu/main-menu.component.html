@@ -1,4 +1,7 @@
 <div class="indicator">
-  <span *ngIf="!opened">OPN</span>
-  <span *ngIf="opened">CLS</span>
+  <mat-icon 
+    [svgIcon]="opened ? 'expand_less' : 'expand_more'" 
+    aria-hidden="false" 
+    aria-label="expand icon"
+  ></mat-icon>
 </div>
