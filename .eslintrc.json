@@ -35,7 +35,39 @@
             "style": "camelCase",
             "type": "attribute"
           }
-        ]
+        ],
+        "@typescript-eslint/explicit-function-return-type": "error",
+        "no-trailing-spaces": "error"
+        // "no-unused-vars": "error"
+        // "import/no-unresolved": "off",
+        // "import/prefer-default-export": "off",
+        // "lines-between-class-members": "off",
+        // "@typescript-eslint/unbound-method": [
+        //   "error",
+        //   {
+        //     "ignoreStatic": true
+        //   }
+        // ],
+        // "class-methods-use-this": "off",
+        // "no-underscore-dangle": "off",
+        // "no-param-reassign": "off",
+        // "no-plusplus": "off",
+        // "no-return-assign": "off",
+        // "@typescript-eslint/camelcase": "off",
+        // "import/no-extraneous-dependencies": [
+        //   "error",
+        //   {
+        //     "packageDir": "./"
+        //   }
+        // ],
+        // "@typescript-eslint/no-use-before-define": [
+        //   "error",
+        //   {
+        //     "classes": false,
+        //     "functions": true,
+        //     "typedefs": true
+        //   }
+        // ]
       }
     },
     {
