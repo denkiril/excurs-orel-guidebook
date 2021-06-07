@@ -5,9 +5,7 @@
   ],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": [
           "tsconfig.json",
@@ -17,7 +15,9 @@
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        // "prettier/@typescript-eslint",
+        "plugin:prettier/recommended"
       ],
       "rules": {
         "@angular-eslint/component-selector": [
@@ -37,7 +37,10 @@
           }
         ],
         "@typescript-eslint/explicit-function-return-type": "error",
-        "no-trailing-spaces": "error"
+        "comma-dangle": ["error", "only-multiline"],
+        "array-element-newline": "off"
+        // "no-trailing-spaces": "error",
+        // "space-in-brackets": ["error", "never"],
         // "no-unused-vars": "error"
         // "import/no-unresolved": "off",
         // "import/prefer-default-export": "off",
@@ -71,13 +74,23 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
+      "files": ["*.html"],
       "extends": [
         "plugin:@angular-eslint/template/recommended"
       ],
       "rules": {}
+    },
+    // NOTE: WE ARE NOT APPLYING @ANGULAR-ESLINT/TEMPLATE IN THIS OVERRIDE, ONLY PRETTIER
+    {
+      "files": ["*.html"],
+      "excludedFiles": ["*inline-template-*.component.html"],
+      "extends": [
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        // NOTE: WE ARE OVERRIDING THE DEFAULT CONFIG TO ALWAYS SET THE PARSER TO ANGULAR (SEE BELOW)
+        "prettier/prettier": ["error", { "parser": "angular" }]
+      }
     }
   ]
 }

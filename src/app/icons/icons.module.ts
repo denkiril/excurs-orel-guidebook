@@ -8,11 +8,11 @@ import expandMore from '!!raw-loader!./svg/expand_more.svg';
 @NgModule({
   declarations: [],
   imports: [
-    MatIconModule
+    MatIconModule, //
   ],
   exports: [
-    MatIconModule
-  ]
+    MatIconModule, //
+  ],
 })
 export class IconsModule {
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

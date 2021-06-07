@@ -3,7 +3,7 @@ import { Component, HostListener, OnInit, ɵmarkDirty as markDirty } from '@angu
 @Component({
   selector: 'exo-main-menu',
   templateUrl: './main-menu.component.html',
-  styleUrls: ['./main-menu.component.scss']
+  styleUrls: ['./main-menu.component.scss'],
 })
 export class MainMenuComponent implements OnInit {
   opened = false;

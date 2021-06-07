@@ -10,16 +10,16 @@ import { MainMenuComponent } from './components/main-menu/main-menu.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent, //
     MainMapComponent,
     MainPanelComponent,
-    MainMenuComponent
+    MainMenuComponent,
   ],
   imports: [
-    BrowserModule,
-    IconsModule
+    BrowserModule, //
+    IconsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
