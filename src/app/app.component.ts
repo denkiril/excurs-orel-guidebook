@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'exo-root',
+  selector: 'exogb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

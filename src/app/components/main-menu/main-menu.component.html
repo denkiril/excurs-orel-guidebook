@@ -1,7 +1,44 @@
-<div class="indicator">
-  <mat-icon 
-    [svgIcon]="opened ? 'expand_less' : 'expand_more'" 
-    aria-hidden="false" 
-    aria-label="expand icon"
-  ></mat-icon>
+<button class="menu-button" (click)="onClick()">
+  <div class="indicator">
+    <mat-icon
+      [svgIcon]="opened ? 'expand_less' : 'expand_more'"
+      aria-hidden="false"
+      aria-label="expand icon"
+    ></mat-icon>
+  </div>
+</button>
+
+<div class="menu-panel-container">
+  <div
+    class="menu-panel"
+    [class.opened]="opened"
+    [@openClose]="opened ? 'open' : 'closed'"
+  >
+    <nav>
+      <ng-container
+        *ngTemplateOutlet="
+          menuBlock;
+          context: { $implicit: MENU_BLOCKS[MENU_BLOCK_NAME.TOP].items }
+        "
+      ></ng-container>
+      <div class="menu-subtitle">Разделы Путеводителя</div>
+      <ng-container
+        *ngTemplateOutlet="
+          menuBlock;
+          context: { $implicit: MENU_BLOCKS[MENU_BLOCK_NAME.SECTIONS].items }
+        "
+      ></ng-container>
+    </nav>
+  </div>
 </div>
+
+<ng-template #menuBlock let-items>
+  <ul>
+    <li *ngFor="let item of items">
+      <a [href]="item.link" target="_blank">
+        <mat-icon svgIcon="open_in_new"></mat-icon>
+        {{ item.title }}
+      </a>
+    </li>
+  </ul>
+</ng-template>

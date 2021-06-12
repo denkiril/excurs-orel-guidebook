@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-// import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
@@ -17,6 +17,7 @@ import { MainMenuComponent } from './components/main-menu/main-menu.component';
   ],
   imports: [
     BrowserModule, //
+    BrowserAnimationsModule,
     IconsModule,
   ],
   providers: [],

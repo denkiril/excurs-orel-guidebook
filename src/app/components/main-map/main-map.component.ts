@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'exo-main-map',
+  selector: 'exogb-main-map',
   templateUrl: './main-map.component.html',
   styleUrls: ['./main-map.component.scss'],
 })

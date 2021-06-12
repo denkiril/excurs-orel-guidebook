@@ -15,7 +15,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "exo",
+      "prefix": "exogb",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

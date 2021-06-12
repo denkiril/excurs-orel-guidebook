@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'exo-main-panel',
+  selector: 'exogb-main-panel',
   templateUrl: './main-panel.component.html',
   styleUrls: ['./main-panel.component.scss'],
 })
