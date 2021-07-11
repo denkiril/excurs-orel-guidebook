@@ -1,4 +1,10 @@
-import { Component, OnInit, ɵmarkDirty as markDirty } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ɵmarkDirty as markDirty,
+} from '@angular/core';
 import {
   animate,
   state,
@@ -6,6 +12,9 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { Subscription } from 'rxjs';
+
+import { UtilitiesService } from 'src/app/services/utilities.service';
 
 interface MenuItem {
   title: string;
@@ -44,8 +53,13 @@ enum MENU_BLOCK_NAME {
     ]),
   ],
 })
-export class MainMenuComponent implements OnInit {
-  opened = false;
+export class MainMenuComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
+  private set sub(s: Subscription) {
+    this.subscriptions.push(s);
+  }
+
+  public opened = false;
 
   MENU_BLOCK_NAME = MENU_BLOCK_NAME;
   MENU_BLOCKS: { [key in MENU_BLOCK_NAME]: MenuBlock } = {
@@ -75,15 +89,33 @@ export class MainMenuComponent implements OnInit {
     },
   };
 
-  constructor() {}
+  constructor(
+    private utilitiesService: UtilitiesService,
+    private elRef: ElementRef,
+  ) {}
 
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.sub = this.utilitiesService.documentClickedTarget.subscribe((target) =>
+      this.onDocumentClick(target),
+    );
+  }
 
-  onClick(): void {
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  private toggleOpened(): void {
     this.opened = !this.opened;
     markDirty(this);
+  }
 
-    console.log('opened:', this.opened);
+  public onMenuButtonClick(): void {
+    this.toggleOpened();
+  }
+
+  private onDocumentClick(target: any): void {
+    if (this.opened && !this.elRef.nativeElement.contains(target)) {
+      this.toggleOpened();
+    }
   }
 }

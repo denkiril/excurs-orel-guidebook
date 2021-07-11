@@ -1,4 +1,4 @@
-<button class="menu-button" (click)="onClick()">
+<button class="menu-button" (click)="onMenuButtonClick()">
   <div class="indicator">
     <mat-icon
       [svgIcon]="opened ? 'expand_less' : 'expand_more'"
@@ -35,7 +35,7 @@
 <ng-template #menuBlock let-items>
   <ul>
     <li *ngFor="let item of items">
-      <a [href]="item.link" target="_blank">
+      <a [href]="item.link" target="_blank" [tabindex]="opened ? '0' : '-1'">
         <mat-icon svgIcon="open_in_new"></mat-icon>
         {{ item.title }}
       </a>

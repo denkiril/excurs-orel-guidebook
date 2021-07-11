@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { UtilitiesService } from './services/utilities.service';
 
 @Component({
   selector: 'exogb-root',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'orel-guidebook';
+  constructor(private utilitiesService: UtilitiesService) {}
+
+  @HostListener('document:click', ['$event'])
+  documentClick(event: any): void {
+    console.log('AppComponent document click');
+    this.utilitiesService.documentClickedTarget.next(event.target);
+  }
 }
