@@ -9,16 +9,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  // bottom: 0;
-  // right: 0;
   display: flex;
-  flex-direction: row-reverse;
   align-items: center;
-  background-color: white;
+  justify-content: flex-end;
+  background-color: var(--light-01);
   box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.4);
   border: none;
-  outline: none;
-  cursor: pointer;
+  border-radius: 0;
   z-index: 10;
 
   &:hover,
@@ -48,6 +45,7 @@
   overflow: hidden;
   left: -2px;
   top: 0;
+  pointer-events: none;
 
   .menu-panel {
     width: calc(100% - 2px);
@@ -56,10 +54,11 @@
     position: relative;
     left: 1px;
     top: -52px;
-    background-color: white;
+    background-color: var(--light-01);
     box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.4);
     padding-top: 60px;
     padding-bottom: 12px;
+    pointer-events: all;
 
     ul {
       list-style-type: none;

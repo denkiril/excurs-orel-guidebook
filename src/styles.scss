@@ -39,10 +39,18 @@
 // body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 :root {
+  // <from site>
+  --accent-dark-yellow: #ffd649;
+  --accent-dark-blue: #015a8d;
+  --accent-light-blue: #e0f3fc;
+  --accent-dark-grey: #3f3f3f;
+  --accent-gb-blue: #005281;
+  --accent-gb-light-grey: #ebebeb;
+  // </from site>
   --accent-red: #FF3B30;
   // --accent-orange: #FF9500;
   // --accent-orange: #fd7f06;
-  // --accent-orange: #edc041;
+  // --accent-orange: #edc041; // from exor logo
   --accent-orange: #E4971B;
   --accent-yellow: #FFCC00;
   --accent-green: #34C759;
@@ -56,9 +64,9 @@
   // --accent-pink: #FF2D55;
   --accent-pink: #E4321B;
   --light-01: #FFFFFF;
-  --light-02: #EFEFF4;
-  --light-03: rgba(239, 239, 244, 0.3);
-  --light-24: rgba(255, 255, 255, 0.24);
+  --light-02: #FFFEEF; // #FFFCD2;
+  --light-03: #FFFBBC;
+  // --light-24: rgba(255, 255, 255, 0.24);
   --dark-100: #2C2C2E;
   --grey-01: #8F8F94;
   --grey-02: #AEAEB2;
@@ -123,7 +131,7 @@ body {
   display: flex;
   align-items: center;
   padding-right: 56px;
-  // z-index: 100;
+  z-index: 100;
 
   .gb-header-logo {
     height: 100%;
@@ -160,4 +168,204 @@ body {
 
 .untouchable {
   pointer-events: none;
+}
+
+//------------- Input styles --------------//
+
+input[type='text'],
+input[type='email'],
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='time'],
+input[type='date'] {
+  height: 32px;
+  width: 100%;
+  padding: 0 4px;
+  outline: none;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid var(--label-secondary);
+  border-radius: 3px;
+  color: var(--label-primary);
+  caret-color: var(--label-secondary);
+  // transition: color, border-color 0.1s linear;
+  transition-property: color, border-color;
+  transition-duration: 0.1s, 0.1s;
+  transition-timing-function: linear, linear;
+
+  & ~ .icon {
+    color: var(--label-primary);
+  }
+
+  &::placeholder {
+    opacity: 1;
+    font-weight: 300;
+    color: var(--label-tetriary);
+  }
+
+  &:not(.invalid) {
+    &:placeholder-shown {
+      & ~ .icon {
+        color: var(--label-tetriary);
+      }
+      &:not(:focus):enabled:hover {
+        &::placeholder {
+          color: var(--label-secondary);
+        }
+
+        & ~ .icon {
+          color: var(--label-secondary);
+        }
+      }
+    }
+
+    &:hover {
+      border-color: var(--label-primary);
+    }
+
+    &:focus {
+      color: var(--label-primary);
+      border-color: var(--label-primary);
+      background-color: var(--light-01);
+
+      &::placeholder {
+        color: var(--label-secondary);
+      }
+
+      & ~ .icon {
+        color: var(--label-primary);
+      }
+    }
+  }
+
+  &.invalid {
+    border-color: var(--accent-red);
+    caret-color: var(--accent-red);
+  }
+
+  &:disabled {
+    background-color: var(--disabled-24);
+    border: none;
+    color: var(--label-tetriary);
+    cursor: not-allowed;
+
+    & ~ .icon {
+      color: var(--label-tetriary);
+      cursor: not-allowed;
+    }
+  }
+
+  &::-ms-reveal,
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+//------------- Buttons Styles --------------//
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 3px;
+  background-color: transparent;
+  outline: none;
+  // transition: color, border-color 0.1s linear;
+  transition-property: color, border-color;
+  transition-duration: 0.1s, 0.1s;
+  transition-timing-function: linear, linear;
+
+  &:enabled {
+    cursor: pointer;
+  }
+
+  &.primary {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--light-01);
+
+    &:enabled:hover {
+      border-color: var(--light-24);
+    }
+  }
+
+  &.secondary {
+    color: var(--label-secondary);
+    border-color: var(--label-secondary);
+
+    &:enabled:hover,
+    &:active,
+    &:enabled:focus-visible {
+      color: var(--label-primary);
+      border-color: var(--label-primary);
+    }
+
+    &:active {
+      background-color: var(--light-01);
+    }
+  }
+
+  &.secondary-2 {
+    color: var(--accent-blue);
+    background-color: var(--light-01);
+    border-color: var(--accent-blue);
+
+    &:enabled:not(:active):hover {
+      background-color: var(--light-02);
+    }
+  }
+
+  &.text {
+    color: var(--accent-blue);
+    background-color: transparent;
+    border-color: transparent;
+
+    &:enabled:hover {
+      border-color: var(--label-quarternary);
+    }
+
+    &:active {
+      border-color: var(--accent-blue);
+    }
+  }
+
+  &.delete {
+    color: var(--accent-red);
+    background-color: var(--light-01);
+    border-color: var(--accent-red);
+
+    &:enabled:not(:active):hover {
+      background-color: var(--light-02);
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+
+    &.primary,
+    &.secondary,
+    &.secondary-2,
+    &.text,
+    &.delete {
+      color: var(--label-tetriary);
+      background-color: var(--disabled-24);
+      border-color: transparent;
+      cursor: not-allowed;
+    }
+
+    &.text {
+      background-color: var(--light-01);
+      border-color: transparent;
+    }
+  }
 }

@@ -1,0 +1,31 @@
+<div class="search-input">
+  <input
+    #searchInput
+    type="text"
+    autocomplete="off"
+    [value]="value"
+    [placeholder]="placeholder"
+    (keyup)="checkValue(searchInput.value, $event)"
+  />
+
+  <mat-icon
+    *ngIf="searchInput.value"
+    class="icon close-icon"
+    svgIcon="close"
+    aria-hidden="false"
+    aria-label="close icon"
+    (click)="clearValue(); searchInput.value = ''"
+  ></mat-icon>
+</div>
+
+<button
+  class="secondary search-button"
+  (click)="searchValue(searchInput.value)"
+>
+  <mat-icon
+    class="search-icon"
+    svgIcon="search"
+    aria-hidden="false"
+    aria-label="search icon"
+  ></mat-icon>
+</button>

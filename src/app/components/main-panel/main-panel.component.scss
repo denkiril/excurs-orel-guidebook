@@ -1,6 +1,10 @@
 :host {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: var(--light-02);
+  border-right: solid 1px var(--label-tetriary);
+  padding: 80px 8px 8px;
 }

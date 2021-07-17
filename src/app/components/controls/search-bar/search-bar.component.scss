@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-input {
+  flex-grow: 1;
+  position: relative;
+  margin-right: 16px;
+
+  input {
+    padding: 0 24px 0 4px;
+  }
+
+  .close-icon {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 2px;
+    cursor: pointer;
+    color: var(--label-secondary);
+    transition: color 0.1s linear;
+  }
+
+  &:hover {
+    input {
+      border-color: var(--label-primary);
+    }
+
+    .close-icon {
+      color: var(--label-primary);
+    }
+  }
+}
+
+.search-button {
+  width: 64px;
+  flex-shrink: 0;
+}

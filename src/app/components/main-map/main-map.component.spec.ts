@@ -8,9 +8,8 @@ describe('MainMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MainMapComponent ]
-    })
-    .compileComponents();
+      declarations: [MainMapComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
