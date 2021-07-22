@@ -1,0 +1,41 @@
+<label
+  [ngClass]="{
+    'size-20': size === 20,
+    'size-24': size === 24,
+    'wrap-text': textWrap,
+    disabled: disabled
+  }"
+  [attr.title]="controlTitle"
+>
+  <span *ngIf="textLeft" class="text" [title]="textLeft">{{ textLeft }}</span>
+
+  <input
+    type="checkbox"
+    [checked]="checked"
+    [disabled]="disabled"
+    (change)="change()"
+  />
+
+  <svg
+    #checkbox
+    class="box"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    focusable="false"
+  >
+    <rect class="box__rect" width="24" height="24" />
+    <path
+      class="box__frame"
+      d="M0 0V-1H-1V0H0ZM24 0H25V-1H24V0ZM24 24V25H25V24H24ZM0 24H-1V25H0V24ZM0 1H24V-1H0V1ZM23 0V24H25V0H23ZM24 23H0V25H24V23ZM1 24V0H-1V24H1Z"
+    />
+    <path
+      class="box__mark"
+      d="M9.99999 15.172L19.192 5.979L20.607 7.393L9.99999 18L3.63599 11.636L5.04999 10.222L9.99999 15.172Z"
+    />
+  </svg>
+
+  <span #label *ngIf="textRight" class="text" [title]="textRight">{{
+    textRight
+  }}</span>
+</label>

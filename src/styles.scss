@@ -55,10 +55,6 @@
   --accent-yellow: #FFCC00;
   --accent-green: #34C759;
   --accent-teal: #5AC8FA;
-  // --accent-blue: #007AFF;
-  // --accent-blue: #015a8d;
-  // --accent-blue: #017AC0;
-  --accent-blue: #1b68e4;
   --accent-indigo: #5856D6;
   --accent-purple: #AF52DE;
   // --accent-pink: #FF2D55;
@@ -74,10 +70,13 @@
   --grey-04: #D1D1D6;
   --disabled-100: #999999;
   --disabled-24: rgba(153, 153, 153, 0.24);
-  --label-primary: #1C1C1E;
+  --label-primary: rgb(28, 28, 30); // #1C1C1E
   --label-secondary: rgba(60, 60, 67, 0.6);
   --label-tetriary: rgba(60, 60, 67, 0.3);
   --label-quarternary: rgba(60, 60, 67, 0.18);
+  --control-primary: #2a95d2;
+  --control-secondary: #185476;
+  --control-contrast: #008cdc;
 }
 
 // Fonts

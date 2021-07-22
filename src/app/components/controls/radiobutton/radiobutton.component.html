@@ -1,0 +1,30 @@
+<label [attr.title]="controlTitle">
+  <span *ngIf="textLeft" class="text" title="{{ textLeft }}">{{
+    textLeft
+  }}</span>
+
+  <input
+    type="radio"
+    [attr.name]="name"
+    [value]="value"
+    [checked]="checked"
+    [disabled]="disabled"
+    (change)="change()"
+  />
+
+  <svg
+    class="box"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    focusable="false"
+  >
+    <circle cx="12" cy="12" r="12" class="box__off box__back" />
+    <circle cx="12" cy="12" r="3" class="box__off" />
+    <circle cx="12" cy="12" r="6" class="box__front" />
+  </svg>
+
+  <span *ngIf="textRight" class="text" title="{{ textRight }}">{{
+    textRight
+  }}</span>
+</label>

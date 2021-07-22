@@ -20,7 +20,7 @@
 
   &:hover,
   &:focus-visible {
-    color: var(--accent-blue);
+    color: var(--control-contrast);
   }
 
   .indicator {
@@ -82,7 +82,7 @@
 
       &:hover,
       &:focus-visible {
-        color: var(--accent-blue);
+        color: var(--accent-dark-blue);
       }
     }
 

@@ -1,0 +1,71 @@
+label {
+  position: relative;
+  display: inline;
+  margin: 0;
+}
+
+input {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.pic {
+  display: flex;
+  position: relative;
+}
+
+.box {
+  width: 40px;
+  height: 24px;
+  fill: var(--label-tetriary);
+}
+
+.box__frame {
+  fill: transparent;
+  transition: fill 0.1s linear;
+}
+
+.knob {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  fill: var(--light-01);
+}
+
+input:checked + .pic > .knob {
+  left: 16px;
+}
+
+input:enabled {
+  & + .pic {
+    cursor: pointer;
+  }
+
+  &:checked + .pic .box__body {
+    fill: var(--control-primary);
+  }
+
+  &:focus-visible + .pic .box__frame {
+    fill: var(--control-secondary);
+  }
+}
+
+input:disabled {
+  & + .pic {
+    cursor: not-allowed;
+  }
+
+  & + .pic > .box,
+  & + .pic > .knob {
+    fill: var(--disabled-24);
+  }
+}
+
+.animate {
+  transition: .2s;
+}

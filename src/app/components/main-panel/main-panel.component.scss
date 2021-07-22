@@ -8,3 +8,13 @@
   border-right: solid 1px var(--label-tetriary);
   padding: 80px 8px 8px;
 }
+
+.search-bar {
+  margin-bottom: 16px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}

@@ -1,0 +1,147 @@
+label {
+  margin: 0;
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+
+  input {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+
+    &.available:not(:checked) {
+      & + .box {
+        cursor: pointer;
+      }
+
+      & + * .box__mark {
+        fill: var(--light-01);
+      }
+      
+      & + * .box__rect {
+        fill: var(--disabled-100);
+      }
+    }
+  }
+
+  input:enabled {
+    & + .box {
+      cursor: pointer;
+    }
+
+    // &:hover + .box__rect,
+    // &:focus-visible + .box__rect {
+    //   // box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    //   fill: var(--control-secondary);
+    // }
+    &:focus-visible + .box {
+      box-shadow: 0px 0px 0px 2px var(--control-secondary);
+    }
+
+    & + * .box__rect,
+    & + * .box__frame {
+      fill: var(--label-tetriary);
+    }
+
+    &:checked {
+      & + * .box__frame {
+        fill: none;
+      }
+  
+      & + * .box__mark {
+        fill: var(--light-01);
+      }
+  
+      & + * .box__rect {
+        fill: var(--control-primary);
+      }
+    }
+
+    // &:focus-visible {
+    //   & + * .box__frame {
+    //     fill: var(--control-secondary);
+    //   }
+    // }
+  }
+
+  input:disabled {
+    & + * .box__rect,
+    & + * .box__frame {
+      fill: var(--disabled-24);
+    }
+
+    &:checked {
+      & + * .box__frame {
+        fill: none;
+      }
+  
+      & + * .box__mark {
+        fill: var(--light-01);
+      }
+    }
+  }
+
+  .box {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    transition: all 0.1s linear;
+  }
+
+  .text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0 8px;
+    line-height: 16px;
+    cursor: default;
+  }
+
+  &.wrap-text .text {
+    white-space: normal;
+  }
+
+  &.size-20 {
+    .box {
+      width: 20px;
+      height: 20px;
+    }
+
+    .text {
+      line-height: 20px;
+    }
+  }
+
+  &.size-24 {
+    .box {
+      width: 24px;
+      height: 24px;
+    }
+
+    .text {
+      line-height: 24px;
+    }
+  }
+
+  &.disabled {
+    .box {
+      cursor: not-allowed;
+    }
+  }
+
+  // Colorize text
+  .text {
+    color: var(--label-secondary);
+    transition: color .1s linear;
+  }
+
+  input:checked ~ .text {
+    color: var(--label-primary);
+  }
+
+  input:disabled ~ .text {
+    color: var(--label-secondary);
+  }
+}

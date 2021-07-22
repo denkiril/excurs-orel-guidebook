@@ -1,0 +1,67 @@
+label {
+  display: flex;
+  margin: 0;
+  position: relative;
+
+  .box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: all 0.1s linear;
+  }
+
+  input {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+
+    &:enabled + .box {
+      cursor: pointer;
+    }
+
+    &:focus-visible + .box {
+      box-shadow: 0px 0px 0px 2px var(--control-secondary);
+    }
+    
+    & + * .box__off {
+      fill: var(--label-tetriary);
+    }
+
+    &:checked {
+      & + * .box__off {
+        fill: none;
+      }
+    
+      & + * .box__back {
+        fill: var(--control-primary);
+      }
+    
+      & + * .box__front {
+        fill: var(--light-01);
+      }
+    }
+  }
+
+  .text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0 8px;
+  }
+
+  // Colorize text
+  .text {
+    color: var(--label-secondary);
+    transition: color .1s linear;
+  }
+
+  input:checked ~ .text {
+    color: var(--label-primary);
+  }
+
+  input:disabled ~ .text {
+    color: var(--label-secondary);
+  }
+}
