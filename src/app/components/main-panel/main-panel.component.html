@@ -2,11 +2,61 @@
   <exogb-search-bar></exogb-search-bar>
 </div>
 
-<div class="controls">
-  <exogb-toggle></exogb-toggle>
-  <exogb-toggle></exogb-toggle>
-  <exogb-checkbox></exogb-checkbox>
-  <exogb-checkbox></exogb-checkbox>
-  <exogb-radiobutton></exogb-radiobutton>
-  <exogb-radiobutton></exogb-radiobutton>
+<div
+  *ngFor="let filterBlock of filterBlocks"
+  class="filter-block"
+  [formGroup]="form"
+>
+  <exogb-filter-block
+    #fb
+    [formControlName]="filterBlock.name"
+    [blockTitle]="filterBlock.title"
+  >
+    <div
+      class="fb-content-container"
+      [@openClose]="fb.opened ? 'open' : 'closed'"
+      (@openClose.done)="animationDone(fb.opened, filterBlock.name)"
+    >
+      <div
+        *ngIf="fb.opened || filterBlock.showed"
+        class="fb-content"
+        [class.disabled]="!fb.switchedOn"
+      >
+        <ng-container
+          *ngFor="let group of filterBlock.groups"
+          [ngTemplateOutlet]="filterGroupTemplate"
+          [ngTemplateOutletContext]="{ block: fb, group: group }"
+        ></ng-container>
+      </div>
+    </div>
+  </exogb-filter-block>
 </div>
+
+<ng-template
+  #filterGroupTemplate
+  let-block="block"
+  let-group="group"
+  [formGroup]="form"
+>
+  <div
+    class="fb-row"
+    [ngClass]="{
+      'not-checked': form.get(group.name)?.errors?.notChecked
+    }"
+    [formGroupName]="group.name"
+  >
+    <div class="fb-col-title" [title]="group.title">
+      {{ group.shortTitle || group.title }}
+    </div>
+
+    <div *ngFor="let control of group.controls" class="fb-col">
+      <exogb-checkbox
+        [formControlName]="control.name"
+        [controlTitle]="control.title"
+        [textRight]="control.shortTitle || control.title"
+        [enabled]="block.switchedOn"
+        [alert]="form.get(group.name)?.errors?.notChecked"
+      ></exogb-checkbox>
+    </div>
+  </div>
+</ng-template>

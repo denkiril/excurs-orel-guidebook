@@ -36,6 +36,10 @@ label {
     //   // box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
     //   fill: var(--control-secondary);
     // }
+    &.alert + .box {
+      box-shadow: 0px 0px 0px 1px var(--accent-alert);
+    }
+
     &:focus-visible + .box {
       box-shadow: 0px 0px 0px 2px var(--control-secondary);
     }

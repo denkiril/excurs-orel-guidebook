@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  border: solid 1px var(--label-tetriary);
+  // border: solid 1px var(--grey-01);
+  border-radius: 5px;
+}
+
+.fb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+
+  .fb-toggle {
+    flex-shrink: 0;
+    margin: 0 8px;
+  }
+
+  button.fb-button {
+    flex-grow: 1;
+    justify-content: space-between;
+    border: none;
+    color: var(--label-secondary);
+  
+    &:enabled:hover,
+    &:active,
+    &:enabled:focus-visible {
+      color: var(--label-primary);
+    }
+
+    &.opened {
+      .fb-title {
+        color: var(--label-primary);
+      }
+    }
+    
+    .mat-icon {
+      height: 32px;
+      width: 40px;
+    }
+  }
+}

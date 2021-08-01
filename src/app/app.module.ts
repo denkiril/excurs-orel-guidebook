@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
@@ -13,6 +13,7 @@ import { SearchBarComponent } from './components/controls/search-bar/search-bar.
 import { CheckboxComponent } from './components/controls/checkbox/checkbox.component';
 import { RadiobuttonComponent } from './components/controls/radiobutton/radiobutton.component';
 import { ToggleComponent } from './components/controls/toggle/toggle.component';
+import { FilterBlockComponent } from './components/controls/filter-block/filter-block.component';
 
 @NgModule({
   declarations: [
@@ -24,12 +25,14 @@ import { ToggleComponent } from './components/controls/toggle/toggle.component';
     CheckboxComponent,
     RadiobuttonComponent,
     ToggleComponent,
+    FilterBlockComponent,
   ],
   imports: [
     BrowserModule, //
     BrowserAnimationsModule,
     CommonModule,
-    // FormsModule,
+    FormsModule,
+    ReactiveFormsModule,
     IconsModule,
   ],
   providers: [],

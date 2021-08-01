@@ -1,0 +1,20 @@
+<div class="fb-header">
+  <div class="fb-toggle">
+    <exogb-toggle
+      [checked]="switchedOn"
+      (changeChecked)="switch()"
+    ></exogb-toggle>
+  </div>
+
+  <button class="fb-button" [class.opened]="opened" (click)="toggleOpened()">
+    <div class="fb-title">{{ blockTitle }}</div>
+
+    <mat-icon
+      [svgIcon]="opened ? 'expand_less' : 'expand_more'"
+      aria-hidden="false"
+      aria-label="expand icon"
+    ></mat-icon>
+  </button>
+</div>
+
+<ng-content></ng-content>

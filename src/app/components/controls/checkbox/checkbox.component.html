@@ -3,7 +3,7 @@
     'size-20': size === 20,
     'size-24': size === 24,
     'wrap-text': textWrap,
-    disabled: disabled
+    disabled: !enabled
   }"
   [attr.title]="controlTitle"
 >
@@ -11,8 +11,9 @@
 
   <input
     type="checkbox"
+    [class.alert]="alert"
     [checked]="checked"
-    [disabled]="disabled"
+    [disabled]="!enabled"
     (change)="change()"
   />
 
@@ -35,7 +36,12 @@
     />
   </svg>
 
-  <span #label *ngIf="textRight" class="text" [title]="textRight">{{
-    textRight
-  }}</span>
+  <span
+    *ngIf="textRight"
+    #label
+    class="text"
+    [title]="controlTitle || textRight"
+  >
+    {{ textRight }}
+  </span>
 </label>

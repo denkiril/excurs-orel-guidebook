@@ -6,7 +6,7 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
-  // ChangeDetectionStrategy
+  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -14,7 +14,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'exogb-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -26,7 +25,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class CheckboxComponent implements ControlValueAccessor {
   @Input() controlTitle: string | undefined;
   @Input() checked = false;
-  @Input() disabled = false;
+  @Input() enabled = true;
+  @Input() alert = false;
   @Input() textLeft: string | undefined;
   @Input() textRight: string | undefined;
   @Input() textWrap = false;
@@ -51,6 +51,7 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.checked = !!value;
+    markDirty(this);
   }
 
   registerOnChange(fn: any): void {
@@ -62,7 +63,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.enabled = !isDisabled;
   }
 
   change(): void {
