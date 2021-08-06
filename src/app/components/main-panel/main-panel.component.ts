@@ -1,7 +1,10 @@
 import {
   Component,
+  EventEmitter,
+  Input,
   OnDestroy,
   OnInit,
+  Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
@@ -80,6 +83,9 @@ interface FilterBlock {
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
   // @ViewChild('fb1') fb1!: FilterBlockComponent;
+  @Input() canExpandPanel = false;
+  @Output() expandPanelEvent = new EventEmitter<void>();
+
   private subs: Subscription[] = [];
   private set sub(s: Subscription) {
     this.subs.push(s);
@@ -158,6 +164,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ];
 
   public form!: FormGroup;
+  public cards: number[] = [];
 
   constructor() {}
 
@@ -220,5 +227,20 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     const block = this.filterBlocks.find((block) => block.name === blockName);
     if (block) block.showed = opened;
     markDirty(this);
+  }
+
+  public toggleExpandPanel(): void {
+    this.expandPanelEvent.emit();
+  }
+
+  public search(value: string): void {
+    const num = parseInt(value, 10);
+    console.log('search:', value, num);
+    this.cards = [];
+    if (!Number.isNaN(num)) {
+      for (let i = 0; i < num; i++) {
+        this.cards.push(i);
+      }
+    }
   }
 }

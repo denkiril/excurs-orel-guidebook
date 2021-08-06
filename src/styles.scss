@@ -369,3 +369,24 @@ button {
     }
   }
 }
+
+// Custom scrollbar (CSS Scrollbars & -webkit-scrollbar)
+
+.scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--label-quarternary) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+
+    &-thumb {
+      background-color: var(--label-quarternary);
+      border-radius: 20px;
+      // border: 1px solid var(--grey-04);
+    }
+
+    // &-track {
+    //   background: var(--grey-04);
+    // }
+  }
+}

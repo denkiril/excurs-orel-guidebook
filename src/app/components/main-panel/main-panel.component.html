@@ -1,35 +1,65 @@
-<div class="search-bar">
-  <exogb-search-bar></exogb-search-bar>
+<div class="noscrolled-header">
+  <div
+    *ngIf="canExpandPanel"
+    class="expand-button"
+    (click)="toggleExpandPanel()"
+  >
+    <svg
+      viewBox="0 0 24 8"
+      xmlns="http://www.w3.org/2000/svg"
+      class="expand-button__dash"
+    >
+      <path
+        d="M2 2.00L12 2L22 2.00"
+        fill="none"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+  </div>
 </div>
 
-<div
-  *ngFor="let filterBlock of filterBlocks"
-  class="filter-block"
-  [formGroup]="form"
->
-  <exogb-filter-block
-    #fb
-    [formControlName]="filterBlock.name"
-    [blockTitle]="filterBlock.title"
-  >
+<div class="scrolled-content scroller">
+  <div class="search-bar">
+    <exogb-search-bar (valueSubmited)="search($event)"></exogb-search-bar>
+  </div>
+
+  <div class="filter-blocks-container">
     <div
-      class="fb-content-container"
-      [@openClose]="fb.opened ? 'open' : 'closed'"
-      (@openClose.done)="animationDone(fb.opened, filterBlock.name)"
+      *ngFor="let filterBlock of filterBlocks"
+      class="filter-block"
+      [formGroup]="form"
     >
-      <div
-        *ngIf="fb.opened || filterBlock.showed"
-        class="fb-content"
-        [class.disabled]="!fb.switchedOn"
+      <exogb-filter-block
+        #fb
+        [formControlName]="filterBlock.name"
+        [blockTitle]="filterBlock.title"
       >
-        <ng-container
-          *ngFor="let group of filterBlock.groups"
-          [ngTemplateOutlet]="filterGroupTemplate"
-          [ngTemplateOutletContext]="{ block: fb, group: group }"
-        ></ng-container>
-      </div>
+        <div
+          class="fb-content-container"
+          [@openClose]="fb.opened ? 'open' : 'closed'"
+          (@openClose.done)="animationDone(fb.opened, filterBlock.name)"
+        >
+          <div
+            *ngIf="fb.opened || filterBlock.showed"
+            class="fb-content"
+            [class.disabled]="!fb.switchedOn"
+          >
+            <ng-container
+              *ngFor="let group of filterBlock.groups"
+              [ngTemplateOutlet]="filterGroupTemplate"
+              [ngTemplateOutletContext]="{ block: fb, group: group }"
+            ></ng-container>
+          </div>
+        </div>
+      </exogb-filter-block>
     </div>
-  </exogb-filter-block>
+  </div>
+
+  <div *ngIf="cards.length" class="cards-container">
+    <div *ngFor="let card of cards" class="card">{{ card }}</div>
+  </div>
 </div>
 
 <ng-template

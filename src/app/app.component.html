@@ -2,8 +2,11 @@
   <exogb-main-menu></exogb-main-menu>
 </div>
 
-<div class="main-panel-container">
-  <exogb-main-panel></exogb-main-panel>
+<div class="main-panel-container" [@expandPanel]="expandPanelState">
+  <exogb-main-panel
+    [canExpandPanel]="canExpandPanel"
+    (expandPanelEvent)="toggleExpandPanel()"
+  ></exogb-main-panel>
 </div>
 
 <div class="main-map-container">

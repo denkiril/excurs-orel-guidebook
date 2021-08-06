@@ -4,6 +4,7 @@
   left: 0;
   bottom: 0;
   right: 0;
+  overflow: hidden;
 }
 
 .main-panel-container {
@@ -18,9 +19,15 @@
 
 @media (max-width: 768px) {
   .main-panel-container {
-    height: 50px;
+    height: 60vh;
     width: 100%;
-    top: auto;
+    // top: auto;
+    top: calc(100vh - 80px);
+    // transition: transform 0.4s ease-out;
+    // transform: translateY(-50vh);
+    // transform: translateY(0);
+    // transform: translateY(calc(100% - 80px));
+    // transform: translateY(calc(80px - 100%));
   }
 }
 
