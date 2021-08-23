@@ -24,10 +24,13 @@ export class FilterBlockComponent implements ControlValueAccessor {
   public opened = false;
   public switchedOn = true;
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => {
+    // do nothing
+  };
 
-  constructor() {}
+  onTouched: any = () => {
+    // do nothing
+  };
 
   writeValue(value: any): void {
     this.switchedOn = !!value;

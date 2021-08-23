@@ -6,8 +6,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main-map.component.scss'],
 })
 export class MainMapComponent implements OnInit {
-  constructor() {}
-
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method, @typescript-eslint/no-empty-function
   ngOnInit(): void {}
 }

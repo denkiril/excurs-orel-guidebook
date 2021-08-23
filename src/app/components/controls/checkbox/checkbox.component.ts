@@ -36,10 +36,13 @@ export class CheckboxComponent implements ControlValueAccessor {
   @ViewChild('checkbox') checkbox!: ElementRef;
   @ViewChild('label') label!: ElementRef;
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => {
+    // do nothing
+  };
 
-  constructor() {}
+  onTouched: any = () => {
+    // do nothing
+  };
 
   // ngAfterViewInit(): void {
   //   if (this.size && !(this.size === 20 || this.size === 24)) {

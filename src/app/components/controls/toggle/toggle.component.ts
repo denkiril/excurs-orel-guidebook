@@ -36,8 +36,13 @@ export class ToggleComponent
   @Output() changeChecked: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('knob') private knob: ElementRef | undefined;
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => {
+    // do nothing
+  };
+
+  onTouched: any = () => {
+    // do nothing
+  };
 
   constructor(
     private renderer: Renderer2,

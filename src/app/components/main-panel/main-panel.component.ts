@@ -166,8 +166,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   public form!: FormGroup;
   public cards: number[] = [];
 
-  constructor() {}
-
   ngOnInit(): void {
     this.form = new FormGroup({
       [this.filterBlocks[0].name]: new FormControl(

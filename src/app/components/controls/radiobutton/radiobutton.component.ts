@@ -33,8 +33,13 @@ export class RadiobuttonComponent implements OnInit, ControlValueAccessor {
   @Input() textRight: string | undefined;
   @Output() changeValue: EventEmitter<string> = new EventEmitter();
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => {
+    // do nothing
+  };
+
+  onTouched: any = () => {
+    // do nothing
+  };
 
   ngOnInit(): void {
     this.name = this.formControlName || this.name;

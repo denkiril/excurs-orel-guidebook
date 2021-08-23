@@ -17,7 +17,7 @@ import { FilterBlockComponent } from './components/controls/filter-block/filter-
 
 @NgModule({
   declarations: [
-    AppComponent, //
+    AppComponent,
     MainMapComponent,
     MainPanelComponent,
     MainMenuComponent,
@@ -28,7 +28,7 @@ import { FilterBlockComponent } from './components/controls/filter-block/filter-
     FilterBlockComponent,
   ],
   imports: [
-    BrowserModule, //
+    BrowserModule,
     BrowserAnimationsModule,
     CommonModule,
     FormsModule,

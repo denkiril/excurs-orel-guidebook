@@ -15,6 +15,8 @@
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
+        "@tinkoff/eslint-config/app",
+        "@tinkoff/eslint-config-angular",
         "plugin:@angular-eslint/template/process-inline-templates",
         // "prettier/@typescript-eslint",
         "plugin:prettier/recommended"
@@ -51,7 +53,8 @@
             "selector": "typeLike",
             "format": ["PascalCase", "UPPER_CASE"]
           }
-        ]
+        ],
+        "@typescript-eslint/consistent-type-imports": "off"
         // "no-trailing-spaces": "error",
         // "space-in-brackets": ["error", "never"],
         // "no-unused-vars": "error"
