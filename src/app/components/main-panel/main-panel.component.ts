@@ -23,27 +23,40 @@ import {
 } from '@angular/forms';
 
 import { Subscription } from 'rxjs';
+import { first } from 'rxjs/operators';
+
+import {
+  // GetSightsParams,
+  OknCategory,
+  OknType,
+  SightData,
+  SightsFilterParams,
+  SightsService,
+} from 'src/app/services/sights.service';
+import { SettingsService } from 'src/app/services/settings.service';
 
 // TODO:
 // 1. выбрано / всего
 // 2. Должно быть выбрано хотя бы одно значение в секции Категория охраны... - OK
 // 3. Справка (большой тултип?)
-// 4. Сохранение настроек фильтра в localStorage
-// 5. Вывод карточек объектов по фильтру
+// 4. Сохранение настроек фильтра в localStorage - OK
+// 5. Вывод карточек объектов по фильтру - OK
 // 6. Поиск (и фильтрация?) по имени (вхождению строки?)
 // 7. Вывод объектов на карте
+// 8. Fix openClose transition
+// 9. Настройки фильтра в location
 
 // type BlockName = 'fb1' | 'fb2' | 'fb3';
 
 interface FilterControl {
-  name: string;
+  name: OknCategory | OknType;
   title: string;
   shortTitle?: string;
   value: boolean;
 }
 
 interface FilterGroup {
-  name: string;
+  name: string; // keyof SightsFilterParams['fb1'];
   title: string;
   shortTitle?: string;
   controls: FilterControl[];
@@ -53,6 +66,7 @@ interface FilterBlock {
   name: string;
   title: string;
   switchedOn: boolean;
+  opened: boolean;
   showed: boolean;
   groups: FilterGroup[];
 }
@@ -64,9 +78,9 @@ interface FilterBlock {
   animations: [
     trigger('openClose', [
       state(
-        'open',
+        'opened',
         style({
-          height: '80px',
+          height: 'auto',
           opacity: 1,
         }),
       ),
@@ -77,7 +91,7 @@ interface FilterBlock {
           opacity: 0,
         }),
       ),
-      transition('open <=> closed', [animate('500ms ease-in-out')]),
+      transition('opened <=> closed', [animate('500ms ease-in-out')]),
     ]),
   ],
 })
@@ -91,82 +105,19 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.subs.push(s);
   }
 
-  public filterBlocks: FilterBlock[] = [
-    {
-      name: 'fb1',
-      title: 'ОКН',
-      switchedOn: true,
-      showed: false,
-      groups: [
-        {
-          name: 'category',
-          title: 'Категория охраны',
-          shortTitle: 'Категория',
-          controls: [
-            {
-              name: 'fed',
-              title: 'Федеральный',
-              shortTitle: 'Фед.',
-              value: true,
-            },
-            {
-              name: 'reg',
-              title: 'Региональный',
-              shortTitle: 'Рег.',
-              value: false,
-            },
-            {
-              name: 'mst',
-              title: 'Местный',
-              shortTitle: 'Мест.',
-              value: false,
-            },
-            {
-              name: 'vvl',
-              title: 'Выявленный',
-              shortTitle: 'Выяв.',
-              value: false,
-            },
-          ],
-        },
-        {
-          name: 'type',
-          title: 'Тип',
-          controls: [
-            {
-              name: 'arc',
-              title: 'Памятник археологии',
-              shortTitle: 'Арх.',
-              value: true,
-            },
-            {
-              name: 'aig',
-              title: 'Памятник архитектуры и градостроительства',
-              shortTitle: 'Архит.',
-              value: true,
-            },
-            {
-              name: 'his',
-              title: 'Памятник истории',
-              shortTitle: 'Истор.',
-              value: true,
-            },
-            {
-              name: 'art',
-              title: 'Памятник искусства',
-              shortTitle: 'Искус.',
-              value: true,
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  public filterBlocks: FilterBlock[] = [];
 
   public form!: FormGroup;
-  public cards: number[] = [];
+  public sights: SightData[] = [];
+
+  constructor(
+    private sightsService: SightsService,
+    private settingsService: SettingsService,
+  ) {}
 
   ngOnInit(): void {
+    this.initFilterBlocks();
+
     this.form = new FormGroup({
       [this.filterBlocks[0].name]: new FormControl(
         this.filterBlocks[0].switchedOn,
@@ -196,8 +147,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
     this.sub = this.form.statusChanges.subscribe(() => {
       console.log('form statusChanges:', this.form.value);
+      this.getSights();
       markDirty(this);
     });
+
+    this.getSights(undefined, true);
   }
 
   ngOnDestroy(): void {
@@ -210,6 +164,97 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   //   markDirty(this);
   // }
 
+  private initFilterBlocks(): void {
+    const filterParams = this.settingsService.getFilterParams();
+    const fb1 = filterParams?.fb1;
+
+    const filterBlock1: FilterBlock = {
+      name: 'fb1',
+      title: 'ОКН',
+      switchedOn: fb1?.switchedOn ?? true,
+      opened: fb1?.opened ?? false,
+      showed: false,
+      groups: [
+        {
+          name: 'category',
+          title: 'Категория охраны',
+          shortTitle: 'Категория',
+          controls: [
+            {
+              name: 'fed',
+              title: 'Федеральный',
+              shortTitle: 'Фед.',
+              value: fb1?.category?.fed ?? true,
+            },
+            {
+              name: 'reg',
+              title: 'Региональный',
+              shortTitle: 'Рег.',
+              value: fb1?.category?.reg ?? false,
+            },
+            {
+              name: 'mst',
+              title: 'Местный',
+              shortTitle: 'Мест.',
+              value: fb1?.category?.mst ?? false,
+            },
+            {
+              name: 'vvl',
+              title: 'Выявленный',
+              shortTitle: 'Выяв.',
+              value: fb1?.category?.vvl ?? false,
+            },
+          ],
+        },
+        {
+          name: 'type',
+          title: 'Тип',
+          controls: [
+            {
+              name: 'arc',
+              title: 'Памятник археологии',
+              shortTitle: 'Арх.',
+              value: fb1?.type?.arc ?? true,
+            },
+            {
+              name: 'aig',
+              title: 'Памятник архитектуры и градостроительства',
+              shortTitle: 'Архит.',
+              value: fb1?.type?.aig ?? true,
+            },
+            {
+              name: 'his',
+              title: 'Памятник истории',
+              shortTitle: 'Истор.',
+              value: fb1?.type?.his ?? true,
+            },
+            {
+              name: 'art',
+              title: 'Памятник искусства',
+              shortTitle: 'Искус.',
+              value: fb1?.type?.art ?? true,
+            },
+          ],
+        },
+      ],
+    };
+
+    this.filterBlocks.push(filterBlock1);
+    markDirty(this);
+
+    // if (filterParams) {
+    //   this.filterBlocks.forEach((block) => {
+    //     block.groups.forEach((group) => {
+    //       group.controls.forEach((control) => {
+    //         if (control.name in filterParams[group.name]) {
+    //           control.value = Boolean(filterParams[group.name][control.name]);
+    //         }
+    //       });
+    //     });
+    //   });
+    // }
+  }
+
   private checkedValidator: ValidatorFn = (ac: AbstractControl) => {
     const controls = (ac as FormGroup).controls || [];
 
@@ -218,13 +263,19 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       : { notChecked: true };
   };
 
-  public animationDone(opened: boolean, blockName: string): void {
+  public animationDone(filterBlock: FilterBlock): void {
     // the toState, fromState and totalTime data is accessible from the event variable
     // console.log('event:', event);
-    console.log('animationDone:', opened);
-    const block = this.filterBlocks.find((block) => block.name === blockName);
-    if (block) block.showed = opened;
+    // console.log('animationDone:', filterBlock.opened);
+    // const fb = this.filterBlocks.find((block) => block.name === blockName);
+    // if (fb) fb.showed = opened;
+    filterBlock.showed = filterBlock.opened;
     markDirty(this);
+  }
+
+  public onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
+    filterBlock.opened = opened;
+    this.updateFilterParams();
   }
 
   public toggleExpandPanel(): void {
@@ -233,12 +284,39 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   public search(value: string): void {
     const num = parseInt(value, 10);
-    console.log('search:', value, num);
-    this.cards = [];
     if (!Number.isNaN(num)) {
-      for (let i = 0; i < num; i++) {
-        this.cards.push(i);
-      }
+      this.getSights(num);
     }
+  }
+
+  private getSights(limit?: number, init = false): void {
+    if (this.form.invalid) return;
+
+    const filterParams = this.updateFilterParams(!init);
+
+    this.sightsService
+      .getSights({ limit, filterParams })
+      .pipe(first())
+      .subscribe((data) => {
+        this.sights = [...data.items];
+      });
+  }
+
+  private updateFilterParams(update = true): SightsFilterParams {
+    const filterParams: SightsFilterParams = {
+      fb1: {
+        switchedOn: this.form.value.fb1,
+        opened:
+          this.filterBlocks.find((block) => block.name === 'fb1')?.opened ??
+          false,
+        category: this.form.value.category,
+        type: this.form.value.type,
+      },
+    };
+
+    console.log('updateFilterParams:', filterParams);
+    if (update) this.settingsService.setFilterParams(filterParams);
+
+    return filterParams;
   }
 }

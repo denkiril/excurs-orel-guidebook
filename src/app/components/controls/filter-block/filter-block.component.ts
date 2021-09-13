@@ -1,7 +1,9 @@
 import {
   Component,
+  EventEmitter,
   forwardRef,
   Input,
+  Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -20,8 +22,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class FilterBlockComponent implements ControlValueAccessor {
   @Input() blockTitle = '';
-
-  public opened = false;
+  @Input() opened = false;
+  @Output() openedChange = new EventEmitter<boolean>();
   public switchedOn = true;
 
   onChange: any = () => {
@@ -51,6 +53,7 @@ export class FilterBlockComponent implements ControlValueAccessor {
 
   public toggleOpened(): void {
     this.opened = !this.opened;
+    this.openedChange.emit(this.opened);
     markDirty(this);
   }
 

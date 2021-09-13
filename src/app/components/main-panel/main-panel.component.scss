@@ -65,7 +65,12 @@
 
   .fb-content-container {
     overflow: hidden;
+    height: 0;
     // transition: all 0.2s linear;
+
+    // &.opened {
+    //   height: auto;
+    // }
   }
   
   .fb-content {
@@ -87,6 +92,7 @@
       font-size: 16px;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       margin-bottom: 16px;
     }
 
@@ -96,11 +102,19 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       margin-right: 16px;
+      margin-bottom: 4px;
       cursor: default;
+    }
+
+    .fb-cols {
+      display: flex;
+      align-items: center;
+      max-width: 100%;
     }
 
     .fb-col {
       width: 88px;
+      min-width: 72px;
     }
   }
 }

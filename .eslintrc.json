@@ -54,7 +54,8 @@
             "format": ["PascalCase", "UPPER_CASE"]
           }
         ],
-        "@typescript-eslint/consistent-type-imports": "off"
+        "@typescript-eslint/consistent-type-imports": "off",
+        "no-console": "off"
         // "no-trailing-spaces": "error",
         // "space-in-brackets": ["error", "never"],
         // "no-unused-vars": "error"
@@ -88,6 +89,7 @@
         // ]
       }
     },
+    // NOTE: WE ARE NOT APPLYING PRETTIER IN THIS OVERRIDE, ONLY @ANGULAR-ESLINT/TEMPLATE
     {
       "files": ["*.html"],
       "extends": [
