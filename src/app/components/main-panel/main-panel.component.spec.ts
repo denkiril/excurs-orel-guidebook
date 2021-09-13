@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MainPanelComponent } from './main-panel.component';
 
@@ -8,9 +9,9 @@ describe('MainPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MainPanelComponent ]
-    })
-    .compileComponents();
+      declarations: [MainPanelComponent],
+      imports: [BrowserAnimationsModule],
+    }).compileComponents();
   });
 
   beforeEach(() => {
