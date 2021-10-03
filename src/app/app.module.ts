@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
@@ -34,6 +35,7 @@ import { FilterBlockComponent } from './components/controls/filter-block/filter-
     FormsModule,
     ReactiveFormsModule,
     IconsModule,
+    RouterModule.forRoot([]),
   ],
   providers: [],
   bootstrap: [AppComponent],

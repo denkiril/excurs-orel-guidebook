@@ -13,22 +13,22 @@ import {
   style,
   transition,
   animate,
-  // AnimationEvent,
 } from '@angular/animations';
 import {
   AbstractControl,
   FormControl,
   FormGroup,
   ValidatorFn,
+  Validators,
 } from '@angular/forms';
 
-import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, first } from 'rxjs/operators';
 
 import {
-  // GetSightsParams,
-  OknCategory,
-  OknType,
+  FilterBlock,
+  FILTER_BLOCKS,
+  GetSightsParams,
   SightData,
   SightsFilterParams,
   SightsService,
@@ -37,39 +37,15 @@ import { SettingsService } from 'src/app/services/settings.service';
 
 // TODO:
 // 1. выбрано / всего
-// 2. Должно быть выбрано хотя бы одно значение в секции Категория охраны... - OK
+// 2. Должно быть выбрано хотя бы одно значение в секции Категория охраны... +
 // 3. Справка (большой тултип?)
-// 4. Сохранение настроек фильтра в localStorage - OK
-// 5. Вывод карточек объектов по фильтру - OK
+// 4. Сохранение настроек фильтра в localStorage +
+// 5. Вывод карточек объектов по фильтру +
 // 6. Поиск (и фильтрация?) по имени (вхождению строки?)
 // 7. Вывод объектов на карте
 // 8. Fix openClose transition
-// 9. Настройки фильтра в location
-
-// type BlockName = 'fb1' | 'fb2' | 'fb3';
-
-interface FilterControl {
-  name: OknCategory | OknType;
-  title: string;
-  shortTitle?: string;
-  value: boolean;
-}
-
-interface FilterGroup {
-  name: string; // keyof SightsFilterParams['fb1'];
-  title: string;
-  shortTitle?: string;
-  controls: FilterControl[];
-}
-
-interface FilterBlock {
-  name: string;
-  title: string;
-  switchedOn: boolean;
-  opened: boolean;
-  showed: boolean;
-  groups: FilterGroup[];
-}
+// 9. Настройки фильтра в queryParams +
+// 10. Loader
 
 @Component({
   selector: 'exogb-main-panel',
@@ -96,16 +72,17 @@ interface FilterBlock {
   ],
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
-  // @ViewChild('fb1') fb1!: FilterBlockComponent;
   @Input() canExpandPanel = false;
   @Output() expandPanelEvent = new EventEmitter<void>();
+
+  getSights$ = new Subject();
 
   private subs: Subscription[] = [];
   private set sub(s: Subscription) {
     this.subs.push(s);
   }
 
-  public filterBlocks: FilterBlock[] = [];
+  public filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
   public form!: FormGroup;
   public sights: SightData[] = [];
@@ -116,24 +93,33 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.initFilterBlocks();
+    const filterParams = this.settingsService.getFilterParams();
+    if (filterParams) this.updateFilterBlocks(filterParams);
 
+    // init form
     this.form = new FormGroup({
-      [this.filterBlocks[0].name]: new FormControl(
-        this.filterBlocks[0].switchedOn,
-      ),
-      [this.filterBlocks[0].groups[0].name]: new FormGroup(
-        {},
-        this.checkedValidator,
-      ),
-      [this.filterBlocks[0].groups[1].name]: new FormGroup(
-        {},
-        this.checkedValidator,
-      ),
+      // [this.filterBlocks[0].name]: new FormControl(
+      //   this.filterBlocks[0].switchedOn,
+      // ),
+      // [this.filterBlocks[0].groups[0].name]: new FormGroup(
+      //   {},
+      //   this.checkedValidator,
+      // ),
+      // [this.filterBlocks[0].groups[1].name]: new FormGroup(
+      //   {},
+      //   this.checkedValidator,
+      // ),
     });
 
     this.filterBlocks.forEach((block) => {
+      this.form.addControl(block.name, new FormControl(block.switchedOn));
+
       block.groups.forEach((group) => {
+        this.form.addControl(
+          group.name,
+          new FormGroup({}, this.selectValidators(group.name)),
+        );
+
         group.controls.forEach((control) => {
           (this.form.get(group.name) as FormGroup).addControl(
             control.name,
@@ -143,116 +129,73 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
     });
 
+    if (filterParams) this.updateForm(filterParams);
     console.log('init form:', this.form);
 
-    this.sub = this.form.statusChanges.subscribe(() => {
-      console.log('form statusChanges:', this.form.value);
+    this.sub = this.settingsService.filterParamsInRoute.subscribe((params) => {
+      console.log('filterParamsInRoute$', params);
+      this.updateForm(params);
+      this.getSights$.next();
+    });
+
+    this.sub = this.form.valueChanges.subscribe(() => {
+      console.log('form valueChanges$', this.form.value);
+      this.updateFilterParams();
+      // this.getSights$.next();
+    });
+
+    this.sub = this.getSights$.pipe(debounceTime(300)).subscribe(() => {
       this.getSights();
       markDirty(this);
     });
 
-    this.getSights(undefined, true);
+    this.getSights$.next();
   }
 
   ngOnDestroy(): void {
     this.subs.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
-  // public animationStart(opened: boolean): void {
-  //   console.log('animationStart:', opened);
-  //   if (opened) this.fb1showed = true;
-  //   markDirty(this);
-  // }
+  private updateFilterBlocks(filterParams: SightsFilterParams): void {
+    console.log('updateFilterBlocks');
+    this.filterBlocks.forEach((block) => {
+      block.opened = filterParams[block.name]?.opened ?? block.opened;
+    });
+  }
 
-  private initFilterBlocks(): void {
-    const filterParams = this.settingsService.getFilterParams();
-    const fb1 = filterParams?.fb1;
+  private updateForm(filterParams: SightsFilterParams): void {
+    console.log('updateForm');
+    const options = { emitEvent: false };
 
-    const filterBlock1: FilterBlock = {
-      name: 'fb1',
-      title: 'ОКН',
-      switchedOn: fb1?.switchedOn ?? true,
-      opened: fb1?.opened ?? false,
-      showed: false,
-      groups: [
-        {
-          name: 'category',
-          title: 'Категория охраны',
-          shortTitle: 'Категория',
-          controls: [
-            {
-              name: 'fed',
-              title: 'Федеральный',
-              shortTitle: 'Фед.',
-              value: fb1?.category?.fed ?? true,
-            },
-            {
-              name: 'reg',
-              title: 'Региональный',
-              shortTitle: 'Рег.',
-              value: fb1?.category?.reg ?? false,
-            },
-            {
-              name: 'mst',
-              title: 'Местный',
-              shortTitle: 'Мест.',
-              value: fb1?.category?.mst ?? false,
-            },
-            {
-              name: 'vvl',
-              title: 'Выявленный',
-              shortTitle: 'Выяв.',
-              value: fb1?.category?.vvl ?? false,
-            },
-          ],
-        },
-        {
-          name: 'type',
-          title: 'Тип',
-          controls: [
-            {
-              name: 'arc',
-              title: 'Памятник археологии',
-              shortTitle: 'Арх.',
-              value: fb1?.type?.arc ?? true,
-            },
-            {
-              name: 'aig',
-              title: 'Памятник архитектуры и градостроительства',
-              shortTitle: 'Архит.',
-              value: fb1?.type?.aig ?? true,
-            },
-            {
-              name: 'his',
-              title: 'Памятник истории',
-              shortTitle: 'Истор.',
-              value: fb1?.type?.his ?? true,
-            },
-            {
-              name: 'art',
-              title: 'Памятник искусства',
-              shortTitle: 'Искус.',
-              value: fb1?.type?.art ?? true,
-            },
-          ],
-        },
-      ],
-    };
+    this.filterBlocks.forEach((block) => {
+      const blockParams = filterParams[block.name];
+      this.form
+        .get(block.name)
+        ?.setValue(blockParams?.switchedOn ?? Boolean(blockParams), options);
 
-    this.filterBlocks.push(filterBlock1);
-    markDirty(this);
+      if (blockParams) {
+        block.groups.forEach((group) => {
+          const groupParams =
+            blockParams.groups && blockParams.groups[group.name];
 
-    // if (filterParams) {
-    //   this.filterBlocks.forEach((block) => {
-    //     block.groups.forEach((group) => {
-    //       group.controls.forEach((control) => {
-    //         if (control.name in filterParams[group.name]) {
-    //           control.value = Boolean(filterParams[group.name][control.name]);
-    //         }
-    //       });
-    //     });
-    //   });
-    // }
+          group.controls.forEach((control) => {
+            this.form
+              .get(group.name)
+              ?.get(control.name)
+              ?.setValue(
+                Boolean(groupParams && groupParams[control.name]),
+                options,
+              );
+          });
+        });
+      }
+    });
+  }
+
+  private selectValidators(name: string): ValidatorFn {
+    return name === 'category' || name === 'type'
+      ? this.checkedValidator
+      : Validators.nullValidator;
   }
 
   private checkedValidator: ValidatorFn = (ac: AbstractControl) => {
@@ -265,15 +208,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   public animationDone(filterBlock: FilterBlock): void {
     // the toState, fromState and totalTime data is accessible from the event variable
-    // console.log('event:', event);
-    // console.log('animationDone:', filterBlock.opened);
-    // const fb = this.filterBlocks.find((block) => block.name === blockName);
-    // if (fb) fb.showed = opened;
     filterBlock.showed = filterBlock.opened;
     markDirty(this);
   }
 
   public onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
+    console.log('onOpenedChange');
     filterBlock.opened = opened;
     this.updateFilterParams();
   }
@@ -289,34 +229,43 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getSights(limit?: number, init = false): void {
+  private getSights(limit?: number): void {
     if (this.form.invalid) return;
 
-    const filterParams = this.updateFilterParams(!init);
+    const params: GetSightsParams = {
+      limit,
+      filterParams: this.buildFilterParams(),
+    };
 
     this.sightsService
-      .getSights({ limit, filterParams })
+      .getSights(params)
       .pipe(first())
       .subscribe((data) => {
         this.sights = [...data.items];
       });
   }
 
-  private updateFilterParams(update = true): SightsFilterParams {
-    const filterParams: SightsFilterParams = {
-      fb1: {
-        switchedOn: this.form.value.fb1,
-        opened:
-          this.filterBlocks.find((block) => block.name === 'fb1')?.opened ??
-          false,
-        category: this.form.value.category,
-        type: this.form.value.type,
-      },
-    };
+  private buildFilterParams(): SightsFilterParams {
+    const filterParams: SightsFilterParams = {};
 
-    console.log('updateFilterParams:', filterParams);
-    if (update) this.settingsService.setFilterParams(filterParams);
+    this.filterBlocks.forEach((block) => {
+      filterParams[block.name] = {
+        switchedOn: this.form.value[block.name],
+        opened: block?.opened ?? false,
+        groups: Object.fromEntries(
+          block.groups.map((group) => [
+            group.name,
+            this.form.value[group.name],
+          ]),
+        ),
+      };
+    });
 
     return filterParams;
+  }
+
+  private updateFilterParams(): void {
+    console.log('updateFilterParams');
+    this.settingsService.setFilterParams(this.buildFilterParams());
   }
 }
