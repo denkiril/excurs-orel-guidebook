@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  min-height: 60px;
+  padding-left: 6px;
+  border: solid 1px var(--label-secondary);
+  cursor: default;
+}
+
+.sight-title {
+  font-size: 16px;
+  line-height: 24px;
+
+  .mat-icon {
+    height: 1em;
+    width: 1em;
+    line-height: normal;
+    vertical-align: text-bottom;
+    margin-right: 2px;
+    color: var(--label-secondary);
+  }
+}
+
+.sight-description {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--label-secondary);
+}
+
+.sight-image {
+  height: 80px;
+  margin-left: auto;
+  // background-color: var(--label-tetriary);
+}

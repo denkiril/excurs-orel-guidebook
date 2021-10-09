@@ -1,16 +1,23 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-export type OknCategory = 'fed' | 'reg' | 'mst' | 'vvl';
+export type OknCategory = 'f' | 'r' | 'm' | 'v';
 
-export type OknType = 'arc' | 'aig' | 'his' | 'art';
+export type OknType = 'a' | 'g' | 'h' | 'i';
+
+export type SightSet = 'main' | 'mus';
 
 export interface SightData {
   // id: number;
   title: string;
+  thumb_url: string;
+  location?: string;
   category?: OknCategory[];
   type?: OknType[];
-  sets?: string[];
+  sets?: SightSet[];
+  okn_id?: string;
 }
 
 export interface SightsData {
@@ -39,13 +46,13 @@ interface FilterControl {
 
 interface FilterGroup {
   name: string;
-  title: string;
+  title?: string;
   shortTitle?: string;
   controls: FilterControl[];
 }
 
 export interface FilterBlock {
-  name: string; // 'fb1' | 'fb2' | 'fb3' ?
+  name: string;
   title: string;
   switchedOn: boolean;
   opened: boolean;
@@ -53,9 +60,29 @@ export interface FilterBlock {
   groups: FilterGroup[];
 }
 
+export interface OknText {
+  short: string;
+  full: string;
+}
+
+export const OKN_TYPES: { [key in OknType]: OknText } = {
+  a: { short: 'Пам. археологии', full: 'Памятник археологии' },
+  // eslint-disable-next-line prettier/prettier
+  g: { short: 'Пам. архитект.', full: 'Памятник архитектуры и градостроительства'},
+  h: { short: 'Пам. истории', full: 'Памятник истории' },
+  i: { short: 'Пам. искусства', full: 'Памятник искусства' },
+};
+
+export const OKN_CATEGORIES: { [key in OknCategory]: OknText } = {
+  f: { short: 'фед. зн.', full: 'Федерального значения' },
+  r: { short: 'рег. зн.', full: 'Регионального значения' },
+  m: { short: 'мест. зн.', full: 'Местного значения' },
+  v: { short: '(выявл.)', full: 'Выявленный объект' },
+};
+
 export const FILTER_BLOCKS: FilterBlock[] = [
   {
-    name: 'fb1',
+    name: 'tur',
     title: 'Туристам',
     switchedOn: true,
     opened: false,
@@ -63,11 +90,10 @@ export const FILTER_BLOCKS: FilterBlock[] = [
     groups: [
       {
         name: 'sets',
-        title: '',
         controls: [
           {
             name: 'main',
-            title: 'Главные',
+            title: 'Главные достопримечательности',
             value: true,
           },
           {
@@ -80,7 +106,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
     ],
   },
   {
-    name: 'fb2',
+    name: 'okn',
     title: 'ОКН',
     switchedOn: true,
     opened: false,
@@ -92,25 +118,25 @@ export const FILTER_BLOCKS: FilterBlock[] = [
         shortTitle: 'Категория',
         controls: [
           {
-            name: 'fed',
+            name: 'f',
             title: 'Федеральный',
             shortTitle: 'Фед.',
             value: true,
           },
           {
-            name: 'reg',
+            name: 'r',
             title: 'Региональный',
             shortTitle: 'Рег.',
             value: false,
           },
           {
-            name: 'mst',
+            name: 'm',
             title: 'Местный',
             shortTitle: 'Мест.',
             value: false,
           },
           {
-            name: 'vvl',
+            name: 'v',
             title: 'Выявленный',
             shortTitle: 'Выяв.',
             value: false,
@@ -122,25 +148,25 @@ export const FILTER_BLOCKS: FilterBlock[] = [
         title: 'Тип',
         controls: [
           {
-            name: 'arc',
+            name: 'a',
             title: 'Памятник археологии',
             shortTitle: 'Арх.',
             value: true,
           },
           {
-            name: 'aig',
+            name: 'g',
             title: 'Памятник архитектуры и градостроительства',
             shortTitle: 'Архит.',
             value: true,
           },
           {
-            name: 'his',
+            name: 'h',
             title: 'Памятник истории',
             shortTitle: 'Истор.',
             value: true,
           },
           {
-            name: 'art',
+            name: 'i',
             title: 'Памятник искусства',
             shortTitle: 'Искус.',
             value: true,
@@ -151,27 +177,74 @@ export const FILTER_BLOCKS: FilterBlock[] = [
   },
 ];
 
+// const SIGHTS_ITEMS: SightData[] = [
+//   /* eslint-disable prettier/prettier */
+//   { title: 'Здание банка ФА', category: ['fed'], type: ['aig'], sets: ['main'] },
+//   { title: 'Гостиный дворъ ФИ', category: ['fed'], type: ['his'], sets: ['main'] },
+//   { title: 'Дом купца РА', category: ['reg'], type: ['aig'], sets: ['main'] },
+//   { title: 'Дом, где бывал РИ', category: ['reg'], type: ['his'], sets: ['main'] },
+//   { title: 'Памятник кокой-то', category: ['mst'], type: ['art'] },
+//   { title: 'Музей #1', sets: ['mus'] },
+//   { title: 'Музей #2', sets: ['mus'] },
+//   /* eslint-enable prettier/prettier */
+// ];
+
 @Injectable({
   providedIn: 'root',
 })
 export class SightsService {
-  private sightsItems: SightData[] = [
-    /* eslint-disable prettier/prettier */
-    { title: 'Здание банка ФА', category: ['fed'], type: ['aig'], sets: ['main'] },
-    { title: 'Гостиный дворъ ФИ', category: ['fed'], type: ['his'], sets: ['main'] },
-    { title: 'Дом купца РА', category: ['reg'], type: ['aig'], sets: ['main'] },
-    { title: 'Дом, где бывал РИ', category: ['reg'], type: ['his'], sets: ['main'] },
-    { title: 'Памятник кокой-то', category: ['mst'], type: ['art'] },
-    { title: 'Музей #1', sets: ['mus'] },
-    { title: 'Музей #2', sets: ['mus'] },
-    /* eslint-enable prettier/prettier */
-  ];
+  private sightsData: SightsData = {
+    items: [],
+  };
 
-  // public sightData: Subject<SightData[]> = new Subject<SightData[]>();
+  public isFetsching$ = new Subject<boolean>();
+
+  constructor(private http: HttpClient) {}
 
   public getSights(params: GetSightsParams): Observable<SightsData> {
-    // TODO
     console.log('--- getSights params:', params);
+    return this.fetchSights().pipe(
+      map((sightsData) => this.filterSights(sightsData, params)),
+    );
+  }
+
+  private fetchSights(): Observable<SightsData> {
+    return new Observable<SightsData>((observer) => {
+      if (this.sightsData.items.length) {
+        observer.next(this.sightsData);
+        observer.complete();
+      } else {
+        this.isFetsching$.next(true);
+
+        this.http.get<SightData[]>('sights').subscribe(
+          (resp) => {
+            console.log('=== GET resp:', resp);
+            this.sightsData.items = resp;
+            this.isFetsching$.next(false);
+            observer.next(this.sightsData);
+            observer.complete();
+          },
+          (error) => {
+            this.isFetsching$.next(false);
+            observer.error(error);
+          },
+        );
+
+        // setTimeout(() => {
+        //   this.sightsData.items = [...SIGHTS_ITEMS];
+        //   observer.next(this.sightsData);
+        //   observer.complete();
+        //   this.isFetsching$.next(false);
+        // }, 1000);
+      }
+    });
+  }
+
+  private filterSights(
+    sightsData: SightsData,
+    params: GetSightsParams,
+  ): SightsData {
+    console.log('filterSights...');
     const { filterParams } = params;
     let items: SightData[] = [];
 
@@ -181,7 +254,7 @@ export class SightsService {
         const groupNames = Object.keys(groups);
 
         items = items.concat(
-          this.sightsItems
+          sightsData.items
             .filter((item) =>
               groupNames.every(
                 (name) =>
@@ -196,7 +269,7 @@ export class SightsService {
 
     items = [...new Set(items)];
 
-    console.log('--- getSights items:', items);
-    return of({ items });
+    console.log('--- filterSights items:', items);
+    return { items };
   }
 }

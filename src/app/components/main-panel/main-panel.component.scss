@@ -110,21 +110,47 @@
       display: flex;
       align-items: center;
       max-width: 100%;
-    }
 
-    .fb-col {
-      width: 88px;
-      min-width: 72px;
+      .fb-col {
+        width: 88px;
+        min-width: 72px;
+      }
+
+      &.is--rows {
+        flex-direction: column;
+
+        .fb-col {
+          width: 100%;
+          margin-bottom: 8px;
+        }
+      }
     }
+  }
+}
+
+.spinner-container {
+  position: absolute;
+  width: calc(100% - 16px);
+  height: 80px;
+}
+
+.error-notification {
+  p {
+    font-size: 16px;
+    text-align: center;
+    color: var(--accent-pink);
+    margin-bottom: 16px;
+  }
+
+  button {
+    margin: 0 auto;
   }
 }
 
 .cards-container {
   margin-bottom: 16px;
 
-  .card {
-    height: 60px;
-    border: solid 1px var(--label-secondary);
+  .card-container {
     margin-bottom: 8px;
   }
 }

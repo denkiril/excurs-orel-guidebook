@@ -59,8 +59,38 @@
     </div>
   </div>
 
+  <div
+    *ngIf="(sightsService.isFetsching$ | async) === true"
+    class="spinner-container"
+  >
+    <exogb-spinner></exogb-spinner>
+  </div>
+
+  <div
+    *ngIf="(sightsService.isFetsching$ | async) !== true && showServerError"
+    class="error-notification"
+  >
+    <p>Сервер временно недоступен. Повторите попытку позже.</p>
+    <button
+      type="button"
+      class="primary"
+      [disabled]="form.invalid"
+      (click)="form.valid && emitGetSights()"
+    >
+      <mat-icon
+        svgIcon="refresh"
+        class="button-icon"
+        aria-hidden="false"
+        aria-label="refresh icon"
+      ></mat-icon>
+      Повторить
+    </button>
+  </div>
+
   <div *ngIf="sights.length" class="cards-container">
-    <div *ngFor="let sight of sights" class="card">{{ sight.title }}</div>
+    <div *ngFor="let sight of sights" class="card-container">
+      <exogb-sight-card [sight]="sight"></exogb-sight-card>
+    </div>
   </div>
 </div>
 
@@ -77,11 +107,15 @@
     }"
     [formGroupName]="group.name"
   >
-    <div class="fb-col-title" [title]="group.title">
+    <div *ngIf="group.title" class="fb-col-title" [title]="group.title">
       {{ group.shortTitle || group.title }}
     </div>
 
-    <div *ngIf="group.controls.length" class="fb-cols">
+    <div
+      *ngIf="group.controls.length"
+      class="fb-cols"
+      [class.is--rows]="group.title === undefined"
+    >
       <div *ngFor="let control of group.controls" class="fb-col">
         <exogb-checkbox
           [formControlName]="control.name"

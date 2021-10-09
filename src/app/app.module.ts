@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,9 @@ import { CheckboxComponent } from './components/controls/checkbox/checkbox.compo
 import { RadiobuttonComponent } from './components/controls/radiobutton/radiobutton.component';
 import { ToggleComponent } from './components/controls/toggle/toggle.component';
 import { FilterBlockComponent } from './components/controls/filter-block/filter-block.component';
+import { SpinnerComponent } from './components/spinner/spinner.component';
+import { APIInterceptor } from './interceptors/api.interceptor';
+import { SightCardComponent } from './components/sight-card/sight-card.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,8 @@ import { FilterBlockComponent } from './components/controls/filter-block/filter-
     RadiobuttonComponent,
     ToggleComponent,
     FilterBlockComponent,
+    SpinnerComponent,
+    SightCardComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,9 +41,16 @@ import { FilterBlockComponent } from './components/controls/filter-block/filter-
     FormsModule,
     ReactiveFormsModule,
     IconsModule,
+    HttpClientModule,
     RouterModule.forRoot([]),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: APIInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

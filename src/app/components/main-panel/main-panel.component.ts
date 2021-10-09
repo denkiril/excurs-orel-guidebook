@@ -36,16 +36,18 @@ import {
 import { SettingsService } from 'src/app/services/settings.service';
 
 // TODO:
-// 1. выбрано / всего
-// 2. Должно быть выбрано хотя бы одно значение в секции Категория охраны... +
-// 3. Справка (большой тултип?)
-// 4. Сохранение настроек фильтра в localStorage +
-// 5. Вывод карточек объектов по фильтру +
-// 6. Поиск (и фильтрация?) по имени (вхождению строки?)
-// 7. Вывод объектов на карте
-// 8. Fix openClose transition
-// 9. Настройки фильтра в queryParams +
-// 10. Loader
+// выбрано / всего
+// Справка (большой тултип?)
+// Поиск (и фильтрация?) по имени (вхождению строки?)
+// Настройки фильтра в queryParams - search
+// Вывод объектов на карте
+// Loader for map
+// Fix openClose transition
+// Show images setting
+// Lazy loading images?
+// Карточка объекта, и кнопка назад
+// Карточка объекта в роуте
+// Офлайн-режим
 
 @Component({
   selector: 'exogb-main-panel',
@@ -86,9 +88,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   public form!: FormGroup;
   public sights: SightData[] = [];
+  public showServerError = false;
+  private limit?: number;
 
   constructor(
-    private sightsService: SightsService,
+    public sightsService: SightsService,
     private settingsService: SettingsService,
   ) {}
 
@@ -135,13 +139,13 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.sub = this.settingsService.filterParamsInRoute.subscribe((params) => {
       console.log('filterParamsInRoute$', params);
       this.updateForm(params);
-      this.getSights$.next();
+      this.emitGetSights();
     });
 
     this.sub = this.form.valueChanges.subscribe(() => {
       console.log('form valueChanges$', this.form.value);
       this.updateFilterParams();
-      // this.getSights$.next();
+      // -> filterParamsInRoute -> getSights...
     });
 
     this.sub = this.getSights$.pipe(debounceTime(300)).subscribe(() => {
@@ -149,7 +153,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       markDirty(this);
     });
 
-    this.getSights$.next();
+    this.emitGetSights();
   }
 
   ngOnDestroy(): void {
@@ -222,27 +226,43 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.expandPanelEvent.emit();
   }
 
+  // TODO rem
   public search(value: string): void {
     const num = parseInt(value, 10);
     if (!Number.isNaN(num)) {
-      this.getSights(num);
+      this.limit = num;
+      this.emitGetSights();
     }
   }
 
-  private getSights(limit?: number): void {
+  public emitGetSights(): void {
+    this.getSights$.next();
+  }
+
+  private getSights(): void {
     if (this.form.invalid) return;
 
     const params: GetSightsParams = {
-      limit,
+      limit: this.limit,
       filterParams: this.buildFilterParams(),
     };
 
     this.sightsService
       .getSights(params)
       .pipe(first())
-      .subscribe((data) => {
-        this.sights = [...data.items];
-      });
+      .subscribe(
+        (data) => {
+          console.log('sightsService data:', data);
+          this.sights = [...data.items];
+          this.showServerError = false;
+          markDirty(this);
+        },
+        (error) => {
+          console.error('!! Error:', error);
+          if (!error.ok) this.showServerError = true;
+          markDirty(this);
+        },
+      );
   }
 
   private buildFilterParams(): SightsFilterParams {

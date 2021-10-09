@@ -1,0 +1,28 @@
+<ng-container>
+  <div>
+    <div class="sight-title">
+      <mat-icon
+        *ngIf="isMuseum"
+        svgIcon="museum"
+        aria-hidden="false"
+        aria-label="Museum icon"
+      ></mat-icon>
+      {{ sight.title }}
+    </div>
+
+    <div class="sight-description">
+      <p [title]="descriptionFull">{{ descriptionShort }}</p>
+      <p *ngIf="sight.location" [title]="'Местонахождение: ' + sight.location">
+        {{ sight.location }}
+      </p>
+    </div>
+  </div>
+
+  <img
+    *ngIf="sight.thumb_url"
+    class="sight-image"
+    loading="lazy"
+    [src]="sight.thumb_url"
+    alt=""
+  />
+</ng-container>

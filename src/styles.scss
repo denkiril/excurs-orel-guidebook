@@ -290,12 +290,20 @@ button {
   }
 
   &.primary {
-    background-color: var(--accent-blue);
-    border-color: var(--accent-blue);
+    background-color: var(--control-primary);
+    border-color: var(--control-primary);
     color: var(--light-01);
+    padding: 0 16px;
 
-    &:enabled:hover {
-      border-color: var(--light-24);
+    &:enabled:hover,
+    &:enabled:focus-visible {
+      background-color: var(--control-secondary);
+      border-color: var(--control-secondary);
+    }
+
+    &:enabled:active {
+      background-color: var(--control-primary);
+      border-color: var(--control-primary);
     }
   }
 
@@ -357,9 +365,9 @@ button {
     &.secondary-2,
     &.text,
     &.delete {
-      color: var(--label-tetriary);
+      color: var(--label-secondary);
       background-color: var(--disabled-24);
-      border-color: transparent;
+      border-color: var(--disabled-24);
       cursor: not-allowed;
     }
 
@@ -367,6 +375,10 @@ button {
       background-color: var(--light-01);
       border-color: transparent;
     }
+  }
+
+  .button-icon {
+    margin-right: 4px;
   }
 }
 
