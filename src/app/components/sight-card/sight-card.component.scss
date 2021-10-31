@@ -1,5 +1,7 @@
 :host {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   min-height: 60px;
   padding-left: 6px;
   border: solid 1px var(--label-secondary);
@@ -24,10 +26,24 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--label-secondary);
+
+  .link-btn {
+    margin-right: 12px;
+  }
+
+  a,
+  .link-btn {
+    opacity: 0.6;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .sight-image {
-  height: 80px;
-  margin-left: auto;
+  height: 88px;
+  cursor: pointer;
+  // margin-left: auto;
   // background-color: var(--label-tetriary);
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   SightData,
   OknText,
@@ -13,6 +13,7 @@ import {
 })
 export class SightCardComponent implements OnInit {
   @Input() sight!: SightData;
+  @Output() clickMore = new EventEmitter<SightData>();
 
   descriptionShort = '';
   descriptionFull = '';
@@ -48,5 +49,9 @@ export class SightCardComponent implements OnInit {
     if (full && categoryText?.full) full += ` ${categoryText.full}`;
 
     return { short, full };
+  }
+
+  public onClickMore(sight: SightData): void {
+    this.clickMore.emit(sight);
   }
 }

@@ -1,0 +1,43 @@
+<div class="sight-navigation">
+  <button
+    type="button"
+    class="link-btn"
+    title="Назад в список"
+    (click)="onClose()"
+  >
+    <mat-icon svgIcon="arrow_back"></mat-icon>
+  </button>
+  <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
+    Открыть страницу
+    <mat-icon svgIcon="open_in_new"></mat-icon>
+  </a>
+</div>
+
+<div>
+  <h2 class="sight-title">{{ sight.title }}</h2>
+
+  <div class="sight-description">
+    <p *ngIf="typeText">
+      <span class="label">Тип объекта:</span> {{ typeText }}
+    </p>
+    <p *ngIf="categoryText">
+      <span class="label">Категория охраны:</span> {{ categoryText }}
+    </p>
+    <p *ngIf="sight.location">
+      <span class="label">Местонахождение:</span> {{ sight.location }}
+    </p>
+    <!-- <p><span class="label">Наименование ОКН:</span> Богоявленская церковь</p> -->
+    <!-- <p>
+      <span class="label">Датировка (по реестру ОКН):</span> 1644 г., 1760 г.,
+      XIX в.
+    </p> -->
+  </div>
+</div>
+
+<!-- <img
+  *ngIf="sight.thumb_url"
+  class="sight-image"
+  loading="lazy"
+  [src]="sight.thumb_url"
+  alt=""
+/> -->

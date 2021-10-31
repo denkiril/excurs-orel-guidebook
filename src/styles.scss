@@ -402,3 +402,26 @@ button {
     // }
   }
 }
+
+// Links
+
+.link-btn {
+  display: inline;
+  height: auto;
+  text-align: left;
+  border: none;
+}
+
+a,
+.link-btn {
+  font-size: inherit;
+  font-weight: normal;
+  text-decoration: none;
+  color: var(--control-secondary);
+
+  .mat-icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: text-top;
+  }
+}

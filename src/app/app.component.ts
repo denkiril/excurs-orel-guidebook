@@ -13,7 +13,7 @@ import {
 } from '@angular/animations';
 import { UtilitiesService } from './services/utilities.service';
 import { WindowService } from './services/window.service';
-import { MOBILE_SCREEN_WIDTH } from './interfaces/constants';
+import { MOBILE_SCREEN_WIDTH } from './core/constants';
 
 @Component({
   selector: 'exogb-root',

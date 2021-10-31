@@ -10,9 +10,10 @@ export type OknType = 'a' | 'g' | 'h' | 'i';
 export type SightSet = 'main' | 'mus';
 
 export interface SightData {
-  // id: number;
+  post_id: number;
   title: string;
   thumb_url: string;
+  permalink: string;
   location?: string;
   category?: OknCategory[];
   type?: OknType[];
@@ -271,5 +272,25 @@ export class SightsService {
 
     console.log('--- filterSights items:', items);
     return { items };
+  }
+
+  public buildFilterParams(
+    filterBlocks: FilterBlock[],
+    formValue: any,
+  ): SightsFilterParams {
+    console.log('--- buildFilterParams formValue:', formValue);
+    const filterParams: SightsFilterParams = {};
+
+    filterBlocks.forEach((block) => {
+      filterParams[block.name] = {
+        switchedOn: formValue[block.name],
+        opened: block?.opened ?? false,
+        groups: Object.fromEntries(
+          block.groups.map((group) => [group.name, formValue[group.name]]),
+        ),
+      };
+    });
+
+    return filterParams;
   }
 }

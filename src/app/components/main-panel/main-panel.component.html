@@ -87,11 +87,20 @@
     </button>
   </div>
 
-  <div *ngIf="sights.length" class="cards-container">
+  <div *ngIf="sights.length && !sightForMore" class="cards-container">
     <div *ngFor="let sight of sights" class="card-container">
-      <exogb-sight-card [sight]="sight"></exogb-sight-card>
+      <exogb-sight-card
+        [sight]="sight"
+        (clickMore)="setSightForMore($event)"
+      ></exogb-sight-card>
     </div>
   </div>
+
+  <exogb-sight-card-more
+    *ngIf="sightForMore"
+    [sight]="sightForMore"
+    (closeCard)="setSightForMore(null)"
+  ></exogb-sight-card-more>
 </div>
 
 <ng-template

@@ -1,28 +1,38 @@
-<ng-container>
-  <div>
-    <div class="sight-title">
-      <mat-icon
-        *ngIf="isMuseum"
-        svgIcon="museum"
-        aria-hidden="false"
-        aria-label="Museum icon"
-      ></mat-icon>
-      {{ sight.title }}
-    </div>
-
-    <div class="sight-description">
-      <p [title]="descriptionFull">{{ descriptionShort }}</p>
-      <p *ngIf="sight.location" [title]="'Местонахождение: ' + sight.location">
-        {{ sight.location }}
-      </p>
-    </div>
+<div>
+  <div class="sight-title">
+    <mat-icon
+      *ngIf="isMuseum"
+      svgIcon="museum"
+      aria-hidden="false"
+      aria-label="Museum icon"
+    ></mat-icon>
+    {{ sight.title }}
   </div>
 
-  <img
-    *ngIf="sight.thumb_url"
-    class="sight-image"
-    loading="lazy"
-    [src]="sight.thumb_url"
-    alt=""
-  />
-</ng-container>
+  <div class="sight-description">
+    <p [title]="descriptionFull">{{ descriptionShort }}</p>
+    <p *ngIf="sight.location" [title]="'Местонахождение: ' + sight.location">
+      {{ sight.location }}
+    </p>
+  </div>
+
+  <div class="sight-description">
+    <button type="button" class="link-btn" (click)="onClickMore(sight)">
+      Подробнее...
+    </button>
+    <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
+      Перейти
+      <mat-icon svgIcon="open_in_new"></mat-icon>
+    </a>
+  </div>
+</div>
+
+<img
+  *ngIf="sight.thumb_url"
+  class="sight-image"
+  loading="lazy"
+  [src]="sight.thumb_url"
+  alt=""
+  title="Подробнее..."
+  (click)="onClickMore(sight)"
+/>

@@ -17,8 +17,9 @@ import { RadiobuttonComponent } from './components/controls/radiobutton/radiobut
 import { ToggleComponent } from './components/controls/toggle/toggle.component';
 import { FilterBlockComponent } from './components/controls/filter-block/filter-block.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
-import { APIInterceptor } from './interceptors/api.interceptor';
+import { APIInterceptor } from './core/api.interceptor';
 import { SightCardComponent } from './components/sight-card/sight-card.component';
+import { SightCardMoreComponent } from './components/sight-card-more/sight-card-more.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { SightCardComponent } from './components/sight-card/sight-card.component
     FilterBlockComponent,
     SpinnerComponent,
     SightCardComponent,
+    SightCardMoreComponent,
   ],
   imports: [
     BrowserModule,

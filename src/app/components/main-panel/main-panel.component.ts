@@ -14,13 +14,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, first } from 'rxjs/operators';
@@ -34,6 +28,7 @@ import {
   SightsService,
 } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
+import { CustomValidators } from 'src/app/core/custom-validators';
 
 // TODO:
 // выбрано / всего
@@ -48,6 +43,7 @@ import { SettingsService } from 'src/app/services/settings.service';
 // Карточка объекта, и кнопка назад
 // Карточка объекта в роуте
 // Офлайн-режим
+// Свой набор достопр-тей: избранное, в роуте
 
 @Component({
   selector: 'exogb-main-panel',
@@ -84,10 +80,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.subs.push(s);
   }
 
-  public filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
+  public readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
   public form!: FormGroup;
   public sights: SightData[] = [];
+  public sightForMore: SightData | null = null;
   public showServerError = false;
   private limit?: number;
 
@@ -100,52 +97,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     const filterParams = this.settingsService.getFilterParams();
     if (filterParams) this.updateFilterBlocks(filterParams);
 
-    // init form
-    this.form = new FormGroup({
-      // [this.filterBlocks[0].name]: new FormControl(
-      //   this.filterBlocks[0].switchedOn,
-      // ),
-      // [this.filterBlocks[0].groups[0].name]: new FormGroup(
-      //   {},
-      //   this.checkedValidator,
-      // ),
-      // [this.filterBlocks[0].groups[1].name]: new FormGroup(
-      //   {},
-      //   this.checkedValidator,
-      // ),
-    });
-
-    this.filterBlocks.forEach((block) => {
-      this.form.addControl(block.name, new FormControl(block.switchedOn));
-
-      block.groups.forEach((group) => {
-        this.form.addControl(
-          group.name,
-          new FormGroup({}, this.selectValidators(group.name)),
-        );
-
-        group.controls.forEach((control) => {
-          (this.form.get(group.name) as FormGroup).addControl(
-            control.name,
-            new FormControl(control.value),
-          );
-        });
-      });
-    });
-
-    if (filterParams) this.updateForm(filterParams);
-    console.log('init form:', this.form);
+    this.initForm(filterParams);
 
     this.sub = this.settingsService.filterParamsInRoute.subscribe((params) => {
       console.log('filterParamsInRoute$', params);
       this.updateForm(params);
       this.emitGetSights();
-    });
-
-    this.sub = this.form.valueChanges.subscribe(() => {
-      console.log('form valueChanges$', this.form.value);
-      this.updateFilterParams();
-      // -> filterParamsInRoute -> getSights...
     });
 
     this.sub = this.getSights$.pipe(debounceTime(300)).subscribe(() => {
@@ -164,6 +121,42 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     console.log('updateFilterBlocks');
     this.filterBlocks.forEach((block) => {
       block.opened = filterParams[block.name]?.opened ?? block.opened;
+    });
+  }
+
+  private initForm(filterParams?: SightsFilterParams): void {
+    this.form = new FormGroup({});
+
+    this.filterBlocks.forEach((block) => {
+      this.form.addControl(block.name, new FormControl(block.switchedOn));
+
+      block.groups.forEach((group) => {
+        this.form.addControl(
+          group.name,
+          new FormGroup(
+            {},
+            group.name === 'category' || group.name === 'type'
+              ? CustomValidators.checkedFormGroup
+              : Validators.nullValidator,
+          ),
+        );
+
+        group.controls.forEach((control) => {
+          (this.form.get(group.name) as FormGroup).addControl(
+            control.name,
+            new FormControl(control.value),
+          );
+        });
+      });
+    });
+
+    if (filterParams) this.updateForm(filterParams);
+    console.log('init form:', this.form);
+
+    this.sub = this.form.valueChanges.subscribe(() => {
+      console.log('form valueChanges$', this.form.value);
+      this.updateFilterParams();
+      // -> filterParamsInRoute -> getSights...
     });
   }
 
@@ -195,20 +188,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  private selectValidators(name: string): ValidatorFn {
-    return name === 'category' || name === 'type'
-      ? this.checkedValidator
-      : Validators.nullValidator;
-  }
-
-  private checkedValidator: ValidatorFn = (ac: AbstractControl) => {
-    const controls = (ac as FormGroup).controls || [];
-
-    return Object.keys(controls).some((key) => controls[key].value)
-      ? null
-      : { notChecked: true };
-  };
 
   public animationDone(filterBlock: FilterBlock): void {
     // the toState, fromState and totalTime data is accessible from the event variable
@@ -266,26 +245,19 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private buildFilterParams(): SightsFilterParams {
-    const filterParams: SightsFilterParams = {};
-
-    this.filterBlocks.forEach((block) => {
-      filterParams[block.name] = {
-        switchedOn: this.form.value[block.name],
-        opened: block?.opened ?? false,
-        groups: Object.fromEntries(
-          block.groups.map((group) => [
-            group.name,
-            this.form.value[group.name],
-          ]),
-        ),
-      };
-    });
-
-    return filterParams;
+    return this.sightsService.buildFilterParams(
+      this.filterBlocks,
+      this.form.value,
+    );
   }
 
   private updateFilterParams(): void {
     console.log('updateFilterParams');
     this.settingsService.setFilterParams(this.buildFilterParams());
+  }
+
+  public setSightForMore(sight: SightData | null): void {
+    this.sightForMore = sight;
+    markDirty(this);
   }
 }
