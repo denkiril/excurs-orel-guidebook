@@ -20,17 +20,13 @@
   </div>
 </div>
 
-<div class="scrolled-content scroller">
+<div class="scrolled-content scroller" [formGroup]="form">
   <div class="search-bar">
-    <exogb-search-bar (valueSubmited)="search($event)"></exogb-search-bar>
+    <exogb-search-bar formControlName="search"></exogb-search-bar>
   </div>
 
   <div class="filter-blocks-container">
-    <div
-      *ngFor="let filterBlock of filterBlocks"
-      class="filter-block"
-      [formGroup]="form"
-    >
+    <div *ngFor="let filterBlock of filterBlocks" class="filter-block">
       <exogb-filter-block
         #fb
         [formControlName]="filterBlock.name"
@@ -88,7 +84,10 @@
   </div>
 
   <div *ngIf="sights.length && !sightForMore" class="cards-container">
-    <div *ngFor="let sight of sights" class="card-container">
+    <div
+      *ngFor="let sight of sights; trackBy: trackById"
+      class="card-container"
+    >
       <exogb-sight-card
         [sight]="sight"
         (clickMore)="setSightForMore($event)"

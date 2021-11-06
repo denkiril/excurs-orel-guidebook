@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { FILTER_BLOCKS, SightsFilterParams } from './sights.service';
+import {
+  FilterParams,
+  FILTER_BLOCKS,
+  SightsFilterParams,
+} from './sights.service';
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
@@ -29,7 +33,7 @@ export class SettingsService {
   public getFilterParams(): SightsFilterParams | undefined {
     console.log('getFilterParams');
     // console.log('snapshot:', this.activatedRoute.snapshot);
-    let filterParams: SightsFilterParams | undefined;
+    let sightsFilterParams: SightsFilterParams | undefined;
     // queryParams or localStorage? TODO
     // queryParams:
     // ...
@@ -37,34 +41,43 @@ export class SettingsService {
     const filterParamsStr = localStorage.getItem(FILTER_PARAMS_LS_ITEM);
     if (filterParamsStr) {
       try {
-        filterParams = JSON.parse(filterParamsStr);
+        sightsFilterParams = JSON.parse(filterParamsStr);
       } finally {
-        if (filterParams) this.setFilterParams(filterParams, false);
+        if (sightsFilterParams) {
+          this.setFilterParams({ sightsFilterParams }, false);
+        }
       }
     }
 
-    return filterParams;
+    return sightsFilterParams;
   }
 
   public setFilterParams(
-    filterParams: SightsFilterParams,
+    filterParams: FilterParams,
     setLS = true,
     setQP = true,
   ): void {
     console.log('setFilterParams (setLS, setQP):', setLS, setQP, filterParams);
+    const { sightsFilterParams } = filterParams;
+
     if (setLS) {
-      localStorage.setItem(FILTER_PARAMS_LS_ITEM, JSON.stringify(filterParams));
+      localStorage.setItem(
+        FILTER_PARAMS_LS_ITEM,
+        JSON.stringify(sightsFilterParams),
+      );
     }
 
     if (setQP) {
       const queryParams: Params = {};
-      const blockNames = Object.keys(filterParams);
+      const blockNames = Object.keys(sightsFilterParams);
 
       if (blockNames.length) {
         const blocks: string[] = [];
         blockNames.forEach((blockName) => {
-          if (filterParams[blockName].switchedOn) {
-            const blockBody = Object.values(filterParams[blockName].groups)
+          if (sightsFilterParams[blockName].switchedOn) {
+            const blockBody = Object.values(
+              sightsFilterParams[blockName].groups,
+            )
               .map((group) => this.stringifyTruthyObj(group))
               .join(';');
             blocks.push(`${blockName}:${blockBody}`);
@@ -72,6 +85,10 @@ export class SettingsService {
         });
         // queryParams.filter = 'fb2:fed,reg;arc,aig,his,art.';
         if (blocks.length) queryParams.filter = blocks.join('.');
+      }
+
+      if (filterParams.search) {
+        queryParams.search = filterParams.search;
       }
 
       this.router.navigate([], {

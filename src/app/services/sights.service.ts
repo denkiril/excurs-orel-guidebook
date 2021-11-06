@@ -35,7 +35,12 @@ export interface SightsFilterParams {
 
 export interface GetSightsParams {
   limit?: number;
-  filterParams: SightsFilterParams;
+  filterParams: FilterParams;
+}
+
+export interface FilterParams {
+  sightsFilterParams: SightsFilterParams;
+  search?: string;
 }
 
 interface FilterControl {
@@ -246,12 +251,12 @@ export class SightsService {
     params: GetSightsParams,
   ): SightsData {
     console.log('filterSights...');
-    const { filterParams } = params;
+    const { sightsFilterParams } = params.filterParams;
     let items: SightData[] = [];
 
-    Object.keys(filterParams).forEach((blockName) => {
-      if (filterParams[blockName].switchedOn) {
-        const { groups } = filterParams[blockName];
+    Object.keys(sightsFilterParams).forEach((blockName) => {
+      if (sightsFilterParams[blockName].switchedOn) {
+        const { groups } = sightsFilterParams[blockName];
         const groupNames = Object.keys(groups);
 
         items = items.concat(
@@ -270,6 +275,13 @@ export class SightsService {
 
     items = [...new Set(items)];
 
+    if (params.filterParams.search) {
+      const searchStr = params.filterParams.search.toLowerCase();
+      items = items.filter((item) =>
+        item.title.toLowerCase().includes(searchStr),
+      );
+    }
+
     console.log('--- filterSights items:', items);
     return { items };
   }
@@ -277,12 +289,12 @@ export class SightsService {
   public buildFilterParams(
     filterBlocks: FilterBlock[],
     formValue: any,
-  ): SightsFilterParams {
+  ): FilterParams {
     console.log('--- buildFilterParams formValue:', formValue);
-    const filterParams: SightsFilterParams = {};
+    const filterParams: FilterParams = { sightsFilterParams: {} };
 
     filterBlocks.forEach((block) => {
-      filterParams[block.name] = {
+      filterParams.sightsFilterParams[block.name] = {
         switchedOn: formValue[block.name],
         opened: block?.opened ?? false,
         groups: Object.fromEntries(
@@ -290,6 +302,10 @@ export class SightsService {
         ),
       };
     });
+
+    if (formValue.search) {
+      filterParams.search = formValue.search;
+    }
 
     return filterParams;
   }

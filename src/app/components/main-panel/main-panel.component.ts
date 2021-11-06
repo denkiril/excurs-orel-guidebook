@@ -21,6 +21,7 @@ import { debounceTime, first } from 'rxjs/operators';
 
 import {
   FilterBlock,
+  FilterParams,
   FILTER_BLOCKS,
   GetSightsParams,
   SightData,
@@ -33,13 +34,13 @@ import { CustomValidators } from 'src/app/core/custom-validators';
 // TODO:
 // выбрано / всего
 // Справка (большой тултип?)
-// Поиск (и фильтрация?) по имени (вхождению строки?)
-// Настройки фильтра в queryParams - search
+// Поиск (и фильтрация?) по имени (вхождению строки?) +
+// Настройки фильтра в queryParams - search +
 // Вывод объектов на карте
 // Loader for map
-// Fix openClose transition
+// Fix openClose transition +-
 // Show images setting
-// Lazy loading images?
+// Lazy loading images +-
 // Карточка объекта, и кнопка назад
 // Карточка объекта в роуте
 // Офлайн-режим
@@ -54,18 +55,19 @@ import { CustomValidators } from 'src/app/core/custom-validators';
       state(
         'opened',
         style({
-          height: 'auto',
+          maxHeight: '300px',
           opacity: 1,
         }),
       ),
       state(
         'closed',
         style({
-          height: '0',
+          maxHeight: '0',
           opacity: 0,
         }),
       ),
-      transition('opened <=> closed', [animate('500ms ease-in-out')]),
+      transition('closed => opened', [animate('400ms ease-in-out')]),
+      transition('opened => closed', [animate('300ms ease-in-out')]),
     ]),
   ],
 })
@@ -125,7 +127,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private initForm(filterParams?: SightsFilterParams): void {
-    this.form = new FormGroup({});
+    this.form = new FormGroup({
+      search: new FormControl(''),
+    });
 
     this.filterBlocks.forEach((block) => {
       this.form.addControl(block.name, new FormControl(block.switchedOn));
@@ -205,15 +209,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.expandPanelEvent.emit();
   }
 
-  // TODO rem
-  public search(value: string): void {
-    const num = parseInt(value, 10);
-    if (!Number.isNaN(num)) {
-      this.limit = num;
-      this.emitGetSights();
-    }
-  }
-
   public emitGetSights(): void {
     this.getSights$.next();
   }
@@ -244,7 +239,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       );
   }
 
-  private buildFilterParams(): SightsFilterParams {
+  private buildFilterParams(): FilterParams {
     return this.sightsService.buildFilterParams(
       this.filterBlocks,
       this.form.value,
@@ -259,5 +254,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   public setSightForMore(sight: SightData | null): void {
     this.sightForMore = sight;
     markDirty(this);
+  }
+
+  public trackById(_index: number, item: SightData): number {
+    return item.post_id;
   }
 }
