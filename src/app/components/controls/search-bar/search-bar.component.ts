@@ -23,6 +23,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class SearchBarComponent implements ControlValueAccessor {
   @Input() placeholder = 'Поиск';
   @Input() value = '';
+  @Input() enabled = true;
 
   @Output() valueSubmited = new EventEmitter<string>();
   @Output() valueChanged = new EventEmitter<string>();

@@ -4,14 +4,10 @@
     class="expand-button"
     (click)="toggleExpandPanel()"
   >
-    <svg
-      viewBox="0 0 24 8"
-      xmlns="http://www.w3.org/2000/svg"
-      class="expand-button__dash"
-    >
+    <svg viewBox="0 0 24 8" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M2 2.00L12 2L22 2.00"
-        fill="none"
+        d="M2 2 L22 2"
+        stroke="currentColor"
         stroke-width="4"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -55,52 +51,38 @@
     </div>
   </div>
 
-  <div
-    *ngIf="(sightsService.isFetsching$ | async) === true"
-    class="spinner-container"
-  >
-    <exogb-spinner></exogb-spinner>
-  </div>
+  <exogb-loader
+    [showSpinner]="sightsFetching"
+    [showServerError]="!sightsFetching && showServerError"
+    [disabled]="form.invalid"
+    (clickRefresh)="form.valid && emitGetSights()"
+  ></exogb-loader>
 
-  <div
-    *ngIf="(sightsService.isFetsching$ | async) !== true && showServerError"
-    class="error-notification"
-  >
-    <p>Сервер временно недоступен. Повторите попытку позже.</p>
-    <button
-      type="button"
-      class="primary"
-      [disabled]="form.invalid"
-      (click)="form.valid && emitGetSights()"
-    >
-      <mat-icon
-        svgIcon="refresh"
-        class="button-icon"
-        aria-hidden="false"
-        aria-label="refresh icon"
-      ></mat-icon>
-      Повторить
-    </button>
-  </div>
-
-  <div *ngIf="sights.length && !sightForMore" class="cards-container">
-    <div
-      *ngFor="let sight of sights; trackBy: trackById"
-      class="card-container"
-    >
-      <exogb-sight-card
-        [sight]="sight"
-        (clickMore)="setSightForMore($event)"
-      ></exogb-sight-card>
+  <ng-container *ngIf="sightsFetched && !sightIdForMore">
+    <div *ngIf="sights.length; else noSightsTemplate" class="cards-container">
+      <div
+        *ngFor="let sight of sights; trackBy: trackById"
+        class="card-container"
+      >
+        <exogb-sight-card
+          [sight]="sight"
+          (clickMore)="setSightForMore($event)"
+        ></exogb-sight-card>
+      </div>
     </div>
-  </div>
+  </ng-container>
 
   <exogb-sight-card-more
-    *ngIf="sightForMore"
-    [sight]="sightForMore"
-    (closeCard)="setSightForMore(null)"
+    *ngIf="sightIdForMore"
+    [sightId]="sightIdForMore"
+    [sights]="sights"
+    (closeCard)="setSightForMore(undefined)"
   ></exogb-sight-card-more>
 </div>
+
+<ng-template #noSightsTemplate>
+  <p class="empty-text">Достопримечательностей по вашему запросу не найдено</p>
+</ng-template>
 
 <ng-template
   #filterGroupTemplate

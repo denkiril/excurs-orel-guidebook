@@ -23,7 +23,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class FilterBlockComponent implements ControlValueAccessor {
   @Input() blockTitle = '';
   @Input() opened = false;
+  @Input() enabled = true;
+
   @Output() openedChange = new EventEmitter<boolean>();
+
   public switchedOn = true;
 
   onChange: any = () => {

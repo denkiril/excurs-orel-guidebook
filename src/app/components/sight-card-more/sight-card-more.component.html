@@ -7,13 +7,18 @@
   >
     <mat-icon svgIcon="arrow_back"></mat-icon>
   </button>
-  <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
+  <a
+    *ngIf="sight && sight.permalink"
+    [href]="sight.permalink"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     Открыть страницу
     <mat-icon svgIcon="open_in_new"></mat-icon>
   </a>
 </div>
 
-<div>
+<div *ngIf="sight">
   <h2 class="sight-title">{{ sight.title }}</h2>
 
   <div class="sight-description">
@@ -26,11 +31,32 @@
     <p *ngIf="sight.location">
       <span class="label">Местонахождение:</span> {{ sight.location }}
     </p>
-    <!-- <p><span class="label">Наименование ОКН:</span> Богоявленская церковь</p> -->
-    <!-- <p>
-      <span class="label">Датировка (по реестру ОКН):</span> 1644 г., 1760 г.,
-      XIX в.
-    </p> -->
+    <p *ngIf="sight.districtStr">
+      <span class="label">Район:</span> {{ sight.districtStr }}
+    </p>
+    <p *ngIf="sight.okn_title">
+      <span class="label">Наименование ОКН:</span> {{ sight.okn_title }}
+    </p>
+    <p *ngIf="sight.okn_date">
+      <span class="label">Датировка (по реестру ОКН):</span>
+      {{ sight.okn_date }}
+    </p>
+    <p *ngIf="sight.registry_date">
+      <span class="label">Год постановки на охрану:</span>
+      {{ sight.registry_date }}
+    </p>
+    <p *ngIf="sight.okn_id">
+      <span class="label">Номер в реестре ОКН:</span> {{ sight.okn_id }}
+    </p>
+    <p *ngIf="sight.founding_date">
+      <span class="label">Дата основания:</span> {{ sight.founding_date }}
+    </p>
+    <p *ngIf="sight.site">
+      <span class="label">Официальный сайт:</span>{{ ' ' }}
+      <a [href]="sight.site" target="_blank" rel="noopener noreferrer">{{
+        sight.site
+      }}</a>
+    </p>
   </div>
 </div>
 
@@ -41,3 +67,11 @@
   [src]="sight.thumb_url"
   alt=""
 /> -->
+
+<div *ngIf="fetching || showServerError" class="loader">
+  <exogb-loader
+    [showSpinner]="fetching"
+    [showServerError]="!fetching && showServerError"
+    (clickRefresh)="getSight()"
+  ></exogb-loader>
+</div>

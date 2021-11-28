@@ -15,9 +15,8 @@ import {
   animate,
 } from '@angular/animations';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, first } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
 import {
   FilterBlock,
@@ -32,19 +31,21 @@ import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 
 // TODO:
-// выбрано / всего
+// totalCount
 // Справка (большой тултип?)
-// Поиск (и фильтрация?) по имени (вхождению строки?) +
+// Фильтрация по имени (вхождению строки)?
 // Настройки фильтра в queryParams - search +
 // Вывод объектов на карте
 // Loader for map
 // Fix openClose transition +-
 // Show images setting
 // Lazy loading images +-
-// Карточка объекта, и кнопка назад
-// Карточка объекта в роуте
+// Lazy loading sights
+// Карточка объекта, и кнопка назад +
+// Карточка объекта в роуте +
 // Офлайн-режим
 // Свой набор достопр-тей: избранное, в роуте
+// Sights sorting. Default? Manual?
 
 @Component({
   selector: 'exogb-main-panel',
@@ -76,19 +77,17 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   @Output() expandPanelEvent = new EventEmitter<void>();
 
   getSights$ = new Subject();
-
-  private subs: Subscription[] = [];
-  private set sub(s: Subscription) {
-    this.subs.push(s);
-  }
+  destroy$ = new Subject();
 
   public readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
   public form!: FormGroup;
   public sights: SightData[] = [];
-  public sightForMore: SightData | null = null;
+  public sightIdForMore?: number;
   public showServerError = false;
   private limit?: number;
+  public sightsFetching = false;
+  public sightsFetched = false;
 
   constructor(
     public sightsService: SightsService,
@@ -96,39 +95,25 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const filterParams = this.settingsService.getFilterParams();
-    if (filterParams) this.updateFilterBlocks(filterParams);
+    this.initForm();
 
-    this.initForm(filterParams);
-
-    this.sub = this.settingsService.filterParamsInRoute.subscribe((params) => {
-      console.log('filterParamsInRoute$', params);
-      this.updateForm(params);
-      this.emitGetSights();
-    });
-
-    this.sub = this.getSights$.pipe(debounceTime(300)).subscribe(() => {
-      this.getSights();
-      markDirty(this);
-    });
-
-    this.emitGetSights();
+    this.settingsService.filterParamsInRoute$
+      .pipe(first())
+      .subscribe((params) => {
+        console.log('settingsService.filterParamsInRoute', params);
+        this.initWithFilterParams(params);
+      });
   }
 
   ngOnDestroy(): void {
-    this.subs.forEach((sub: Subscription) => sub.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private updateFilterBlocks(filterParams: SightsFilterParams): void {
-    console.log('updateFilterBlocks');
-    this.filterBlocks.forEach((block) => {
-      block.opened = filterParams[block.name]?.opened ?? block.opened;
-    });
-  }
-
-  private initForm(filterParams?: SightsFilterParams): void {
+  private initForm(): void {
     this.form = new FormGroup({
       search: new FormControl(''),
+      sightId: new FormControl(),
     });
 
     this.filterBlocks.forEach((block) => {
@@ -154,43 +139,92 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
     });
 
-    if (filterParams) this.updateForm(filterParams);
     console.log('init form:', this.form);
+  }
 
-    this.sub = this.form.valueChanges.subscribe(() => {
+  private initWithFilterParams(filterParamsInRoute: FilterParams): void {
+    console.log('initWithFilterParams:', filterParamsInRoute);
+    const filterParams =
+      this.settingsService.getFilterParams(filterParamsInRoute);
+
+    if (filterParams) {
+      if (filterParams.sightsFilterParams) {
+        this.updateFilterBlocks(filterParams.sightsFilterParams);
+      }
+      this.updateForm(filterParams);
+    }
+
+    this.settingsService.filterParamsInRoute$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => this.processFilterParams(params));
+
+    this.getSights$
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => {
+        this.getSights();
+        markDirty(this);
+      });
+
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       console.log('form valueChanges$', this.form.value);
       this.updateFilterParams();
       // -> filterParamsInRoute -> getSights...
     });
+
+    this.emitGetSights();
   }
 
-  private updateForm(filterParams: SightsFilterParams): void {
+  private updateFilterBlocks(sightsFilterParams: SightsFilterParams): void {
+    console.log('updateFilterBlocks');
+    this.filterBlocks.forEach((block) => {
+      block.opened = sightsFilterParams[block.name]?.opened ?? block.opened;
+    });
+  }
+
+  private updateForm(filterParams: FilterParams): void {
     console.log('updateForm');
     const options = { emitEvent: false };
+    const { sightsFilterParams } = filterParams;
 
-    this.filterBlocks.forEach((block) => {
-      const blockParams = filterParams[block.name];
-      this.form
-        .get(block.name)
-        ?.setValue(blockParams?.switchedOn ?? Boolean(blockParams), options);
+    if (sightsFilterParams) {
+      this.filterBlocks.forEach((block) => {
+        const blockParams = sightsFilterParams[block.name];
+        this.form
+          .get(block.name)
+          ?.setValue(blockParams?.switchedOn ?? Boolean(blockParams), options);
 
-      if (blockParams) {
-        block.groups.forEach((group) => {
-          const groupParams =
-            blockParams.groups && blockParams.groups[group.name];
+        if (blockParams) {
+          block.groups.forEach((group) => {
+            const groupParams =
+              blockParams.groups && blockParams.groups[group.name];
 
-          group.controls.forEach((control) => {
-            this.form
-              .get(group.name)
-              ?.get(control.name)
-              ?.setValue(
-                Boolean(groupParams && groupParams[control.name]),
-                options,
-              );
+            group.controls.forEach((control) => {
+              this.form
+                .get(group.name)
+                ?.get(control.name)
+                ?.setValue(
+                  Boolean(groupParams && groupParams[control.name]),
+                  options,
+                );
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
+
+    this.form.patchValue({ search: filterParams.search || '' }, options);
+
+    this.form.patchValue({ sightId: filterParams.sightId }, options);
+    if (this.sightIdForMore !== this.form.value.sightId) {
+      this.sightIdForMore = this.form.value.sightId;
+      markDirty(this);
+    }
+  }
+
+  private processFilterParams(filterParams: FilterParams): void {
+    console.log('filterParamsInRoute$', filterParams);
+    this.updateForm(filterParams);
+    this.emitGetSights();
   }
 
   public animationDone(filterBlock: FilterBlock): void {
@@ -210,7 +244,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   public emitGetSights(): void {
-    this.getSights$.next();
+    console.log('emitGetSights', !this.sightIdForMore);
+    if (!this.sightIdForMore) this.getSights$.next();
   }
 
   private getSights(): void {
@@ -221,18 +256,24 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       filterParams: this.buildFilterParams(),
     };
 
+    this.sightsFetching = true;
+    markDirty(this);
+
     this.sightsService
       .getSights(params)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
           console.log('sightsService data:', data);
           this.sights = [...data.items];
+          this.sightsFetching = false;
+          this.sightsFetched = true;
           this.showServerError = false;
           markDirty(this);
         },
         (error) => {
           console.error('!! Error:', error);
+          this.sightsFetching = false;
           if (!error.ok) this.showServerError = true;
           markDirty(this);
         },
@@ -251,9 +292,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.settingsService.setFilterParams(this.buildFilterParams());
   }
 
-  public setSightForMore(sight: SightData | null): void {
-    this.sightForMore = sight;
-    markDirty(this);
+  public setSightForMore(sight?: SightData): void {
+    this.form.patchValue({ sightId: sight?.post_id });
   }
 
   public trackById(_index: number, item: SightData): number {

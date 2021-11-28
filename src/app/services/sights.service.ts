@@ -9,6 +9,8 @@ export type OknType = 'a' | 'g' | 'h' | 'i';
 
 export type SightSet = 'main' | 'mus';
 
+export type District = '1' | '2' | '3';
+
 export interface SightData {
   post_id: number;
   title: string;
@@ -20,6 +22,17 @@ export interface SightData {
   sets?: SightSet[];
   okn_id?: string;
 }
+
+export type SightDataExt = SightData &
+  Partial<{
+    okn_title: string;
+    okn_date: string;
+    registry_date: string;
+    district: District;
+    districtStr: string;
+    founding_date: string;
+    site: string;
+  }>;
 
 export interface SightsData {
   items: SightData[];
@@ -39,8 +52,9 @@ export interface GetSightsParams {
 }
 
 export interface FilterParams {
-  sightsFilterParams: SightsFilterParams;
+  sightsFilterParams?: SightsFilterParams;
   search?: string;
+  sightId?: number;
 }
 
 interface FilterControl {
@@ -203,9 +217,47 @@ export class SightsService {
     items: [],
   };
 
-  public isFetsching$ = new Subject<boolean>();
+  public fetching$ = new Subject<boolean>();
 
   constructor(private http: HttpClient) {}
+
+  /* API methods */
+
+  private fetchSights(): Observable<SightsData> {
+    return new Observable<SightsData>((observer) => {
+      if (this.sightsData.items.length) {
+        observer.next(this.sightsData);
+        observer.complete();
+      } else {
+        this.fetching$.next(true);
+
+        this.http.get<SightData[]>('sights').subscribe(
+          (resp) => {
+            console.log('=== GET resp:', resp);
+            this.sightsData.items = resp;
+            this.fetching$.next(false);
+            observer.next(this.sightsData);
+            observer.complete();
+          },
+          (error) => {
+            this.fetching$.next(false);
+            observer.error(error);
+          },
+        );
+      }
+    });
+  }
+
+  public getSightById(id: number): Observable<SightDataExt> {
+    console.log('getSightById...', id);
+    // return this.fetchSights().pipe(
+    //   delay(2000),
+    //   map((sightsData) => sightsData.items[0]),
+    // );
+    return this.http.get<SightDataExt>(`sights/${id}`);
+  }
+
+  /* Other methods */
 
   public getSights(params: GetSightsParams): Observable<SightsData> {
     console.log('--- getSights params:', params);
@@ -214,44 +266,12 @@ export class SightsService {
     );
   }
 
-  private fetchSights(): Observable<SightsData> {
-    return new Observable<SightsData>((observer) => {
-      if (this.sightsData.items.length) {
-        observer.next(this.sightsData);
-        observer.complete();
-      } else {
-        this.isFetsching$.next(true);
-
-        this.http.get<SightData[]>('sights').subscribe(
-          (resp) => {
-            console.log('=== GET resp:', resp);
-            this.sightsData.items = resp;
-            this.isFetsching$.next(false);
-            observer.next(this.sightsData);
-            observer.complete();
-          },
-          (error) => {
-            this.isFetsching$.next(false);
-            observer.error(error);
-          },
-        );
-
-        // setTimeout(() => {
-        //   this.sightsData.items = [...SIGHTS_ITEMS];
-        //   observer.next(this.sightsData);
-        //   observer.complete();
-        //   this.isFetsching$.next(false);
-        // }, 1000);
-      }
-    });
-  }
-
   private filterSights(
     sightsData: SightsData,
     params: GetSightsParams,
   ): SightsData {
     console.log('filterSights...');
-    const { sightsFilterParams } = params.filterParams;
+    const sightsFilterParams = params.filterParams.sightsFilterParams || {};
     let items: SightData[] = [];
 
     Object.keys(sightsFilterParams).forEach((blockName) => {
@@ -291,10 +311,11 @@ export class SightsService {
     formValue: any,
   ): FilterParams {
     console.log('--- buildFilterParams formValue:', formValue);
-    const filterParams: FilterParams = { sightsFilterParams: {} };
+    const filterParams: FilterParams = {};
+    const sightsFilterParams: SightsFilterParams = {};
 
     filterBlocks.forEach((block) => {
-      filterParams.sightsFilterParams[block.name] = {
+      sightsFilterParams[block.name] = {
         switchedOn: formValue[block.name],
         opened: block?.opened ?? false,
         groups: Object.fromEntries(
@@ -303,8 +324,16 @@ export class SightsService {
       };
     });
 
+    if (Object.keys(sightsFilterParams).length) {
+      filterParams.sightsFilterParams = sightsFilterParams;
+    }
+
     if (formValue.search) {
       filterParams.search = formValue.search;
+    }
+
+    if (formValue.sightId) {
+      filterParams.sightId = formValue.sightId;
     }
 
     return filterParams;

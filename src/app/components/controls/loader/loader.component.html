@@ -1,0 +1,21 @@
+<div *ngIf="showSpinner" class="spinner-container">
+  <exogb-spinner></exogb-spinner>
+</div>
+
+<div *ngIf="showServerError" class="error-notification">
+  <p>Сервер временно недоступен. Повторите попытку позже.</p>
+  <button
+    type="button"
+    class="primary"
+    [disabled]="disabled"
+    (click)="!disabled && emitClickRefresh()"
+  >
+    <mat-icon
+      svgIcon="refresh"
+      class="button-icon"
+      aria-hidden="false"
+      aria-label="refresh icon"
+    ></mat-icon>
+    Повторить
+  </button>
+</div>

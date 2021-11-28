@@ -7,14 +7,19 @@ import {
   SightsFilterParams,
 } from './sights.service';
 
+// export interface FilterParamsConfig {
+//   filterParams?: FilterParams;
+//   setLS?: boolean;
+//   setQP?: boolean;
+// }
+
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  public filterParamsInRoute: Subject<SightsFilterParams> =
-    new Subject<SightsFilterParams>();
+  public filterParamsInRoute$ = new Subject<FilterParams>();
 
   // groupNames = { fb2: ['category', 'type'], }
   groupNames: Record<string, string[]> = Object.fromEntries(
@@ -30,26 +35,49 @@ export class SettingsService {
     });
   }
 
-  public getFilterParams(): SightsFilterParams | undefined {
-    console.log('getFilterParams');
+  public getFilterParams(
+    filterParamsInRoute: FilterParams,
+  ): FilterParams | undefined {
+    console.log('getFilterParams', filterParamsInRoute);
     // console.log('snapshot:', this.activatedRoute.snapshot);
-    let sightsFilterParams: SightsFilterParams | undefined;
+    let filterParams: FilterParams | undefined;
     // queryParams or localStorage? TODO
     // queryParams:
     // ...
     // else localStorage:
+    if (Object.keys(filterParamsInRoute).length) {
+      filterParams = filterParamsInRoute;
+    }
+
     const filterParamsStr = localStorage.getItem(FILTER_PARAMS_LS_ITEM);
+    let sightsParamsLS: SightsFilterParams | undefined;
     if (filterParamsStr) {
       try {
-        sightsFilterParams = JSON.parse(filterParamsStr);
+        sightsParamsLS = JSON.parse(filterParamsStr);
       } finally {
-        if (sightsFilterParams) {
-          this.setFilterParams({ sightsFilterParams }, false);
+        if (sightsParamsLS) {
+          if (!filterParams) {
+            filterParams = { sightsFilterParams: sightsParamsLS };
+          } else {
+            console.log('define... filterParams:', filterParams);
+            console.log('define... sightsParamsLS:', sightsParamsLS);
+            const sightsFilterParams = filterParams.sightsFilterParams || {};
+
+            Object.keys(sightsFilterParams).forEach((key) => {
+              const param = sightsParamsLS && sightsParamsLS[key];
+              if (param) {
+                sightsFilterParams[key].opened = param.opened;
+                sightsFilterParams[key].switchedOn = param.switchedOn;
+              }
+            });
+          }
+
+          this.setFilterParams(filterParams, false);
         }
       }
     }
 
-    return sightsFilterParams;
+    return filterParams;
   }
 
   public setFilterParams(
@@ -58,9 +86,9 @@ export class SettingsService {
     setQP = true,
   ): void {
     console.log('setFilterParams (setLS, setQP):', setLS, setQP, filterParams);
-    const { sightsFilterParams } = filterParams;
+    const sightsFilterParams = filterParams.sightsFilterParams || {};
 
-    if (setLS) {
+    if (setLS && Object.keys(sightsFilterParams).length) {
       localStorage.setItem(
         FILTER_PARAMS_LS_ITEM,
         JSON.stringify(sightsFilterParams),
@@ -91,6 +119,10 @@ export class SettingsService {
         queryParams.search = filterParams.search;
       }
 
+      if (filterParams.sightId) {
+        queryParams.sight = filterParams.sightId;
+      }
+
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
         queryParams,
@@ -100,25 +132,38 @@ export class SettingsService {
 
   private parseQueryParams(queryParams: Params): void {
     console.log('parseQueryParams:', queryParams);
-    const filterParams: SightsFilterParams = {};
+    const filterParams: FilterParams = {};
+    const sightsFilterParams: SightsFilterParams = {};
 
     if (queryParams.filter && typeof queryParams.filter === 'string') {
       const blocks = queryParams.filter.split('.');
       blocks.forEach((block) => {
         const [blockName, blockBody] = block.split(':');
-        filterParams[blockName] = { groups: {} };
+        sightsFilterParams[blockName] = { groups: {} };
 
         blockBody.split(';').forEach((group, index) => {
           if (group) {
             const groupName = this.groupNames[blockName][index];
-            filterParams[blockName].groups[groupName] =
+            sightsFilterParams[blockName].groups[groupName] =
               this.parseTruthyObj(group);
           }
         });
       });
     }
 
-    this.filterParamsInRoute.next(filterParams);
+    if (Object.keys(sightsFilterParams).length) {
+      filterParams.sightsFilterParams = sightsFilterParams;
+    }
+
+    if (queryParams.search) {
+      filterParams.search = queryParams.search;
+    }
+
+    if (queryParams.sight) {
+      filterParams.sightId = Number(queryParams.sight);
+    }
+
+    this.filterParamsInRoute$.next(filterParams);
   }
 
   private stringifyTruthyObj(obj?: Record<string, boolean>): string {

@@ -5,7 +5,8 @@
     autocomplete="off"
     [value]="value"
     [placeholder]="placeholder"
-    (keyup)="checkValue(searchInput.value, $event)"
+    [disabled]="!enabled"
+    (keyup)="enabled && checkValue(searchInput.value, $event)"
   />
 
   <mat-icon
@@ -20,7 +21,8 @@
 
 <button
   class="secondary search-button"
-  (click)="searchValue(searchInput.value)"
+  [disabled]="!enabled"
+  (click)="enabled && searchValue(searchInput.value)"
 >
   <mat-icon
     class="search-icon"
