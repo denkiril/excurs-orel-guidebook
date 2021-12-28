@@ -18,7 +18,7 @@
 
 .scrolled-content {
   flex-grow: 1;
-  padding: 72px 8px 8px;
+  padding: 72px 8px 16px;
   overflow-y: auto;
   overflow-y: overlay;
 }
@@ -37,20 +37,6 @@
   .scrolled-content {
     padding-top: 0;
   }
-}
-
-.expand-button {
-  display: flex;
-  justify-content: center;
-  height: 16px;
-  padding-top: 8px;
-  color: var(--label-tetriary);
-  cursor: pointer;
-
-  // svg {
-  //   width: 24px;
-  //   height: 8px;
-  // }
 }
 
 .search-bar {

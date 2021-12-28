@@ -29,7 +29,9 @@ export class SettingsService {
     ]),
   );
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
+
+  public startParseQueryParams(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.parseQueryParams(params);
     });
@@ -39,12 +41,8 @@ export class SettingsService {
     filterParamsInRoute: FilterParams,
   ): FilterParams | undefined {
     console.log('getFilterParams', filterParamsInRoute);
-    // console.log('snapshot:', this.activatedRoute.snapshot);
+    // queryParams or localStorage...
     let filterParams: FilterParams | undefined;
-    // queryParams or localStorage? TODO
-    // queryParams:
-    // ...
-    // else localStorage:
     if (Object.keys(filterParamsInRoute).length) {
       filterParams = filterParamsInRoute;
     }
@@ -163,6 +161,7 @@ export class SettingsService {
       filterParams.sightId = Number(queryParams.sight);
     }
 
+    console.log('filterParamsInRoute$.next', filterParams);
     this.filterParamsInRoute$.next(filterParams);
   }
 

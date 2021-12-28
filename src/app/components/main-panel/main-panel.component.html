@@ -1,19 +1,5 @@
 <div class="noscrolled-header">
-  <div
-    *ngIf="canExpandPanel"
-    class="expand-button"
-    (click)="toggleExpandPanel()"
-  >
-    <svg viewBox="0 0 24 8" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M2 2 L22 2"
-        stroke="currentColor"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-    </svg>
-  </div>
+  <ng-content></ng-content>
 </div>
 
 <div class="scrolled-content scroller" [formGroup]="form">

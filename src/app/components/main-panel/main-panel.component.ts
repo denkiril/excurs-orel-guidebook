@@ -1,10 +1,7 @@
 import {
   Component,
-  EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
-  Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
@@ -73,9 +70,6 @@ import { CustomValidators } from 'src/app/core/custom-validators';
   ],
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
-  @Input() canExpandPanel = false;
-  @Output() expandPanelEvent = new EventEmitter<void>();
-
   getSights$ = new Subject();
   destroy$ = new Subject();
 
@@ -103,6 +97,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
         console.log('settingsService.filterParamsInRoute', params);
         this.initWithFilterParams(params);
       });
+
+    this.settingsService.startParseQueryParams();
   }
 
   ngOnDestroy(): void {
@@ -237,10 +233,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     console.log('onOpenedChange');
     filterBlock.opened = opened;
     this.updateFilterParams();
-  }
-
-  public toggleExpandPanel(): void {
-    this.expandPanelEvent.emit();
   }
 
   public emitGetSights(): void {

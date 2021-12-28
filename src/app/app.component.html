@@ -2,11 +2,27 @@
   <exogb-main-menu></exogb-main-menu>
 </div>
 
-<div class="main-panel-container" [@expandPanel]="expandPanelState">
-  <exogb-main-panel
-    [canExpandPanel]="canExpandPanel"
-    (expandPanelEvent)="toggleExpandPanel()"
-  ></exogb-main-panel>
+<!-- <div class="main-panel-container" [@expandPanel]="expandPanelState"> -->
+<div #mainPanelContainer class="main-panel-container">
+  <exogb-main-panel>
+    <div
+      *ngIf="isMobile"
+      class="expand-button"
+      (click)="onExpandBtnClick()"
+      (touchstart)="onExpandBtnTouchstart($event)"
+      (touchend)="onExpandBtnTouchend()"
+    >
+      <svg viewBox="0 0 24 8" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M2 2 L22 2"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </div>
+  </exogb-main-panel>
 </div>
 
 <div class="main-map-container">
