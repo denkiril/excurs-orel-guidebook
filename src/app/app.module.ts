@@ -21,6 +21,7 @@ import { APIInterceptor } from './core/api.interceptor';
 import { SightCardComponent } from './components/sight-card/sight-card.component';
 import { SightCardMoreComponent } from './components/sight-card-more/sight-card-more.component';
 import { LoaderComponent } from './components/controls/loader/loader.component';
+import { SecondPanelComponent } from './components/second-panel/second-panel.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { LoaderComponent } from './components/controls/loader/loader.component';
     SightCardComponent,
     SightCardMoreComponent,
     LoaderComponent,
+    SecondPanelComponent,
   ],
   imports: [
     BrowserModule,

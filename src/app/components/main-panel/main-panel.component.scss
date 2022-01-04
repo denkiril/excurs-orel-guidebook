@@ -120,6 +120,12 @@
 
   .card-container {
     margin-bottom: 8px;
+    border: solid 1px var(--label-secondary);
+
+    &.active {
+      border-color: var(--label-primary);
+      background-color: var(--light-01);
+    }
   }
 }
 

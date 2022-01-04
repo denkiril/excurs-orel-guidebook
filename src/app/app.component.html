@@ -25,6 +25,18 @@
   </exogb-main-panel>
 </div>
 
+<div
+  class="second-panel-container"
+  [@secondPanelAnim]="showSightForMore ? 'opened' : 'closed'"
+  (@secondPanelAnim.done)="animationDone($event)"
+>
+  <exogb-second-panel
+    *ngIf="sightForMore"
+    [sightForMore]="sightForMore"
+    (closePanel)="onClosePanel()"
+  ></exogb-second-panel>
+</div>
+
 <div class="main-map-container">
   <exogb-main-map></exogb-main-map>
 </div>

@@ -8,20 +8,22 @@ import {
   ViewChild,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
-// import {
-//   animate,
-//   state,
-//   style,
-//   transition,
-//   trigger,
-// } from '@angular/animations';
+import {
+  animate,
+  AnimationEvent,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { UtilitiesService } from './services/utilities.service';
 import { WindowService } from './services/window.service';
-// import { MOBILE_SCREEN_WIDTH } from './core/constants';
 import { DocumentService, MediaSize } from './services/document.service';
+import { SightForMoreData } from './services/sights.service';
+import { SettingsService } from './services/settings.service';
 
 const TOP_MARGIN = 80;
 
@@ -32,23 +34,23 @@ const TOP_MARGIN = 80;
   selector: 'exogb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  // animations: [
-  //   trigger('expandPanel', [
-  //     state(
-  //       'default',
-  //       style({
-  //         transform: 'translateY(0)',
-  //       }),
-  //     ),
-  //     state(
-  //       'expanded',
-  //       style({
-  //         transform: 'translateY(calc(80px - 100%))',
-  //       }),
-  //     ),
-  //     transition('default <=> expanded', [animate('400ms ease-out')]),
-  //   ]),
-  // ],
+  animations: [
+    trigger('secondPanelAnim', [
+      state(
+        'closed',
+        style({
+          transform: 'translateX(-100%)',
+        }),
+      ),
+      state(
+        'opened',
+        style({
+          transform: 'translateX(0)',
+        }),
+      ),
+      transition('closed <=> opened', [animate('400ms ease-out')]),
+    ]),
+  ],
 })
 export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('mainPanelContainer', { static: true, read: ElementRef })
@@ -60,12 +62,16 @@ export class AppComponent implements OnInit, OnDestroy {
   private translateYStart = 0;
   private translateYBreakpoint = -400;
   public expandButtonPressed = false;
+  public sightForMore?: SightForMoreData;
+  public showSightForMore = false;
 
+  // eslint-disable-next-line max-params
   constructor(
+    private renderer: Renderer2,
+    private windowService: WindowService,
     private documentService: DocumentService,
     private utilitiesService: UtilitiesService,
-    private windowService: WindowService,
-    private renderer: Renderer2,
+    private settingsService: SettingsService,
   ) {}
 
   // @HostListener('window:resize')
@@ -112,6 +118,14 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
         if (this.expandButtonPressed) this.movePanel(event);
+      });
+
+    this.settingsService.sightForMore$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        if (data) this.sightForMore = data;
+        this.showSightForMore = !!data;
+        markDirty(this);
       });
   }
 
@@ -187,6 +201,23 @@ export class AppComponent implements OnInit, OnDestroy {
         this.mainPanelContainer.nativeElement,
         'transition',
       );
+    }
+  }
+
+  public onClosePanel(): void {
+    this.showSightForMore = false;
+    markDirty(this);
+  }
+
+  public animationDone(event: AnimationEvent): void {
+    // the toState, fromState and totalTime data is accessible from the event variable
+    console.log('animationDone', this.showSightForMore, this.sightForMore);
+    console.log('animationDone', event);
+    // if (this.sightForMore && !this.showSightForMore) {
+    if (this.sightForMore && event.toState === 'closed') {
+      this.sightForMore = undefined;
+      this.settingsService.setSightForMore();
+      // markDirty(this);
     }
   }
 }

@@ -3,7 +3,7 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
+  OnChanges,
   Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
@@ -16,6 +16,7 @@ import {
   OKN_TYPES,
   SightData,
   SightDataExt,
+  SightForMoreData,
   SightsService,
 } from 'src/app/services/sights.service';
 
@@ -24,8 +25,8 @@ import {
   templateUrl: './sight-card-more.component.html',
   styleUrls: ['./sight-card-more.component.scss'],
 })
-export class SightCardMoreComponent implements OnInit, OnDestroy {
-  @Input() sightId!: number;
+export class SightCardMoreComponent implements OnChanges, OnDestroy {
+  @Input() sightForMore!: SightForMoreData;
   @Input() sights: SightData[] = [];
 
   @Output() closeCard = new EventEmitter<void>();
@@ -37,12 +38,17 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   isMuseum = false;
   showServerError = false;
   fetching = false;
+  sightId?: number;
 
   constructor(private sightsService: SightsService) {}
 
-  ngOnInit(): void {
-    const sight = this.sights.find((item) => item.post_id === this.sightId);
-    console.log('SightCardMore init', sight, this.sights, this.sightId);
+  ngOnChanges(): void {
+    this.sightId =
+      this.sightForMore.sight?.post_id || this.sightForMore.sightId;
+    const sight =
+      this.sightForMore.sight ||
+      this.sights.find((item) => item.post_id === this.sightId);
+
     if (sight) this.initSight(sight);
 
     this.getSight();
@@ -94,6 +100,8 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   }
 
   public getSight(): void {
+    if (!this.sightId) return;
+
     this.fetching = true;
     markDirty(this);
 
@@ -117,7 +125,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
       );
   }
 
-  public onClose(): void {
+  public close(): void {
     this.closeCard.emit();
   }
 }

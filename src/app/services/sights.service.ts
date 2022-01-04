@@ -54,6 +54,10 @@ export interface GetSightsParams {
 export interface FilterParams {
   sightsFilterParams?: SightsFilterParams;
   search?: string;
+}
+
+export interface SightForMoreData {
+  sight?: SightData;
   sightId?: number;
 }
 
@@ -304,38 +308,5 @@ export class SightsService {
 
     console.log('--- filterSights items:', items);
     return { items };
-  }
-
-  public buildFilterParams(
-    filterBlocks: FilterBlock[],
-    formValue: any,
-  ): FilterParams {
-    console.log('--- buildFilterParams formValue:', formValue);
-    const filterParams: FilterParams = {};
-    const sightsFilterParams: SightsFilterParams = {};
-
-    filterBlocks.forEach((block) => {
-      sightsFilterParams[block.name] = {
-        switchedOn: formValue[block.name],
-        opened: block?.opened ?? false,
-        groups: Object.fromEntries(
-          block.groups.map((group) => [group.name, formValue[group.name]]),
-        ),
-      };
-    });
-
-    if (Object.keys(sightsFilterParams).length) {
-      filterParams.sightsFilterParams = sightsFilterParams;
-    }
-
-    if (formValue.search) {
-      filterParams.search = formValue.search;
-    }
-
-    if (formValue.sightId) {
-      filterParams.sightId = formValue.sightId;
-    }
-
-    return filterParams;
   }
 }

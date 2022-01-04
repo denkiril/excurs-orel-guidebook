@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import {
+  FilterBlock,
   FilterParams,
   FILTER_BLOCKS,
+  SightData,
+  SightForMoreData,
+  // SightData,
   SightsFilterParams,
 } from './sights.service';
 
-// export interface FilterParamsConfig {
-//   filterParams?: FilterParams;
-//   setLS?: boolean;
-//   setQP?: boolean;
-// }
+// TODO
+// browser navigate with skipParse bug
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
@@ -20,6 +22,9 @@ const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 })
 export class SettingsService {
   public filterParamsInRoute$ = new Subject<FilterParams>();
+  public sightForMore$ = new Subject<SightForMoreData | undefined>();
+
+  private skipParse = false;
 
   // groupNames = { fb2: ['category', 'type'], }
   groupNames: Record<string, string[]> = Object.fromEntries(
@@ -32,9 +37,15 @@ export class SettingsService {
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
 
   public startParseQueryParams(): void {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.parseQueryParams(params);
-    });
+    console.log('startParseQueryParams');
+    this.activatedRoute.queryParams
+      .pipe(debounceTime(300))
+      .subscribe((params) => {
+        console.log('upd queryParams... skipParse:', this.skipParse);
+        if (!this.skipParse) this.parseQueryParams(params);
+        this.skipParse = false;
+        console.log('skipParse = false');
+      });
   }
 
   public getFilterParams(
@@ -94,8 +105,10 @@ export class SettingsService {
     }
 
     if (setQP) {
+      const curQueryParams = this.activatedRoute.snapshot.queryParams;
       const queryParams: Params = {};
       const blockNames = Object.keys(sightsFilterParams);
+      console.log('/// curQueryParams:', curQueryParams);
 
       if (blockNames.length) {
         const blocks: string[] = [];
@@ -117,9 +130,7 @@ export class SettingsService {
         queryParams.search = filterParams.search;
       }
 
-      if (filterParams.sightId) {
-        queryParams.sight = filterParams.sightId;
-      }
+      queryParams.sight = curQueryParams.sight || null;
 
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
@@ -157,9 +168,11 @@ export class SettingsService {
       filterParams.search = queryParams.search;
     }
 
-    if (queryParams.sight) {
-      filterParams.sightId = Number(queryParams.sight);
-    }
+    this.setSightForMore(
+      undefined,
+      queryParams.sight ? Number(queryParams.sight) : undefined,
+      false,
+    );
 
     console.log('filterParamsInRoute$.next', filterParams);
     this.filterParamsInRoute$.next(filterParams);
@@ -175,5 +188,58 @@ export class SettingsService {
 
   private parseTruthyObj(str: string): Record<string, boolean> {
     return Object.fromEntries(str.split(',').map((key) => [key, true]));
+  }
+
+  public buildFilterParams(
+    filterBlocks: FilterBlock[],
+    formValue: any,
+  ): FilterParams {
+    console.log('--- buildFilterParams formValue:', formValue);
+    const filterParams: FilterParams = {};
+    const sightsFilterParams: SightsFilterParams = {};
+
+    filterBlocks.forEach((block) => {
+      sightsFilterParams[block.name] = {
+        switchedOn: formValue[block.name],
+        opened: block?.opened ?? false,
+        groups: Object.fromEntries(
+          block.groups.map((group) => [group.name, formValue[group.name]]),
+        ),
+      };
+    });
+
+    if (Object.keys(sightsFilterParams).length) {
+      filterParams.sightsFilterParams = sightsFilterParams;
+    }
+
+    if (formValue.search) {
+      filterParams.search = formValue.search;
+    }
+
+    return filterParams;
+  }
+
+  public setSightForMore(
+    sight?: SightData,
+    sightId?: number,
+    setQP = true,
+  ): void {
+    if (setQP) this.setQueryParam('sight', sight?.post_id || sightId);
+    this.sightForMore$.next(sight || sightId ? { sight, sightId } : undefined);
+  }
+
+  private setQueryParam(key: string, value: any): void {
+    console.log('setQueryParam', key, value);
+
+    this.skipParse = true;
+    console.log('skipParse = true');
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { [key]: value || null },
+      queryParamsHandling: 'merge',
+      // skipLocationChange: true,
+      // state: { skip: true },
+    });
   }
 }

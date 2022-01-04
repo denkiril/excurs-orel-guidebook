@@ -98,6 +98,13 @@ export class MainPanelComponent implements OnInit, OnDestroy {
         this.initWithFilterParams(params);
       });
 
+    this.settingsService.sightForMore$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.sightIdForMore = data?.sight?.post_id || data?.sightId;
+        markDirty(this);
+      });
+
     this.settingsService.startParseQueryParams();
   }
 
@@ -109,7 +116,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = new FormGroup({
       search: new FormControl(''),
-      sightId: new FormControl(),
     });
 
     this.filterBlocks.forEach((block) => {
@@ -209,12 +215,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     }
 
     this.form.patchValue({ search: filterParams.search || '' }, options);
-
-    this.form.patchValue({ sightId: filterParams.sightId }, options);
-    if (this.sightIdForMore !== this.form.value.sightId) {
-      this.sightIdForMore = this.form.value.sightId;
-      markDirty(this);
-    }
   }
 
   private processFilterParams(filterParams: FilterParams): void {
@@ -236,8 +236,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   public emitGetSights(): void {
-    console.log('emitGetSights', !this.sightIdForMore);
-    if (!this.sightIdForMore) this.getSights$.next();
+    this.getSights$.next();
   }
 
   private getSights(): void {
@@ -273,7 +272,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private buildFilterParams(): FilterParams {
-    return this.sightsService.buildFilterParams(
+    return this.settingsService.buildFilterParams(
       this.filterBlocks,
       this.form.value,
     );
@@ -285,7 +284,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   public setSightForMore(sight?: SightData): void {
-    this.form.patchValue({ sightId: sight?.post_id });
+    this.settingsService.setSightForMore(sight);
   }
 
   public trackById(_index: number, item: SightData): number {

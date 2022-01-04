@@ -44,11 +44,12 @@
     (clickRefresh)="form.valid && emitGetSights()"
   ></exogb-loader>
 
-  <ng-container *ngIf="sightsFetched && !sightIdForMore">
+  <ng-container *ngIf="sightsFetched">
     <div *ngIf="sights.length; else noSightsTemplate" class="cards-container">
       <div
         *ngFor="let sight of sights; trackBy: trackById"
         class="card-container"
+        [class.active]="sight.post_id === sightIdForMore"
       >
         <exogb-sight-card
           [sight]="sight"
@@ -57,13 +58,6 @@
       </div>
     </div>
   </ng-container>
-
-  <exogb-sight-card-more
-    *ngIf="sightIdForMore"
-    [sightId]="sightIdForMore"
-    [sights]="sights"
-    (closeCard)="setSightForMore(undefined)"
-  ></exogb-sight-card-more>
 </div>
 
 <ng-template #noSightsTemplate>

@@ -1,23 +1,26 @@
 :host {
-  display: block;
-  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   font-size: 16px;
   line-height: 22px;
   font-weight: normal;
-  padding: 4px 8px 8px;
-  border: solid 1px var(--label-secondary);
+  padding: 0 12px 16px;
   color: var(--label-primary);
   cursor: default;
 }
 
-.sight-navigation {
+header {
+  height: 48px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 26px;
 
-  .link-btn {
-    font-size: 20px;
+  .close-btn {
+    margin-left: auto;
+    border-color: transparent;
     color: var(--label-secondary);
 
     &:hover {
@@ -30,20 +33,22 @@
   }
 }
 
+.scrolled-content {
+  flex-grow: 1;
+  min-height: 400px;
+  overflow-y: auto;
+}
+
+footer {
+  flex-shrink: 0;
+  margin-top: 20px;
+}
+
 .sight-title {
   font-size: 20px;
   line-height: 28px;
   font-weight: normal;
   margin-bottom: 4px;
-
-  // .mat-icon {
-  //   height: 1em;
-  //   width: 1em;
-  //   line-height: normal;
-  //   vertical-align: text-bottom;
-  //   margin-right: 2px;
-  //   color: var(--label-secondary);
-  // }
 }
 
 .sight-description {
@@ -52,10 +57,13 @@
   }
 }
 
-// .sight-image {
-//   height: 88px;
-// }
-
 .loader {
   margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  header {
+    height: 40px;
+    margin-bottom: 0;
+  }
 }
