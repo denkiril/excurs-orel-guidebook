@@ -33,19 +33,23 @@
 }
 
 .expand-button {
+  height: 100%;
   display: flex;
   justify-content: center;
-  height: 16px;
   padding-top: 8px;
   color: var(--label-tetriary);
   cursor: pointer;
+
+  svg {
+    height: 10px;
+  }
 }
 
 @media (max-width: 768px) {
   .main-panel-container {
     width: 100%;
     height: calc(100vh - 64px);
-    top: calc(100vh - 80px);
+    top: calc(100vh - 128px);
     // top: auto;
     // transition: transform 0.4s ease-out;
     // transform: translateY(-50vh);

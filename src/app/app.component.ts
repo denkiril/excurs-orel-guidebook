@@ -26,6 +26,7 @@ import { SightForMoreData } from './services/sights.service';
 import { SettingsService } from './services/settings.service';
 
 const TOP_MARGIN = 80;
+const BOTTOM_MARGIN = 128;
 
 // TODO:
 // Add map layout on movePanel upper center
@@ -56,10 +57,14 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('mainPanelContainer', { static: true, read: ElementRef })
   mainPanelContainer!: ElementRef;
 
+  @ViewChild('mainPanel', { static: true, read: ElementRef })
+  mainPanel!: ElementRef;
+
   destroy$ = new Subject();
   public isMobile = false;
   public translateY = 0;
   private translateYStart = 0;
+  private paddingSummand = 0;
   private translateYBreakpoint = -400;
   public expandButtonPressed = false;
   public sightForMore?: SightForMoreData;
@@ -88,16 +93,19 @@ export class AppComponent implements OnInit, OnDestroy {
   // @HostListener('document:touchmove', ['$event'])
   // onTouchmove(event: TouchEvent): void {
   //   if (this.expandButtonPressed) {
-  //     this.onPanelTouchmove(event);
+  //     event.preventDefault(); // prevent Chrome "pull down to refresh" feature
+  //     this.movePanel(event);
   //   }
   // }
 
   ngOnInit(): void {
-    this.translateYBreakpoint = -Math.floor(
-      this.windowService.windowRef.innerHeight / 2,
-    );
+    this.calcVars();
 
-    console.log('translateYBreakpoint', this.translateYBreakpoint);
+    this.documentService.onResize$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.calcVars();
+      });
 
     this.documentService.getMediaSize$
       .pipe(takeUntil(this.destroy$))
@@ -132,6 +140,19 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private calcVars(): void {
+    this.translateYBreakpoint = -Math.floor(
+      this.windowService.windowRef.innerHeight / 2,
+    );
+
+    this.paddingSummand =
+      this.mainPanelContainer.nativeElement.clientHeight - BOTTOM_MARGIN + 8;
+
+    console.log('[][] translateYBreakpoint', this.translateYBreakpoint);
+    console.log('[][] paddingSummand', this.paddingSummand);
+    this.correctMainPanel(true);
   }
 
   private checkExpandPanelAbility(mediaSize: MediaSize | undefined): void {
@@ -186,6 +207,19 @@ export class AppComponent implements OnInit, OnDestroy {
       this.mainPanelContainer.nativeElement,
       'transform',
       `translateY(${translateY}px)`,
+    );
+
+    if (this.isMobile) this.correctMainPanel();
+  }
+
+  private correctMainPanel(reset = false): void {
+    let paddingBottom = reset ? 0 : this.translateY + this.paddingSummand;
+    if (paddingBottom < 0) paddingBottom = 0;
+
+    this.renderer.setStyle(
+      this.mainPanel.nativeElement,
+      'padding-bottom',
+      `${paddingBottom}px`,
     );
   }
 
