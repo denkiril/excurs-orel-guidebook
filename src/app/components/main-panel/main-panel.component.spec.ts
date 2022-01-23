@@ -1,5 +1,15 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+
+import { IconsModule } from 'src/app/icons/icons.module';
+import { FilterBlockComponent } from '../controls/filter-block/filter-block.component';
+import { LoaderComponent } from '../controls/loader/loader.component';
+import { SearchBarComponent } from '../controls/search-bar/search-bar.component';
+import { SpinnerComponent } from '../controls/spinner/spinner.component';
+import { ToggleComponent } from '../controls/toggle/toggle.component';
 
 import { MainPanelComponent } from './main-panel.component';
 
@@ -9,8 +19,22 @@ describe('MainPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MainPanelComponent],
-      imports: [BrowserAnimationsModule],
+      imports: [
+        BrowserAnimationsModule,
+        HttpClientTestingModule,
+        RouterTestingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        IconsModule,
+      ],
+      declarations: [
+        MainPanelComponent,
+        FilterBlockComponent,
+        LoaderComponent,
+        SearchBarComponent,
+        ToggleComponent,
+        SpinnerComponent,
+      ],
     }).compileComponents();
   });
 

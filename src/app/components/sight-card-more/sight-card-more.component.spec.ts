@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { IconsModule } from 'src/app/icons/icons.module';
 
 import { SightCardMoreComponent } from './sight-card-more.component';
 
@@ -8,6 +10,7 @@ describe('SightCardMoreComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, IconsModule],
       declarations: [SightCardMoreComponent],
     }).compileComponents();
   });

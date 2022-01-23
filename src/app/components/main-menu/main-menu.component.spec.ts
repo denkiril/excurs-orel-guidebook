@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { IconsModule } from 'src/app/icons/icons.module';
 
 import { MainMenuComponent } from './main-menu.component';
 
@@ -10,7 +11,7 @@ describe('MainMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MainMenuComponent],
-      imports: [BrowserAnimationsModule],
+      imports: [BrowserAnimationsModule, IconsModule],
     }).compileComponents();
   });
 

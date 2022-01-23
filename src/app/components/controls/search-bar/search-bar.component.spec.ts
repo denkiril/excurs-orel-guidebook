@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IconsModule } from 'src/app/icons/icons.module';
 
 import { SearchBarComponent } from './search-bar.component';
 
@@ -8,6 +9,7 @@ describe('SearchBarComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      imports: [IconsModule],
       declarations: [SearchBarComponent],
     }).compileComponents();
   });

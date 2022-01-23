@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IconsModule } from 'src/app/icons/icons.module';
+import { ToggleComponent } from '../toggle/toggle.component';
 
 import { FilterBlockComponent } from './filter-block.component';
 
@@ -8,7 +10,8 @@ describe('FilterBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FilterBlockComponent],
+      imports: [IconsModule],
+      declarations: [FilterBlockComponent, ToggleComponent],
     }).compileComponents();
   });
 
