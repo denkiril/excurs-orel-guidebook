@@ -9,7 +9,10 @@
     "test": "ng test",
     "test:prod": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy1": "scp -r deploy/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/",
+    "deploy2": "scp -r dist/guidebook/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/",
+    "deploy": "npm run deploy1 && npm run deploy2"
   },
   "private": true,
   "dependencies": {
