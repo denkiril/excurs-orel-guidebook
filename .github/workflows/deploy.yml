@@ -23,7 +23,7 @@ jobs:
       - run: chmod 600 "$HOME/.ssh/key"
       # Build
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:prod
       # Deploy
       - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/
       - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/guidebook/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/
