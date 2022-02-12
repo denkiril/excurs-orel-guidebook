@@ -11,25 +11,32 @@
 }
 
 header {
-  height: 48px;
   flex-shrink: 0;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 26px;
+  margin-bottom: 8px;
+  position: relative;
+
+  .sight-title {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: normal;
+    padding-top: 70px;
+  }
 
   .close-btn {
-    margin-left: auto;
+    position: absolute;
+    top: 16px;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: 8px;
     border-color: transparent;
     color: var(--label-secondary);
 
     &:hover {
       color: var(--label-primary);
     }
-  }
-
-  a {
-    font-size: 15px;
   }
 }
 
@@ -44,14 +51,9 @@ footer {
   margin-top: 20px;
 }
 
-.sight-title {
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: normal;
-  margin-bottom: 4px;
-}
-
 .sight-description {
+  margin-bottom: 16px;
+
   .label {
     color: var(--label-secondary);
   }
@@ -63,7 +65,14 @@ footer {
 
 @media (max-width: 768px) {
   header {
-    height: 40px;
-    margin-bottom: 0;
+    padding-top: 8px;
+
+    .sight-title {
+      padding-top: 0;
+    }
+
+    .close-btn {
+      position: static;
+    }
   }
 }

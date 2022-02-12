@@ -1,0 +1,11 @@
+<picture>
+  <source type="image/webp" [srcset]="srcsetWebp" [sizes]="sizes" />
+  <source [srcset]="srcset" [sizes]="sizes" />
+  <img
+    [width]="width"
+    [height]="height"
+    [src]="src"
+    [alt]="image.alt"
+    [title]="image.title"
+  />
+</picture>

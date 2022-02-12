@@ -61,6 +61,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
 
   private initSight(sight: SightData): void {
     this.sight = sight;
+    // this.sight = { ...sight, images: sight.images || [] };
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
 
     if (this.isMuseum) {

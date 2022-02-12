@@ -13,6 +13,7 @@ import {
 })
 export class SightCardComponent implements OnInit {
   @Input() sight!: SightData;
+  @Input() index = 0;
   @Output() clickMore = new EventEmitter<SightData>();
 
   descriptionShort = '';

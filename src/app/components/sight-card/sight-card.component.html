@@ -30,9 +30,8 @@
 <img
   *ngIf="sight.thumb_url"
   class="sight-image"
-  loading="lazy"
+  [attr.loading]="index > 6 ? 'lazy' : 'eager'"
   [src]="sight.thumb_url"
-  alt=""
   title="Подробнее..."
   (click)="onClickMore(sight)"
 />

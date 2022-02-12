@@ -19,6 +19,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
 import { UtilitiesService } from './services/utilities.service';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
@@ -99,6 +100,9 @@ export class AppComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit(): void {
+    // console.info('Version -> ', process.env.REACT_APP_VERSION || version);
+    console.info(`Version -> ${environment.VERSION}`);
+
     this.calcVars();
 
     this.documentService.onResize$

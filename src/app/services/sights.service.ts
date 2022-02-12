@@ -11,10 +11,34 @@ export type SightSet = 'main' | 'mus';
 
 export type District = '1' | '2' | '3';
 
+export interface ImageSizeItem {
+  file: string;
+  height: number;
+  width: number;
+  'mime-type'?: string;
+}
+
+export interface ImageItem {
+  alt: string;
+  title: string;
+  full: string;
+  meta: {
+    file: string;
+    height: number;
+    width: number;
+    sizes: {
+      large: ImageSizeItem;
+      medium: ImageSizeItem;
+      medium_large: ImageSizeItem;
+      thumbnail: ImageSizeItem;
+    };
+  };
+}
+
 export interface SightData {
   post_id: number;
   title: string;
-  thumb_url: string;
+  thumb_url?: string;
   permalink: string;
   location?: string;
   category?: OknCategory[];
@@ -32,6 +56,8 @@ export type SightDataExt = SightData &
     districtStr: string;
     founding_date: string;
     site: string;
+    thumb_image?: ImageItem;
+    images: (ImageItem | null)[];
   }>;
 
 export interface SightsData {

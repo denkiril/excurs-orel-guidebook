@@ -47,12 +47,13 @@
   <ng-container *ngIf="sightsFetched">
     <div *ngIf="sights.length; else noSightsTemplate" class="cards-container">
       <div
-        *ngFor="let sight of sights; trackBy: trackById"
+        *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"
         [class.active]="sight.post_id === sightIdForMore"
       >
         <exogb-sight-card
           [sight]="sight"
+          [index]="i"
           (clickMore)="setSightForMore($event)"
         ></exogb-sight-card>
       </div>

@@ -63,8 +63,6 @@ export class DocumentService {
   );
 
   private init(): void {
-    console.log('Release 0.0.1');
-
     this.onResize$.subscribe(() => {
       this.getMediaSize$.next(this.getMediaSize());
     });
