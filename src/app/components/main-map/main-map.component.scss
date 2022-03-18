@@ -8,8 +8,37 @@
   right: 0;
   // background-image: url('../../../assets/images/ya-map.jpg');
   // background-image: url('~assets/images/ya-map.jpg');
-  background-image: url($assets-path + 'images/ya-map.jpg');
+  // background-image: url($assets-path + 'images/ya-map.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#box10 {
+  position: relative;
+  width: 40vw;
+  height: 40vh;
+  background-color: rgb(170, 243, 219);
+  margin-left: 20px;
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+}
+
+.box1 {
+  width: 80px;
+  height: 80px;
+  background-color: rgb(210, 138, 243);
+  margin-bottom: 20px;
+}
+
+.box2 {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: env(safe-area-inset-bottom);
+  background-color: rgb(79, 30, 212);
 }
