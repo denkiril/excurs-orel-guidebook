@@ -10,8 +10,8 @@
   </button>
 </header>
 
-<div class="scrolled-content scroller">
-  <div *ngIf="sight">
+<div class="scrolled-container scroller">
+  <div *ngIf="sight" class="scrolled-content">
     <div class="sight-description">
       <p *ngIf="typeText">
         <span class="label">Тип объекта:</span> {{ typeText }}
@@ -25,8 +25,8 @@
       <p *ngIf="sight.okn_id">
         <span class="label">Номер в реестре ОКН:</span> {{ sight.okn_id }}
       </p>
-      <p *ngIf="sight.districtStr">
-        <span class="label">Район:</span> {{ sight.districtStr }}
+      <p *ngIf="districtText">
+        <span class="label">Район:</span> {{ districtText }}
       </p>
       <p *ngIf="sight.okn_title">
         <span class="label">Наименование ОКН:</span> {{ sight.okn_title }}
@@ -44,16 +44,18 @@
       </p>
       <p *ngIf="sight.site">
         <span class="label">Официальный сайт:</span>{{ ' ' }}
-        <a [href]="sight.site" target="_blank" rel="noopener noreferrer">{{
-          sight.site
-        }}</a>
+        <a [href]="sight.site" target="_blank" rel="noopener noreferrer">
+          {{ sight.site }}
+        </a>
       </p>
     </div>
 
-    <exogb-picture
-      *ngIf="sight.thumb_image"
-      [image]="sight.thumb_image"
-    ></exogb-picture>
+    <div *ngIf="introHTML" class="sight-intro" [innerHTML]="introHTML"></div>
+
+    <exogb-sight-images
+      *ngIf="sight.images?.length"
+      [images]="sight.images || []"
+    ></exogb-sight-images>
   </div>
 
   <div *ngIf="fetching || showServerError" class="loader">

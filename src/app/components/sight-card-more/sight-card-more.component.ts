@@ -34,11 +34,13 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   destroy$ = new Subject();
   sight?: SightDataExt;
   typeText = '';
+  districtText = '';
   categoryText = '';
   isMuseum = false;
   showServerError = false;
   fetching = false;
   sightId?: number;
+  introHTML = '';
 
   constructor(private sightsService: SightsService) {}
 
@@ -74,30 +76,54 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     }
 
     if (this.sight.district) {
-      this.sight.districtStr = this.defineDistrictStr(this.sight.district);
+      this.districtText = this.defineDistrictText(this.sight.district);
+    }
+
+    if (this.sight.intro) {
+      this.introHTML = this.convertIntroHTML(this.sight.intro);
     }
 
     markDirty(this);
   }
 
-  private defineDistrictStr(district: District): string {
-    let districtStr = '';
+  private defineDistrictText(district: District): string {
+    let text = '';
 
     switch (district) {
       case '1':
-        districtStr = 'Заводской';
+        text = 'Заводской';
         break;
       case '2':
-        districtStr = 'Железнодорожный';
+        text = 'Железнодорожный';
         break;
       case '3':
-        districtStr = 'Советский';
+        text = 'Советский';
         break;
       default:
         break;
     }
 
-    return districtStr;
+    return text;
+  }
+
+  private convertIntroHTML(intro: string): string {
+    // TODO
+    // const parser = new DOMParser();
+    // console.log('xml:', parser.parseFromString(intro, 'application/xml'));
+    // console.log('text/html:', parser.parseFromString(intro, 'text/html'));
+    let html = intro;
+    const re = /<a[^>]*>([^<]+)<\/a>/gi;
+    const aTags = html.match(re);
+    aTags?.forEach((tag) => {
+      console.log('tag:', tag);
+      const hrefValue = tag.match(/href=["'](.*?)["']/);
+      if (!hrefValue || (hrefValue && hrefValue[1][0] === '/')) {
+        const content = tag.replace(re, '$1');
+        html = html.replace(tag, content);
+      }
+    });
+
+    return html;
   }
 
   public getSight(): void {

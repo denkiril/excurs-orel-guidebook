@@ -23,6 +23,7 @@ import { SightCardMoreComponent } from './components/sight-card-more/sight-card-
 import { LoaderComponent } from './components/controls/loader/loader.component';
 import { SecondPanelComponent } from './components/second-panel/second-panel.component';
 import { PictureComponent } from './components/ui/picture/picture.component';
+import { SightImagesComponent } from './components/sight-images/sight-images.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { PictureComponent } from './components/ui/picture/picture.component';
     LoaderComponent,
     SecondPanelComponent,
     PictureComponent,
+    SightImagesComponent,
   ],
   imports: [
     BrowserModule,

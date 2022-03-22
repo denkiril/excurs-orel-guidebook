@@ -20,6 +20,7 @@ export interface ImageSizeItem {
 
 export interface ImageItem {
   alt: string;
+  caption: string;
   title: string;
   full: string;
   meta: {
@@ -53,11 +54,11 @@ export type SightDataExt = SightData &
     okn_date: string;
     registry_date: string;
     district: District;
-    districtStr: string;
     founding_date: string;
     site: string;
-    thumb_image?: ImageItem;
-    images: (ImageItem | null)[];
+    // thumb_image?: ImageItem;
+    images: ImageItem[];
+    intro: string;
   }>;
 
 export interface SightsData {

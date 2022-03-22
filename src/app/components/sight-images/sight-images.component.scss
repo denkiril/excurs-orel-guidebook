@@ -1,0 +1,31 @@
+@import 'constants';
+
+.top-block {
+  min-height: 360px;
+  margin-bottom: 12px;
+
+  .top-image-block {
+    margin-bottom: 4px;
+  }
+}
+
+.images-block {
+  display: flex;
+  flex-wrap: wrap;
+
+  .image-container {
+    width: 25%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: $mobile-width) {
+      width: 33.333%;
+    }
+  }
+
+  .image-wrapper {
+    width: 90%;
+    cursor: pointer;
+  }
+}

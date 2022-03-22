@@ -1,0 +1,14 @@
+<div *ngIf="topImage" class="top-block">
+  <div class="top-image-block">
+    <exogb-picture [image]="topImage"></exogb-picture>
+  </div>
+  <p class="image-caption">{{ topImage.caption || topImage.title }}</p>
+</div>
+
+<div *ngIf="images.length > 1" class="images-block">
+  <div *ngFor="let image of images" class="image-container">
+    <div class="image-wrapper" (click)="setTopImage(image)">
+      <exogb-picture [image]="image" [targetWidth]="150"></exogb-picture>
+    </div>
+  </div>
+</div>

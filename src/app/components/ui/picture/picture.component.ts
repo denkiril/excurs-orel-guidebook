@@ -1,4 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 
 @Component({
@@ -6,7 +12,7 @@ import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
   templateUrl: './picture.component.html',
   styleUrls: ['./picture.component.scss'],
 })
-export class PictureComponent implements OnInit {
+export class PictureComponent implements OnChanges, OnInit {
   @Input() image!: ImageItem;
   @Input() targetWidth = 600;
 
@@ -18,8 +24,19 @@ export class PictureComponent implements OnInit {
   src = '';
   // mimeType = 'image/jpeg';
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // console.log('changes:', changes);
+    if (changes.image?.firstChange === false) {
+      this.setImage();
+    }
+  }
+
   ngOnInit(): void {
-    // console.log('image:', this.image);
+    this.setImage();
+  }
+
+  private setImage(): void {
+    // console.log('setImage:', this.image);
     const { meta } = this.image;
     const baseUrl = this.image.full.replace(meta.file, '');
 
