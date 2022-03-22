@@ -46,7 +46,7 @@ enum MENU_BLOCK_NAME {
       state(
         'closed',
         style({
-          transform: 'translateY(calc(100px - 100%))',
+          transform: 'translateY(calc(50px - 100%))',
         }),
       ),
       transition('open <=> closed', [animate('500ms ease-in-out')]),

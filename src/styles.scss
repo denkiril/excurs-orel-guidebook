@@ -158,14 +158,17 @@ body {
   }
 }
 
-// Grid system: 576px 768px 992px 1200px
-@media (max-width: 768px) {
+@media (max-width: $mobile-width) {
   .gb-header-container {
     width: 100%;
     top: 0;
     left: 0;
     border-radius: 0;
     border-width: 0 0 1px 0;
+
+    .gb-header-title {
+      opacity: 0.6;
+    }
   }
 }
 

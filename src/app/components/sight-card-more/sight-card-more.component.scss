@@ -1,3 +1,5 @@
+@import 'constants';
+
 :host {
   display: flex;
   flex-direction: column;
@@ -5,7 +7,7 @@
   font-size: 16px;
   line-height: 22px;
   font-weight: normal;
-  padding: 0 12px 16px;
+  padding: 0 4px 16px 12px;
   color: var(--label-primary);
   cursor: default;
 }
@@ -40,10 +42,14 @@ header {
   }
 }
 
-.scrolled-content {
+.scrolled-container {
   flex-grow: 1;
   min-height: 400px;
   overflow-y: auto;
+
+  .scrolled-content {
+    padding-right: 8px;
+  }
 }
 
 footer {
@@ -59,11 +65,19 @@ footer {
   }
 }
 
+.sight-intro {
+  padding: 12px 0 4px;
+  border-top: 1px solid;
+  // border-bottom: 1px solid;
+  border-color: var(--label-quarternary);
+  margin-bottom: 16px;
+}
+
 .loader {
   margin-top: 16px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: $mobile-width) {
   header {
     padding-top: 8px;
 
