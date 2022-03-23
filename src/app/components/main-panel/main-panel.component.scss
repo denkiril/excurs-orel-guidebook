@@ -42,6 +42,12 @@
   }
 }
 
+@media (max-height: $mobile-height) {
+  .scrolled-content {
+    padding: 16px 8px;
+  }
+}
+
 .search-bar {
   margin-bottom: 16px;
 }

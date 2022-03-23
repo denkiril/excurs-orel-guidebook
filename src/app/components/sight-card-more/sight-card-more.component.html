@@ -1,13 +1,10 @@
 <header>
   <h2 class="sight-title">{{ sight?.title || '' }}</h2>
-  <button
-    type="button"
-    class="close-btn"
-    title="Закрыть панель"
-    (click)="close()"
-  >
-    <mat-icon svgIcon="close"></mat-icon>
-  </button>
+  <div class="close-btn-wrapper">
+    <button type="button" title="Закрыть панель" (click)="close()">
+      <mat-icon svgIcon="close"></mat-icon>
+    </button>
+  </div>
 </header>
 
 <div class="scrolled-container scroller">
@@ -56,6 +53,18 @@
       *ngIf="sight.images?.length"
       [images]="sight.images || []"
     ></exogb-sight-images>
+
+    <div class="content-footer">
+      <a
+        *ngIf="sight && sight.permalink"
+        [href]="sight.permalink"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Открыть страницу объекта
+        <mat-icon svgIcon="open_in_new"></mat-icon>
+      </a>
+    </div>
   </div>
 
   <div *ngIf="fetching || showServerError" class="loader">
@@ -66,15 +75,3 @@
     ></exogb-loader>
   </div>
 </div>
-
-<footer>
-  <a
-    *ngIf="sight && sight.permalink"
-    [href]="sight.permalink"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Открыть страницу объекта
-    <mat-icon svgIcon="open_in_new"></mat-icon>
-  </a>
-</footer>

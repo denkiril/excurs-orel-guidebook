@@ -7,7 +7,7 @@
   font-size: 16px;
   line-height: 22px;
   font-weight: normal;
-  padding: 0 4px 16px 12px;
+  padding: 0 4px 0 12px;
   color: var(--label-primary);
   cursor: default;
 }
@@ -26,35 +26,34 @@ header {
     padding-top: 70px;
   }
 
-  .close-btn {
+  .close-btn-wrapper {
     position: absolute;
     top: 16px;
     right: 0;
-    width: 28px;
-    height: 28px;
-    margin-left: 8px;
-    border-color: transparent;
-    color: var(--label-secondary);
+    width: 48px;
 
-    &:hover {
-      color: var(--label-primary);
+    button {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto;
+      border-color: transparent;
+      color: var(--label-secondary);
+
+      &:hover {
+        color: var(--label-primary);
+      }
     }
   }
 }
 
 .scrolled-container {
   flex-grow: 1;
-  min-height: 400px;
+  // min-height: 400px;
   overflow-y: auto;
 
   .scrolled-content {
     padding-right: 8px;
   }
-}
-
-footer {
-  flex-shrink: 0;
-  margin-top: 20px;
 }
 
 .sight-description {
@@ -73,6 +72,14 @@ footer {
   margin-bottom: 16px;
 }
 
+.content-footer {
+  flex-shrink: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .loader {
   margin-top: 16px;
 }
@@ -85,7 +92,23 @@ footer {
       padding-top: 0;
     }
 
-    .close-btn {
+    .close-btn-wrapper {
+      position: static;
+    }
+  }
+}
+
+@media (max-height: $mobile-height) {
+  header {
+    padding-top: 4px;
+    margin-bottom: 6px;
+
+    .sight-title {
+      padding-top: 0;
+      font-size: 18px;
+    }
+
+    .close-btn-wrapper {
       position: static;
     }
   }

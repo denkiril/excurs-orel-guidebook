@@ -3,6 +3,12 @@
     <exogb-picture [image]="topImage"></exogb-picture>
   </div>
   <p class="image-caption">{{ topImage.caption || topImage.title }}</p>
+  <p class="image-link">
+    <a [href]="topImage.full" target="_blank" rel="noopener noreferrer">
+      Открыть изображние
+      <mat-icon svgIcon="open_in_new"></mat-icon>
+    </a>
+  </p>
 </div>
 
 <div *ngIf="images.length > 1" class="images-block">

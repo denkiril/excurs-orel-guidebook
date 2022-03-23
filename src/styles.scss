@@ -172,6 +172,17 @@ body {
   }
 }
 
+@media (max-height: $mobile-height) {
+  .gb-header-container {
+    left: auto;
+    right: 5px;
+
+    .gb-header-title {
+      opacity: 0.6;
+    }
+  }
+}
+
 .untouchable {
   pointer-events: none;
 }

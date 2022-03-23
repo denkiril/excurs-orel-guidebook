@@ -12,6 +12,8 @@
 .main-panel-container {
   height: 100%;
   width: 500px;
+  min-width: 350px;
+  max-width: 50%;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -22,7 +24,8 @@
 .second-panel-container {
   height: 100%;
   width: 450px;
-  max-width: 100%;
+  min-width: 350px;
+  max-width: 50%;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -50,6 +53,7 @@
 @media (max-width: $mobile-width) {
   .main-panel-container {
     width: 100%;
+    max-width: 100%;
     height: calc(100vh - 64px);
     top: calc(100vh - 128px);
     // top: auto;
@@ -58,5 +62,10 @@
     // transform: translateY(0);
     // transform: translateY(calc(100% - 80px));
     // transform: translateY(calc(80px - 100%));
+  }
+
+  .second-panel-container {
+    width: 100%;
+    max-width: 100%;
   }
 }
