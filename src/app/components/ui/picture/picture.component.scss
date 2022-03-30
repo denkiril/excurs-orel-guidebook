@@ -1,5 +1,27 @@
-img {
+:host {
   display: block;
-  max-width: 100%;
-  height: auto;
+  position: relative;
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .loader-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: background-color 250ms linear;
+
+    &.loading {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
 }

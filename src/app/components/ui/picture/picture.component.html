@@ -7,5 +7,12 @@
     [src]="src"
     [alt]="image.alt"
     [title]="image.title"
+    (load)="onImgLoad()"
   />
 </picture>
+
+<div
+  *ngIf="showLoader"
+  class="loader-container"
+  [class.loading]="isLoading"
+></div>

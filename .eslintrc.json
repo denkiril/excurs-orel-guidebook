@@ -55,7 +55,7 @@
           }
         ],
         "@typescript-eslint/consistent-type-imports": "off",
-        "no-console": "off"
+        "no-console": "warn"
         // "no-trailing-spaces": "error",
         // "space-in-brackets": ["error", "never"],
         // "no-unused-vars": "error"

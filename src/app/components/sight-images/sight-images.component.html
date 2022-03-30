@@ -1,6 +1,6 @@
 <div *ngIf="topImage" class="top-block">
   <div class="top-image-block">
-    <exogb-picture [image]="topImage"></exogb-picture>
+    <exogb-picture [image]="topImage" [showLoader]="true"></exogb-picture>
   </div>
   <p class="image-caption">{{ topImage.caption || topImage.title }}</p>
   <p class="image-link">

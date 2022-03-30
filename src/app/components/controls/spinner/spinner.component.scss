@@ -1,4 +1,4 @@
-.spinner-container {
+:host {
   position: absolute;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@
   justify-content: center;
   // background-color: transparent;
   // transition: background-color 0.2s linear;
-  z-index: 9999;
+  z-index: 10;
 
   // &.spinner_visible {
   //   background-color: rgba(255, 255, 255, 0.4);
@@ -26,25 +26,25 @@
       animation: dash 1.5s ease-in-out infinite;
     }
   }
+}
 
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
-    }
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
   }
+}
 
-  @keyframes dash {
-    0% {
-      stroke-dasharray: 1, 150;
-      stroke-dashoffset: 0;
-    }
-    50% {
-      stroke-dasharray: 90, 150;
-      stroke-dashoffset: -35;
-    }
-    100% {
-      stroke-dasharray: 90, 150;
-      stroke-dashoffset: -124;
-    }
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
   }
 }

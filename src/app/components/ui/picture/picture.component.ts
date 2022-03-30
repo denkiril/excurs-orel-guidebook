@@ -4,6 +4,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 
@@ -15,6 +16,7 @@ import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 export class PictureComponent implements OnChanges, OnInit {
   @Input() image!: ImageItem;
   @Input() targetWidth = 600;
+  @Input() showLoader = false;
 
   srcset = '';
   srcsetWebp = '';
@@ -23,6 +25,7 @@ export class PictureComponent implements OnChanges, OnInit {
   height = 512;
   src = '';
   // mimeType = 'image/jpeg';
+  isLoading = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     // console.log('changes:', changes);
@@ -60,6 +63,9 @@ export class PictureComponent implements OnChanges, OnInit {
     // if (sizesItemWithType) this.mimeType = sizesItemWithType['mime-type'];
 
     this.findTargetImage(sizes, baseUrl);
+
+    this.isLoading = true;
+    markDirty(this);
   }
 
   private findTargetImage(sizes: ImageSizeItem[], baseUrl: string): void {
@@ -78,5 +84,10 @@ export class PictureComponent implements OnChanges, OnInit {
       this.height = target.height;
       this.src = `${baseUrl}${target.file}`;
     }
+  }
+
+  onImgLoad(): void {
+    this.isLoading = false;
+    markDirty(this);
   }
 }
