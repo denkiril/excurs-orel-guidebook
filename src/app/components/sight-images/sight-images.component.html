@@ -2,7 +2,23 @@
   <div class="top-image-block">
     <exogb-picture [image]="topImage" [showLoader]="true"></exogb-picture>
   </div>
-  <p class="image-caption">{{ topImage.caption || topImage.title }}</p>
+
+  <p *ngIf="topImage.captionParts?.length" class="image-caption">
+    <ng-container
+      *ngFor="let part of topImage.captionParts"
+      [ngSwitch]="part.type"
+    >
+      <ng-container *ngSwitchCase="'text'">{{ part.content }}</ng-container>
+      <a
+        *ngSwitchCase="'sight'"
+        [routerLink]="[]"
+        [queryParams]="{ sight: part.sightId }"
+        queryParamsHandling="merge"
+        >{{ part.content }}</a
+      >
+    </ng-container>
+  </p>
+
   <p class="image-link">
     <a [href]="topImage.full" target="_blank" rel="noopener noreferrer">
       Открыть изображние

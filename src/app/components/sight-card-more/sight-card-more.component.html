@@ -51,6 +51,7 @@
 
     <exogb-sight-images
       *ngIf="sight.images?.length"
+      [sightId]="sightId"
       [images]="sight.images || []"
     ></exogb-sight-images>
 
