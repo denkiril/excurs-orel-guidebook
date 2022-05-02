@@ -2,7 +2,6 @@ import {
   Component,
   Input,
   OnChanges,
-  SimpleChanges,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ImageItem } from 'src/app/services/sights.service';
@@ -17,6 +16,7 @@ interface ContentPart {
 
 interface ImageItemLocal extends ImageItem {
   captionParts?: ContentPart[];
+  captionText?: string;
 }
 
 @Component({
@@ -30,20 +30,22 @@ export class SightImagesComponent implements OnChanges {
 
   topImage?: ImageItemLocal;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // console.log('changes:', changes);
-    if (changes.sightId) {
-      this.setTopImage(this.images.length ? this.images[0] : undefined);
-    }
+  ngOnChanges(): void {
+    this.setTopImage(this.images.length ? this.images[0] : undefined);
   }
 
   setTopImage(image?: ImageItem): void {
     this.topImage = image;
 
     if (this.topImage) {
-      this.topImage.captionParts = this.convertToParts(
-        this.topImage.caption || this.topImage.title,
-      );
+      const text = this.topImage.caption || this.topImage.title;
+      const captionParts = this.convertToParts(text);
+
+      if (captionParts.length === 1) {
+        this.topImage.captionText = captionParts[0].content;
+      } else if (captionParts.length > 1) {
+        this.topImage.captionParts = captionParts;
+      }
     }
 
     markDirty(this);
@@ -51,6 +53,7 @@ export class SightImagesComponent implements OnChanges {
 
   private convertToParts(value: string): ContentPart[] {
     if (!value) return [];
+    // console.log('value:', value);
 
     const parts: ContentPart[] = [];
     let curIdx = 0;
@@ -60,9 +63,10 @@ export class SightImagesComponent implements OnChanges {
       const idx1 = value.indexOf('[post', curIdx);
       const idx2 = value.indexOf(']', curIdx);
       const hasTag = idx1 !== -1 && idx2 !== -1;
-      lastIdx = hasTag ? idx1 : value.length - 1;
+      lastIdx = hasTag ? idx1 : value.length;
       const content = value.substring(curIdx, lastIdx);
       if (content) parts.push({ type: 'text', content });
+      // console.log('content:', content.replace(/\s/g, '*'));
 
       if (hasTag) {
         lastIdx = idx2 + 1;
@@ -94,6 +98,8 @@ export class SightImagesComponent implements OnChanges {
     // });
 
     // console.log('parts:', parts);
-    return parts;
+    return parts.some((item) => item.type !== 'text')
+      ? parts
+      : [{ type: 'text', content: parts.map((item) => item.content).join('') }];
   }
 }

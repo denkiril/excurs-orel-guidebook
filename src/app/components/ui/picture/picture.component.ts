@@ -28,8 +28,8 @@ export class PictureComponent implements OnChanges, OnInit {
   isLoading = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    // console.log('changes:', changes);
-    if (changes.image?.firstChange === false) {
+    const { firstChange, currentValue, previousValue } = changes.image;
+    if (firstChange === false && currentValue.full !== previousValue.full) {
       this.setImage();
     }
   }
@@ -39,7 +39,6 @@ export class PictureComponent implements OnChanges, OnInit {
   }
 
   private setImage(): void {
-    // console.log('setImage:', this.image);
     const { meta } = this.image;
     const baseUrl = this.image.full.replace(meta.file, '');
 

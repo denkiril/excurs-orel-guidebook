@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
 
@@ -131,6 +131,18 @@ export const OKN_CATEGORIES: { [key in OknCategory]: OknText } = {
   v: { short: '(выявл.)', full: 'Выявленный объект' },
 };
 
+interface SightByLink {
+  slug: string;
+  post_id: number;
+  title: string;
+}
+
+export interface SightLink {
+  link: string;
+  sightId: number;
+  title?: string;
+}
+
 export const FILTER_BLOCKS: FilterBlock[] = [
   {
     name: 'tur',
@@ -248,6 +260,8 @@ export class SightsService {
     items: [],
   };
 
+  private sightLinks: SightLink[] = [];
+
   public fetching$ = new Subject<boolean>();
 
   constructor(private http: HttpClient) {}
@@ -335,5 +349,39 @@ export class SightsService {
 
     console.log('--- filterSights items:', items);
     return { items };
+  }
+
+  public getSightLinks(links: string[]): Observable<SightLink[]> {
+    const addSlash = (str: string): string => {
+      return str[str.length - 1] === '/' ? str : `${str}/`;
+    };
+
+    const gbPrefix = 'guidebook/';
+    const slugs: string[] = [];
+    links.forEach((str) => {
+      const link = str.includes(gbPrefix) ? addSlash(str) : null;
+      if (link && !this.sightLinks.some((item) => item.link === link)) {
+        slugs.push(link.replace(gbPrefix, '').replace(/\//g, ''));
+      }
+    });
+
+    return slugs.length
+      ? this.http
+          .get<SightByLink[]>('sight-links', {
+            params: { slugs: slugs.join(',') },
+          })
+          .pipe(
+            tap((sights) => {
+              const sightLinks: SightLink[] = sights.map((item) => ({
+                link: `/${gbPrefix}${item.slug}/`,
+                sightId: item.post_id,
+                title: item.title,
+              }));
+
+              this.sightLinks = this.sightLinks.concat(sightLinks);
+            }),
+            map(() => this.sightLinks),
+          )
+      : of(this.sightLinks);
   }
 }

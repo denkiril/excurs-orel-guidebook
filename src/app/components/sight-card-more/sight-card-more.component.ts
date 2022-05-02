@@ -7,6 +7,7 @@ import {
   Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -40,9 +41,12 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   showServerError = false;
   fetching = false;
   sightId?: number;
-  introHTML = '';
+  introHTML?: SafeHtml;
 
-  constructor(private sightsService: SightsService) {}
+  constructor(
+    private sightsService: SightsService,
+    private sanitizer: DomSanitizer,
+  ) {}
 
   ngOnChanges(): void {
     this.sightId =
@@ -80,7 +84,9 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     }
 
     if (this.sight.intro) {
-      this.introHTML = this.convertIntroHTML(this.sight.intro);
+      this.introHTML = this.sanitizer.bypassSecurityTrustHtml(
+        this.convertIntroHTML(this.sight.intro),
+      );
     }
 
     markDirty(this);
@@ -115,11 +121,15 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     const re = /<a[^>]*>([^<]+)<\/a>/gi;
     const aTags = html.match(re);
     aTags?.forEach((tag) => {
-      console.log('tag:', tag);
-      const hrefValue = tag.match(/href=["'](.*?)["']/);
-      if (!hrefValue || (hrefValue && hrefValue[1][0] === '/')) {
-        const content = tag.replace(re, '$1');
-        html = html.replace(tag, content);
+      // console.log('tag:', tag);
+      const aValue = tag.match(/href=["'](.*?)["']/);
+      // console.log('aValue:', aValue);
+      if (!aValue || (aValue && aValue[1][0] === '/')) {
+        const aContent = tag.replace(re, '$1');
+        const newTag = aValue
+          ? `<span data-link="${aValue[1]}">${aContent}</span>`
+          : aContent;
+        html = html.replace(tag, newTag);
       }
     });
 

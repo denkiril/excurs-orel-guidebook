@@ -47,15 +47,22 @@
       </p>
     </div>
 
-    <div *ngIf="introHTML" class="sight-intro" [innerHTML]="introHTML"></div>
+    <ng-container *ngIf="!fetching">
+      <div
+        *ngIf="introHTML"
+        exogbSightLinks
+        class="sight-intro"
+        [innerHTML]="introHTML"
+      ></div>
 
-    <exogb-sight-images
-      *ngIf="sight.images?.length"
-      [sightId]="sightId"
-      [images]="sight.images || []"
-    ></exogb-sight-images>
+      <exogb-sight-images
+        *ngIf="sight.images?.length"
+        [sightId]="sightId"
+        [images]="sight.images || []"
+      ></exogb-sight-images>
+    </ng-container>
 
-    <div class="content-footer">
+    <div *ngIf="!fetching || showServerError" class="content-footer">
       <a
         *ngIf="sight && sight.permalink"
         [href]="sight.permalink"

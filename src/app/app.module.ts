@@ -24,6 +24,7 @@ import { LoaderComponent } from './components/controls/loader/loader.component';
 import { SecondPanelComponent } from './components/second-panel/second-panel.component';
 import { PictureComponent } from './components/ui/picture/picture.component';
 import { SightImagesComponent } from './components/sight-images/sight-images.component';
+import { SightLinksDirective } from './directives/sight-links.directive';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { SightImagesComponent } from './components/sight-images/sight-images.com
     SecondPanelComponent,
     PictureComponent,
     SightImagesComponent,
+    SightLinksDirective,
   ],
   imports: [
     BrowserModule,
