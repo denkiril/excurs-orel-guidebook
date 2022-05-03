@@ -136,7 +136,7 @@ body {
   padding-right: 56px;
   z-index: 100;
 
-  .gb-header-logo {
+  .header-logo-container {
     height: 100%;
     width: 56px;
     flex-shrink: 0;
@@ -147,15 +147,24 @@ body {
     }
   }
 
-  .gb-header-title {
+  .header-title-container {
     flex-grow: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
 
     h1 {
+      width: 100%;
       font-size: 24px;
+      line-height: normal;
       font-weight: normal;
       text-align: center;
     }
   }
+}
+
+#header-title-container {
+  margin-left: 56px;
 }
 
 @media (max-width: $mobile-width) {
@@ -166,7 +175,7 @@ body {
     border-radius: 0;
     border-width: 0 0 1px 0;
 
-    .gb-header-title {
+    .header-title-container {
       opacity: 0.6;
     }
   }
@@ -177,7 +186,7 @@ body {
     left: auto;
     right: 5px;
 
-    .gb-header-title {
+    .header-title-container {
       opacity: 0.6;
     }
   }
@@ -283,6 +292,7 @@ input[type='date'] {
 //------------- Buttons Styles --------------//
 
 button {
+  font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: center;

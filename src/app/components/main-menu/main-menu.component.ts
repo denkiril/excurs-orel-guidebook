@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   OnDestroy,
@@ -14,6 +15,7 @@ import {
 } from '@angular/animations';
 import { Subscription } from 'rxjs';
 
+import { DocumentService } from 'src/app/services/document.service';
 import { UtilitiesService } from 'src/app/services/utilities.service';
 
 interface MenuItem {
@@ -53,7 +55,7 @@ enum MENU_BLOCK_NAME {
     ]),
   ],
 })
-export class MainMenuComponent implements OnInit, OnDestroy {
+export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private set sub(s: Subscription) {
     this.subscriptions.push(s);
@@ -90,14 +92,22 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private utilitiesService: UtilitiesService,
     private elRef: ElementRef,
+    private documentService: DocumentService,
+    private utilitiesService: UtilitiesService,
   ) {}
 
   ngOnInit(): void {
     this.sub = this.utilitiesService.documentClickedTarget.subscribe((target) =>
       this.onDocumentClick(target),
     );
+  }
+
+  ngAfterViewInit(): void {
+    const h1El = this.documentService.documentRef.getElementById(
+      'header-title-container',
+    );
+    if (h1El) h1El.remove();
   }
 
   ngOnDestroy(): void {

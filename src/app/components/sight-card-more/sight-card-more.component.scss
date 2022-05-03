@@ -1,6 +1,7 @@
 @import 'constants';
 
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -12,48 +13,43 @@
   cursor: default;
 }
 
-header {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  position: relative;
+.scrolled-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-y: scroll;
+}
 
-  .sight-title {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: normal;
-    padding-top: 70px;
-  }
+.scrolled-content {
+  padding-top: 70px;
+  padding-right: 8px;
+}
 
-  .close-btn-wrapper {
-    position: absolute;
-    top: 16px;
-    right: 0;
-    width: 48px;
+.close-btn-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 44px;
+  left: 0;
+  top: 0;
+  background-color: var(--light-02);
 
-    button {
-      width: 28px;
-      height: 28px;
-      margin: 0 auto;
-      border-color: transparent;
-      color: var(--label-secondary);
+  button {
+    width: 28px;
+    height: 28px;
+    margin: 16px 18px 0 auto;
+    border-color: transparent;
+    color: var(--label-secondary);
 
-      &:hover {
-        color: var(--label-primary);
-      }
+    &:hover {
+      color: var(--label-primary);
     }
   }
 }
 
-.scrolled-container {
-  flex-grow: 1;
-  // min-height: 400px;
-  overflow-y: auto;
-
-  .scrolled-content {
-    padding-right: 8px;
-  }
+.sight-title {
+  width: calc(100% - 40px);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: normal;
 }
 
 .sight-description {
@@ -67,7 +63,6 @@ header {
 .sight-intro {
   padding: 12px 0 4px;
   border-top: 1px solid;
-  // border-bottom: 1px solid;
   border-color: var(--label-quarternary);
   margin-bottom: 16px;
 }
@@ -77,7 +72,6 @@ header {
   height: 50px;
   display: flex;
   align-items: center;
-  // justify-content: flex-end;
 }
 
 .loader {
@@ -85,15 +79,20 @@ header {
 }
 
 @media (max-width: $mobile-width) {
-  header {
-    padding-top: 8px;
+  .scrolled-content {
+    position: relative;
+    padding-top: 60px;
+  }
 
-    .sight-title {
-      padding-top: 0;
-    }
+  .close-btn-wrapper {
+    width: 40px;
+    height: 28px;
+    left: auto;
+    top: 60px;
+    right: 0;
 
-    .close-btn-wrapper {
-      position: static;
+    button {
+      margin: 0 auto;
     }
   }
 }

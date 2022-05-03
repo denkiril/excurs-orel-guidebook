@@ -1,11 +1,17 @@
 <button class="menu-button" (click)="onMenuButtonClick()">
-  <div class="indicator">
+  <span class="header-logo-container">
+    <img src="assets/images/Logo_100.png" alt="logo" />
+  </span>
+  <span class="header-title-container">
+    <h1>Путеводитель</h1>
+  </span>
+  <span class="indicator">
     <mat-icon
       [svgIcon]="opened ? 'expand_less' : 'expand_more'"
       aria-hidden="false"
       aria-label="expand icon"
     ></mat-icon>
-  </div>
+  </span>
 </button>
 
 <div class="menu-panel-container">

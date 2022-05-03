@@ -1,15 +1,14 @@
-<header>
-  <h2 class="sight-title">{{ sight?.title || '' }}</h2>
-  <div class="close-btn-wrapper">
-    <button type="button" title="Закрыть панель" (click)="close()">
-      <mat-icon svgIcon="close"></mat-icon>
-    </button>
-  </div>
-</header>
-
 <div class="scrolled-container scroller">
-  <div *ngIf="sight" class="scrolled-content">
-    <div class="sight-description">
+  <div class="scrolled-content">
+    <div class="close-btn-wrapper">
+      <button type="button" title="Закрыть панель" (click)="close()">
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </div>
+
+    <h2 class="sight-title">{{ sight?.title || '' }}</h2>
+
+    <div *ngIf="!!sight" class="sight-description">
       <p *ngIf="typeText">
         <span class="label">Тип объекта:</span> {{ typeText }}
       </p>
@@ -47,7 +46,7 @@
       </p>
     </div>
 
-    <ng-container *ngIf="!fetching">
+    <ng-container *ngIf="!!sight && !fetching">
       <div
         *ngIf="introHTML"
         exogbSightLinks
@@ -73,13 +72,13 @@
         <mat-icon svgIcon="open_in_new"></mat-icon>
       </a>
     </div>
-  </div>
 
-  <div *ngIf="fetching || showServerError" class="loader">
-    <exogb-loader
-      [showSpinner]="fetching"
-      [showServerError]="!fetching && showServerError"
-      (clickRefresh)="getSight()"
-    ></exogb-loader>
+    <div *ngIf="fetching || showServerError" class="loader">
+      <exogb-loader
+        [showSpinner]="fetching"
+        [showServerError]="!fetching && showServerError"
+        (clickRefresh)="getSight()"
+      ></exogb-loader>
+    </div>
   </div>
 </div>
