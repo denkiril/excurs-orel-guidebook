@@ -52,7 +52,10 @@ export class SightLinksDirective implements AfterViewInit {
   @HostListener('click', ['$event'])
   onClick($event: PointerEvent): void {
     const target = $event.target as HTMLElement | null;
+
     if (target?.dataset?.sightid) {
+      $event.preventDefault();
+
       this.router.navigate([], {
         queryParams: { sight: target.dataset.sightid },
         queryParamsHandling: 'merge',

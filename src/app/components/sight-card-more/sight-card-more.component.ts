@@ -85,8 +85,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
 
     if (this.sight.intro) {
       this.introHTML = this.sanitizer.bypassSecurityTrustHtml(
-        // this.convertIntroHTML(this.sight.intro),
-        this.sight.intro,
+        this.convertIntroHTML(this.sight.intro),
       );
     }
 
