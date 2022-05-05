@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('mainPanel', { static: true, read: ElementRef })
   mainPanel!: ElementRef;
 
-  destroy$ = new Subject();
+  private destroy$ = new Subject();
   public isMobile = false;
   public translateY = 0;
   private translateYStart = 0;
@@ -249,8 +249,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public animationDone(event: AnimationEvent): void {
     // the toState, fromState and totalTime data is accessible from the event variable
-    console.log('animationDone', this.showSightForMore, this.sightForMore);
-    console.log('animationDone', event);
+    // console.log('animationDone', this.showSightForMore, this.sightForMore);
+    // console.log('animationDone', event);
     // if (this.sightForMore && !this.showSightForMore) {
     if (this.sightForMore && event.toState === 'closed') {
       this.sightForMore = undefined;

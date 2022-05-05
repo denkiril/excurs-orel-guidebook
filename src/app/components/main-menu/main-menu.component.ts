@@ -13,10 +13,12 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { DocumentService } from 'src/app/services/document.service';
 import { UtilitiesService } from 'src/app/services/utilities.service';
+import { SettingsService } from 'src/app/services/settings.service';
 
 interface MenuItem {
   title: string;
@@ -56,12 +58,10 @@ enum MENU_BLOCK_NAME {
   ],
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
-  private subscriptions: Subscription[] = [];
-  private set sub(s: Subscription) {
-    this.subscriptions.push(s);
-  }
+  private destroy$ = new Subject();
 
   public opened = false;
+  public transparent = false;
 
   MENU_BLOCK_NAME = MENU_BLOCK_NAME;
   MENU_BLOCKS: { [key in MENU_BLOCK_NAME]: MenuBlock } = {
@@ -95,12 +95,20 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private elRef: ElementRef,
     private documentService: DocumentService,
     private utilitiesService: UtilitiesService,
+    private settingsService: SettingsService,
   ) {}
 
   ngOnInit(): void {
-    this.sub = this.utilitiesService.documentClickedTarget.subscribe((target) =>
-      this.onDocumentClick(target),
-    );
+    this.utilitiesService.documentClickedTarget
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((target) => this.onDocumentClick(target));
+
+    this.settingsService.sightForMore$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.transparent = !!data;
+        markDirty(this);
+      });
   }
 
   ngAfterViewInit(): void {
@@ -111,7 +119,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private toggleOpened(): void {

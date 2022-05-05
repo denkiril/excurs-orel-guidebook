@@ -1,4 +1,8 @@
-<button class="menu-button" (click)="onMenuButtonClick()">
+<button
+  class="menu-button"
+  [class.transparent]="transparent && !opened"
+  (click)="onMenuButtonClick()"
+>
   <span class="header-logo-container">
     <img src="assets/images/Logo_100.png" alt="logo" />
   </span>

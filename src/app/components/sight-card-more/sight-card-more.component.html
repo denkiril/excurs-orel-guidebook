@@ -54,16 +54,6 @@
         [innerHTML]="introHTML"
       ></div>
 
-      <p class="test-block">
-        Тестовая ссылка:
-        <a
-          [routerLink]="[]"
-          [queryParams]="{ sight: 805 }"
-          queryParamsHandling="merge"
-          >Богоявленский собор</a
-        >
-      </p>
-
       <exogb-sight-images
         *ngIf="sight.images?.length"
         [sightId]="sightId"

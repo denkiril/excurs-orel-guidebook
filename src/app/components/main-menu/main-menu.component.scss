@@ -22,11 +22,27 @@
   @media (max-width: $mobile-width) {
     border-radius: 0;
     background-color: rgba(255, 255, 255, 0.5);
+
+    &.transparent {
+      .header-logo-container,
+      .header-title-container {
+        opacity: 0;
+      }
+      .indicator {
+        opacity: 0.3;
+      }
+    }
   }
 
   @media (max-height: $mobile-height) {
     border-radius: 0;
     background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .header-logo-container,
+  .header-title-container,
+  .indicator {
+    transition: all 400ms ease-in-out;
   }
 
   .indicator {
