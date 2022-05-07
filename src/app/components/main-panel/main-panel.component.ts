@@ -126,7 +126,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
           group.name,
           new FormGroup(
             {},
-            group.name === 'category' || group.name === 'type'
+            group.name === 'okn_category' || group.name === 'okn_type'
               ? CustomValidators.checkedFormGroup
               : Validators.nullValidator,
           ),

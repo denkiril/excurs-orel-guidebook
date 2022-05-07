@@ -26,7 +26,6 @@ export class SettingsService {
 
   private skipParse = false;
 
-  // groupNames = { fb2: ['category', 'type'], }
   groupNames: Record<string, string[]> = Object.fromEntries(
     FILTER_BLOCKS.map((block) => [
       block.name,

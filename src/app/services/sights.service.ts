@@ -42,8 +42,8 @@ export interface SightData {
   thumb_url?: string;
   permalink: string;
   location?: string;
-  category?: OknCategory[];
-  type?: OknType[];
+  okn_category?: OknCategory[];
+  okn_type?: OknType[];
   sets?: SightSet[];
   okn_id?: string;
 }
@@ -58,7 +58,8 @@ export type SightDataExt = SightData &
     site: string;
     // thumb_image?: ImageItem;
     images: ImageItem[];
-    intro: string;
+    gba_intro: string;
+    gba_content: string;
   }>;
 
 export interface SightsData {
@@ -176,7 +177,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
     showed: false,
     groups: [
       {
-        name: 'category',
+        name: 'okn_category',
         title: 'Категория охраны',
         shortTitle: 'Категория',
         controls: [
@@ -207,7 +208,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
         ],
       },
       {
-        name: 'type',
+        name: 'okn_type',
         title: 'Тип',
         controls: [
           {
@@ -329,7 +330,9 @@ export class SightsService {
             .filter((item) =>
               groupNames.every(
                 (name) =>
-                  (name === 'category' || name === 'type' || name === 'sets') &&
+                  (name === 'okn_category' ||
+                    name === 'okn_type' ||
+                    name === 'sets') &&
                   item[name]?.some((value: string) => groups[name][value]),
               ),
             )

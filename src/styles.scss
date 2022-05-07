@@ -183,12 +183,14 @@ body {
 
 @media (max-height: $mobile-height) {
   .gb-header-container {
-    left: auto;
-    right: 5px;
+    display: none;
+    // visibility: hidden;
+    // left: auto;
+    // right: 5px;
 
-    .header-title-container {
-      opacity: 0.6;
-    }
+    // .header-title-container {
+    //   opacity: 0.6;
+    // }
   }
 }
 
@@ -456,4 +458,17 @@ a,
 .data-link {
   color: var(--control-secondary);
   cursor: pointer;
+}
+
+// Content
+
+.sight-content {
+  p {
+    margin-bottom: 8px;
+  }
+
+  ul {
+    margin-left: 2em;
+    margin-bottom: 12px;
+  }
 }

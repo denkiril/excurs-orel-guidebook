@@ -31,6 +31,7 @@
   left: 0;
   top: 0;
   background-color: var(--light-02);
+  z-index: 10;
 
   button {
     width: 28px;
@@ -67,6 +68,10 @@
   margin-bottom: 16px;
 }
 
+.sight-images {
+  margin-bottom: 16px;
+}
+
 .content-footer {
   flex-shrink: 0;
   height: 50px;
@@ -98,17 +103,24 @@
 }
 
 @media (max-height: $mobile-height) {
-  header {
-    padding-top: 4px;
-    margin-bottom: 6px;
+  .scrolled-content {
+    position: relative;
+    padding-top: 12px;
+  }
 
-    .sight-title {
-      padding-top: 0;
-      font-size: 18px;
-    }
+  .close-btn-wrapper {
+    width: 39px;
+    height: 28px;
+    left: auto;
+    top: 12px;
+    right: 0;
 
-    .close-btn-wrapper {
-      position: static;
+    button {
+      margin: 0 auto;
     }
+  }
+
+  .sight-title {
+    font-size: 18px;
   }
 }

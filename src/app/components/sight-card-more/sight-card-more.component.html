@@ -50,15 +50,24 @@
       <div
         *ngIf="introHTML"
         exogbSightLinks
-        class="sight-intro"
+        class="sight-content sight-intro"
         [innerHTML]="introHTML"
       ></div>
 
-      <exogb-sight-images
-        *ngIf="sight.images?.length"
-        [sightId]="sightId"
-        [images]="sight.images || []"
-      ></exogb-sight-images>
+      <div class="sight-images">
+        <exogb-sight-images
+          *ngIf="sight.images?.length"
+          [sightId]="sightId"
+          [images]="sight.images || []"
+        ></exogb-sight-images>
+      </div>
+
+      <div
+        *ngIf="articleHTML"
+        exogbSightLinks
+        class="sight-content"
+        [innerHTML]="articleHTML"
+      ></div>
     </ng-container>
 
     <div *ngIf="!fetching || showServerError" class="content-footer">

@@ -42,6 +42,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   fetching = false;
   sightId?: number;
   introHTML?: SafeHtml;
+  articleHTML?: SafeHtml;
 
   constructor(
     private sightsService: SightsService,
@@ -72,22 +73,31 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
 
     if (this.isMuseum) {
       this.typeText = 'Государственный музей';
+      this.categoryText = '';
     } else {
-      this.typeText = this.sight.type ? OKN_TYPES[this.sight.type[0]].full : '';
-      this.categoryText = this.sight.category
-        ? OKN_CATEGORIES[this.sight.category[0]].full
+      this.typeText = this.sight.okn_type
+        ? OKN_TYPES[this.sight.okn_type[0]].full
+        : '';
+      this.categoryText = this.sight.okn_category
+        ? OKN_CATEGORIES[this.sight.okn_category[0]].full
         : '';
     }
 
-    if (this.sight.district) {
-      this.districtText = this.defineDistrictText(this.sight.district);
-    }
+    this.districtText = this.sight.district
+      ? this.defineDistrictText(this.sight.district)
+      : '';
 
-    if (this.sight.intro) {
-      this.introHTML = this.sanitizer.bypassSecurityTrustHtml(
-        this.convertIntroHTML(this.sight.intro),
-      );
-    }
+    this.introHTML = this.sight.gba_intro
+      ? this.sanitizer.bypassSecurityTrustHtml(
+          this.convertIntroHTML(this.sight.gba_intro),
+        )
+      : undefined;
+
+    this.articleHTML = this.sight.gba_content
+      ? this.sanitizer.bypassSecurityTrustHtml(
+          this.convertIntroHTML(this.sight.gba_content),
+        )
+      : undefined;
 
     markDirty(this);
   }

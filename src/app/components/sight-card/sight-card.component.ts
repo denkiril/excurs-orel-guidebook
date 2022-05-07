@@ -36,11 +36,11 @@ export class SightCardComponent implements OnInit {
   }
 
   private getOknText(sight: SightData): OknText {
-    const typeText: OknText | undefined = sight.type
-      ? OKN_TYPES[sight.type[0]]
+    const typeText: OknText | undefined = sight.okn_type
+      ? OKN_TYPES[sight.okn_type[0]]
       : undefined;
-    const categoryText: OknText | undefined = sight.category
-      ? OKN_CATEGORIES[sight.category[0]]
+    const categoryText: OknText | undefined = sight.okn_category
+      ? OKN_CATEGORIES[sight.okn_category[0]]
       : undefined;
 
     let short = typeText?.short || '';
