@@ -20,7 +20,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
-import { UtilitiesService } from './services/utilities.service';
+// import { UtilitiesService } from './services/utilities.service';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
 import { SightForMoreData } from './services/sights.service';
@@ -76,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private windowService: WindowService,
     private documentService: DocumentService,
-    private utilitiesService: UtilitiesService,
+    // private utilitiesService: UtilitiesService,
     private settingsService: SettingsService,
   ) {}
 
@@ -117,14 +117,14 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkExpandPanelAbility(mediaSize);
       });
 
-    this.documentService.onClick$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        console.log('AppComponent document click');
-        this.utilitiesService.documentClickedTarget.next(
-          event.target as HTMLElement,
-        );
-      });
+    // this.documentService.onClick$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((event) => {
+    //     console.log('AppComponent document click');
+    //     this.utilitiesService.documentClickedTarget.next(
+    //       event.target as HTMLElement,
+    //     );
+    //   });
 
     this.documentService.onTouchmove$
       .pipe(takeUntil(this.destroy$))

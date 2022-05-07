@@ -50,9 +50,7 @@ export class DocumentService {
   public onScroll$: Observable<Event> = fromEvent(
     this.windowService.windowRef,
     'scroll',
-    {
-      capture: true,
-    },
+    { capture: true },
   ).pipe(debounceTime(20), share());
 
   public onClick$: Observable<Event> = fromEvent(this.documentRef, 'click');

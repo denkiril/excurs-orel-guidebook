@@ -17,7 +17,6 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { DocumentService } from 'src/app/services/document.service';
-import { UtilitiesService } from 'src/app/services/utilities.service';
 import { SettingsService } from 'src/app/services/settings.service';
 
 interface MenuItem {
@@ -59,9 +58,10 @@ enum MENU_BLOCK_NAME {
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject();
+  private isSightForMore = false;
 
-  public opened = false;
-  public transparent = false;
+  opened = false;
+  transparent = false;
 
   MENU_BLOCK_NAME = MENU_BLOCK_NAME;
   MENU_BLOCKS: { [key in MENU_BLOCK_NAME]: MenuBlock } = {
@@ -92,22 +92,29 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   constructor(
-    private elRef: ElementRef,
+    private elRef: ElementRef<HTMLElement>,
     private documentService: DocumentService,
-    private utilitiesService: UtilitiesService,
     private settingsService: SettingsService,
   ) {}
 
   ngOnInit(): void {
-    this.utilitiesService.documentClickedTarget
+    this.documentService.onClick$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((target) => this.onDocumentClick(target));
+      .subscribe((event) => this.onDocumentClick(event));
+
+    this.documentService.onScroll$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.opened = false;
+        this.transparent = this.isSightForMore;
+        markDirty(this);
+      });
 
     this.settingsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.transparent = !!data;
-        markDirty(this);
+        this.isSightForMore = !!data;
+        if (!this.isSightForMore) this.transparent = false;
       });
   }
 
@@ -132,7 +139,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggleOpened();
   }
 
-  private onDocumentClick(target: any): void {
+  private onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+
     if (this.opened && !this.elRef.nativeElement.contains(target)) {
       this.toggleOpened();
     }
