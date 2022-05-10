@@ -1,44 +1,42 @@
 @import 'constants';
 
 :host {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.map-container {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  // background-image: url('../../../assets/images/ya-map.jpg');
-  // background-image: url('~assets/images/ya-map.jpg');
-  background-image: url($assets-path + 'images/ya-map.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: rgb(171, 255, 151, 0.25);
 }
 
-#box10 {
-  position: relative;
-  width: 40vw;
-  height: 40vh;
-  background-color: rgb(170, 243, 219);
-  margin-left: 20px;
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-}
+// #box10 {
+//   position: relative;
+//   width: 40vw;
+//   height: 40vh;
+//   background-color: rgb(170, 243, 219);
+//   margin-left: 20px;
+//   padding-top: env(safe-area-inset-top);
+//   padding-left: env(safe-area-inset-left);
+// }
 
-.box1 {
-  width: 80px;
-  height: 80px;
-  background-color: rgb(210, 138, 243);
-  margin-bottom: 20px;
-}
+// .box1 {
+//   width: 80px;
+//   height: 80px;
+//   background-color: rgb(210, 138, 243);
+//   margin-bottom: 20px;
+// }
 
-.box2 {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: env(safe-area-inset-bottom);
-  background-color: rgb(79, 30, 212);
-}
+// .box2 {
+//   position: absolute;
+//   left: 0;
+//   bottom: 0;
+//   width: 100%;
+//   height: env(safe-area-inset-bottom);
+//   background-color: rgb(79, 30, 212);
+// }

@@ -4,7 +4,7 @@
 // $menu-panel-translateY: 550px;
 // $menu-panel-translateY: $menu-panel-container-height - $menu-button-container-height;
 
-.menu-button {
+.menu-button-container {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -15,34 +15,29 @@
   justify-content: space-between;
   background-color: var(--light-01);
   box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.4);
-  border: none;
   border-radius: 5px;
   z-index: 10;
 
-  @media (max-width: $mobile-width) {
-    border-radius: 0;
-    background-color: rgba(255, 255, 255, 0.5);
+  button {
+    border: none;
+    outline: none;
+  }
 
-    &.transparent {
-      .header-logo-container,
-      .header-title-container {
-        opacity: 0;
-      }
+  .header-logo-container {
+    flex-shrink: 0;
+  }
+
+  .menu-button {
+    flex-grow: 1;
+    height: 100%;
+
+    &:hover,
+    &:focus-visible {
+      // color: var(--control-contrast);
       .indicator {
-        opacity: 0.3;
+        opacity: 0.9;
       }
     }
-  }
-
-  @media (max-height: $mobile-height) {
-    border-radius: 0;
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-
-  .header-logo-container,
-  .header-title-container,
-  .indicator {
-    transition: all 400ms ease-in-out;
   }
 
   .indicator {
@@ -57,12 +52,48 @@
     }
   }
 
-  &:hover,
-  &:focus-visible {
-    // color: var(--control-contrast);
-    .indicator {
-      opacity: 0.9;
+  .header-logo-container,
+  .header-title-container,
+  .indicator {
+    transition: all 400ms ease-in-out;
+  }
+
+  @media (max-width: $mobile-width) {
+    border-radius: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &.transparent {
+      .header-logo-container,
+      .header-title-container {
+        opacity: 0;
+      }
+      .indicator {
+        opacity: 0.3;
+      }
     }
+
+    &.minimize {
+      border: none;
+      box-shadow: none;
+      background-color: transparent;
+
+      .header-logo-container {
+        img {
+          border-radius: 50%;
+          border: solid 1px var(--grey-01);
+          box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.1);
+          background-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+      .menu-button {
+        display: none;
+      }
+    }
+  }
+
+  @media (max-height: $mobile-height) {
+    border-radius: 0;
+    background-color: rgba(255, 255, 255, 0.5);
   }
 }
 

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
@@ -46,6 +46,7 @@ export interface SightData {
   okn_type?: OknType[];
   sets?: SightSet[];
   okn_id?: string;
+  geolocation?: { lat: string; lng: string };
 }
 
 export type SightDataExt = SightData &
@@ -263,7 +264,8 @@ export class SightsService {
 
   private sightLinks: SightLink[] = [];
 
-  public fetching$ = new Subject<boolean>();
+  fetching$ = new Subject<boolean>();
+  sightsData$ = new ReplaySubject<SightsData>();
 
   constructor(private http: HttpClient) {}
 
@@ -309,6 +311,7 @@ export class SightsService {
     console.log('--- getSights params:', params);
     return this.fetchSights().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
+      tap((filtSightsData) => this.sightsData$.next(filtSightsData)),
     );
   }
 

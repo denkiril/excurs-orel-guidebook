@@ -18,6 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { DocumentService } from 'src/app/services/document.service';
 import { SettingsService } from 'src/app/services/settings.service';
+import { MapService } from 'src/app/services/map.service';
 
 interface MenuItem {
   title: string;
@@ -62,6 +63,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   opened = false;
   transparent = false;
+  minimize = false;
 
   MENU_BLOCK_NAME = MENU_BLOCK_NAME;
   MENU_BLOCKS: { [key in MENU_BLOCK_NAME]: MenuBlock } = {
@@ -95,6 +97,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private elRef: ElementRef<HTMLElement>,
     private documentService: DocumentService,
     private settingsService: SettingsService,
+    private mapService: MapService,
   ) {}
 
   ngOnInit(): void {
@@ -116,6 +119,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isSightForMore = !!data;
         if (!this.isSightForMore) this.transparent = false;
       });
+
+    this.mapService.initialized$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.setMinimize(true));
   }
 
   ngAfterViewInit(): void {
@@ -130,13 +137,13 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  onMenuButtonClick(): void {
+    this.toggleOpened();
+  }
+
   private toggleOpened(): void {
     this.opened = !this.opened;
     markDirty(this);
-  }
-
-  public onMenuButtonClick(): void {
-    this.toggleOpened();
   }
 
   private onDocumentClick(event: Event): void {
@@ -145,5 +152,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.opened && !this.elRef.nativeElement.contains(target)) {
       this.toggleOpened();
     }
+  }
+
+  onLogoButtonClick(): void {
+    this.setMinimize(!this.minimize);
+  }
+
+  private setMinimize(minimize: boolean): void {
+    this.minimize = minimize;
+    this.opened = false;
+    markDirty(this);
   }
 }

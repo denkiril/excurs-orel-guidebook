@@ -71,7 +71,7 @@ import { CustomValidators } from 'src/app/core/custom-validators';
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
   getSights$ = new Subject();
-  destroy$ = new Subject();
+  private destroy$ = new Subject();
 
   public readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 

@@ -1,24 +1,29 @@
-<button
-  class="menu-button"
-  [class.transparent]="transparent && !opened"
-  (click)="onMenuButtonClick()"
+<div
+  class="menu-button-container"
+  [ngClass]="{ transparent: transparent && !opened, minimize: minimize }"
 >
-  <span class="header-logo-container">
+  <button
+    type="button"
+    class="header-logo-container"
+    (click)="onLogoButtonClick()"
+  >
     <img src="assets/images/Logo_100.png" alt="logo" />
-  </span>
-  <span class="header-title-container">
-    <h1>Путеводитель</h1>
-  </span>
-  <span class="indicator">
-    <mat-icon
-      [svgIcon]="opened ? 'expand_less' : 'expand_more'"
-      aria-hidden="false"
-      aria-label="expand icon"
-    ></mat-icon>
-  </span>
-</button>
+  </button>
+  <button type="button" class="menu-button" (click)="onMenuButtonClick()">
+    <span class="header-title-container">
+      <h1>Путеводитель</h1>
+    </span>
+    <span class="indicator">
+      <mat-icon
+        [svgIcon]="opened ? 'expand_less' : 'expand_more'"
+        aria-hidden="false"
+        aria-label="expand icon"
+      ></mat-icon>
+    </span>
+  </button>
+</div>
 
-<div class="menu-panel-container">
+<div class="menu-panel-container" [class.hide]="minimize">
   <div
     class="menu-panel"
     [class.opened]="opened"
