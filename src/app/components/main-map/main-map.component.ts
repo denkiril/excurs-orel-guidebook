@@ -7,7 +7,7 @@ import {
   // ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
 import { SightsService } from 'src/app/services/sights.service';
 
@@ -46,16 +46,15 @@ export class MainMapComponent implements OnInit, OnDestroy {
   }
 
   private initMap(): void {
-    this.sightsService.sightsData$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((sightsData) => {
-        this.mapService
-          .init(this.container.nativeElement, sightsData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            console.log('mapService init!');
-          });
-      });
+    this.sightsService.sightsData$.pipe(first()).subscribe((sightsData) => {
+      console.log('sightsData$', sightsData);
+      this.mapService
+        .init(this.container.nativeElement, sightsData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          console.log('mapService init!');
+        });
+    });
   }
 
   // calcParams(): void {

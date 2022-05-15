@@ -26,6 +26,7 @@ import {
 } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
+import { MapService } from 'src/app/services/map.service';
 
 // TODO:
 // totalCount
@@ -43,6 +44,10 @@ import { CustomValidators } from 'src/app/core/custom-validators';
 // Офлайн-режим
 // Свой набор достопр-тей: избранное, в роуте
 // Sights sorting. Default? Manual?
+
+interface SightDataLocal extends SightData {
+  active?: boolean;
+}
 
 @Component({
   selector: 'exogb-main-panel',
@@ -76,7 +81,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   public readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
   public form!: FormGroup;
-  public sights: SightData[] = [];
+  public sights: SightDataLocal[] = [];
   public sightIdForMore?: number;
   public showServerError = false;
   private limit?: number;
@@ -86,6 +91,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   constructor(
     public sightsService: SightsService,
     private settingsService: SettingsService,
+    private mapService: MapService,
   ) {}
 
   ngOnInit(): void {
@@ -106,6 +112,15 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
 
     this.settingsService.startParseQueryParams();
+
+    this.mapService.activeSights$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((activeSights) => {
+        this.sights.forEach((sight) => {
+          sight.active = activeSights.includes(sight.post_id);
+        });
+        markDirty(this);
+      });
   }
 
   ngOnDestroy(): void {

@@ -9,14 +9,22 @@ import { WindowService } from './window.service';
 const YMAPS_API_URL =
   'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=6ebdbbc2-3779-4216-9d88-129e006559bd';
 
+const baseColor = '#005281'; // 015a8d
+const activeColor = '#bc3134'; // ffd649
+
+// TODO:
+// ymaps search hints
+
 @Injectable({
   providedIn: 'root',
 })
 export class MapService {
   private destroy$ = new Subject();
   private ymaps?: any;
+  private activeSights = new Set<number>();
 
-  initialized$ = new ReplaySubject();
+  initialized$ = new ReplaySubject<void>();
+  activeSights$ = new Subject<number[]>();
 
   constructor(
     private windowService: WindowService,
@@ -81,6 +89,14 @@ export class MapService {
     map.markers = this.makeMarkers(sightsData.items);
     map.markers.forEach((mark: any) => map.geoObjects.add(mark));
 
+    const searchControl = map.controls.get('searchControl');
+    if (searchControl) {
+      searchControl.events.add('submit', (event: any) => {
+        console.log('searchControl request:', event.originalEvent.request);
+        // TODO ymaps search hints
+      });
+    }
+
     this.documentService.getMediaSize$
       .pipe(takeUntil(this.destroy$))
       .subscribe((mediaSize) => {
@@ -97,6 +113,10 @@ export class MapService {
     return map;
   }
 
+  private emitActiveSights(): void {
+    this.activeSights$.next(Array.from(this.activeSights));
+  }
+
   private makeMarkers(items: SightData[]): any[] {
     const markers: any[] = [];
 
@@ -104,27 +124,48 @@ export class MapService {
       if (item.geolocation) {
         const { lat, lng } = item.geolocation;
         const { title } = item;
-        const url = item.permalink;
-        // const clusterImg = thumbUrl ? `<img src="${thumbUrl}" />` : '';
+        // const url = item.permalink;
+        const thumbUrl = item.thumb_url;
+        const content = `<h3>{{ properties.title }}</h3>
+          ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}
+        `;
 
         const marker = new this.ymaps.Placemark(
           [lat, lng],
           {
             postId: item.post_id,
-            url,
+            // url,
             title,
-            thumbUrl: item.thumb_url,
+            thumbUrl,
             clusterCaption: title,
             // balloonContent: `${clusterImg}<p><a href="${url}">Перейти на страницу объекта >></a></p>`,
           },
           {
             // preset: 'islands#darkBlueIcon',
             preset: 'islands#Icon',
-            iconColor: '#005281',
-            // balloonContentLayout: BalloonLayoutClass,
-            // hintContentLayout: HintLayoutClass,
+            iconColor: baseColor,
+            balloonContentLayout: this.ymaps.templateLayoutFactory.createClass(
+              `<div class="ymc-template">${content}</div>`,
+            ),
+            hintContentLayout: this.ymaps.templateLayoutFactory.createClass(
+              `<div class="ymc-template ymc-hint">${content}</div>`,
+            ),
           },
         );
+
+        marker.events.add(['mouseenter', 'balloonopen'], (e: any) => {
+          const mark = e.get('target');
+          mark.options.set('iconColor', activeColor);
+          this.activeSights.add(item.post_id);
+          this.emitActiveSights();
+        });
+
+        marker.events.add(['mouseleave', 'balloonclose'], (e: any) => {
+          const mark = e.get('target');
+          mark.options.set('iconColor', baseColor);
+          this.activeSights.delete(item.post_id);
+          this.emitActiveSights();
+        });
 
         markers.push(marker);
       }

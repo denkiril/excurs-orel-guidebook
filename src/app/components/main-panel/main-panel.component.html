@@ -49,7 +49,7 @@
       <div
         *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"
-        [class.active]="sight.post_id === sightIdForMore"
+        [class.active]="sight.post_id === sightIdForMore || sight.active"
       >
         <exogb-sight-card
           [sight]="sight"
