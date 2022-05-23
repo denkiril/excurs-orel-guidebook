@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
 import { DocumentService, MediaSize } from './document.service';
 import { SightData, SightsData } from './sights.service';
 import { WindowService } from './window.service';
 
-const YMAPS_API_URL =
-  'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=6ebdbbc2-3779-4216-9d88-129e006559bd';
+const { YMAPS_APIKEY } = environment;
+const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
+const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
 
 const baseColor = '#005281'; // 015a8d
 const activeColor = '#bc3134'; // ffd649
