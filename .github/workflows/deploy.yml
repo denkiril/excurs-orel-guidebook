@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+env:
+  API_URL: ${{ secrets.API_URL }}
+  YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
