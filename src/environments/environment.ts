@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  VERSION: '0.0.0',
-  API_URL: '',
+  VERSION: 'develop',
+  API_URL: 'http://excurs-orel/wp-json/api/',
   YMAPS_APIKEY: '',
 };

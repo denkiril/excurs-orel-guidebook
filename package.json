@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "config": "ts-node ./scripts/setenv.ts",
-    "start": "npm run config -- --environment=dev && ng serve --port=4201",
+    "start": "npm run config -- --environment=dev && ng serve --configuration=development --port=4201",
     "build": "ng build",
     "build:prod": "npm run config -- --environment=prod && ng build --configuration=production",
     "test": "ng test",

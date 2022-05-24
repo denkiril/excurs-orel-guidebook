@@ -46,11 +46,19 @@
             "namedChunks": true
           },
           "configurations": {
+            "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment._dev.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "with": "src/environments/environment._prod.ts"
                 }
               ],
               "optimization": true,
@@ -81,6 +89,9 @@
             "browserTarget": "orel-guidebook:build"
           },
           "configurations": {
+            "development": {
+              "browserTarget": "orel-guidebook:build:development"
+            },
             "production": {
               "browserTarget": "orel-guidebook:build:production"
             }
