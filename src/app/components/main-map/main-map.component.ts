@@ -7,9 +7,13 @@ import {
   // ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { first, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+
 import { MapService } from 'src/app/services/map.service';
-import { SightsService } from 'src/app/services/sights.service';
+import { SightsData, SightsService } from 'src/app/services/sights.service';
+
+// TODO
+// Loader for map ?
 
 @Component({
   selector: 'exogb-main-map',
@@ -18,7 +22,9 @@ import { SightsService } from 'src/app/services/sights.service';
 })
 export class MainMapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLElement>;
+
   private destroy$ = new Subject();
+  private isMapInitialized = false;
 
   // winW = 0;
   // winH = 0;
@@ -32,11 +38,14 @@ export class MainMapComponent implements OnInit, OnDestroy {
     private sightsService: SightsService,
   ) {}
 
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method, @typescript-eslint/no-empty-function
   ngOnInit(): void {
-    this.initMap();
-    // this.calcParams();
-    // setTimeout(() => this.calcParams(), 10000);
+    this.sightsService.sightsData$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((sightsData) => {
+        console.log('MAP GOT sightsData$...');
+        if (!this.isMapInitialized) this.initMap(sightsData);
+        else this.updateMap(sightsData);
+      });
   }
 
   ngOnDestroy(): void {
@@ -45,16 +54,18 @@ export class MainMapComponent implements OnInit, OnDestroy {
     this.mapService.destroy();
   }
 
-  private initMap(): void {
-    this.sightsService.sightsData$.pipe(first()).subscribe((sightsData) => {
-      console.log('sightsData$', sightsData);
-      this.mapService
-        .init(this.container.nativeElement, sightsData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          console.log('mapService init!');
-        });
-    });
+  private initMap(sightsData: SightsData): void {
+    this.mapService
+      .init(this.container.nativeElement, sightsData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('mapService init!');
+        this.isMapInitialized = true;
+      });
+  }
+
+  private updateMap(sightsData: SightsData): void {
+    this.mapService.update(sightsData);
   }
 
   // calcParams(): void {

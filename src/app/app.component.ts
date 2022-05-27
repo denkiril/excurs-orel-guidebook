@@ -19,11 +19,9 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-// import { UtilitiesService } from './services/utilities.service';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
-import { SightForMoreData } from './services/sights.service';
-import { SettingsService } from './services/settings.service';
+import { SightForMoreData, SightsService } from './services/sights.service';
 
 const TOP_MARGIN = 80;
 const BOTTOM_MARGIN = 128;
@@ -76,7 +74,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private windowService: WindowService,
     private documentService: DocumentService,
     // private utilitiesService: UtilitiesService,
-    private settingsService: SettingsService,
+    // private settingsService: SettingsService,
+    private sightsService: SightsService,
   ) {}
 
   // @HostListener('window:resize')
@@ -128,7 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (this.expandButtonPressed) this.movePanel(event);
       });
 
-    this.settingsService.sightForMore$
+    this.sightsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if (data) this.sightForMore = data;
@@ -250,7 +249,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // if (this.sightForMore && !this.showSightForMore) {
     if (this.sightForMore && event.toState === 'closed') {
       this.sightForMore = undefined;
-      this.settingsService.setSightForMore();
+      this.sightsService.setSightForMore();
       // markDirty(this);
     }
   }

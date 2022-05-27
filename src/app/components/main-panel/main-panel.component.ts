@@ -26,15 +26,13 @@ import {
 } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
-import { MapService } from 'src/app/services/map.service';
 
 // TODO:
 // totalCount
 // Справка (большой тултип?)
 // Фильтрация по имени (вхождению строки)?
 // Настройки фильтра в queryParams - search +
-// Вывод объектов на карте
-// Loader for map
+// Вывод объектов на карте +
 // Fix openClose transition +-
 // Show images setting
 // Lazy loading images +-
@@ -46,7 +44,7 @@ import { MapService } from 'src/app/services/map.service';
 // Sights sorting. Default? Manual?
 
 interface SightDataLocal extends SightData {
-  active?: boolean;
+  active: boolean;
 }
 
 @Component({
@@ -89,9 +87,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   public sightsFetched = false;
 
   constructor(
-    public sightsService: SightsService,
+    // private mapService: MapService,
+    private sightsService: SightsService,
     private settingsService: SettingsService,
-    private mapService: MapService,
   ) {}
 
   ngOnInit(): void {
@@ -100,11 +98,10 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.settingsService.filterParamsInRoute$
       .pipe(first())
       .subscribe((params) => {
-        console.log('settingsService.filterParamsInRoute', params);
         this.initWithFilterParams(params);
       });
 
-    this.settingsService.sightForMore$
+    this.sightsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.sightIdForMore = data?.sight?.post_id || data?.sightId;
@@ -113,7 +110,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
     this.settingsService.startParseQueryParams();
 
-    this.mapService.activeSights$
+    this.sightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
         this.sights.forEach((sight) => {
@@ -230,6 +227,14 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     }
 
     this.form.patchValue({ search: filterParams.search || '' }, options);
+
+    if (filterParams.sightForMore) {
+      this.sightsService.setSightForMore(
+        undefined,
+        Number(filterParams.sightForMore),
+        false,
+      );
+    }
   }
 
   private processFilterParams(filterParams: FilterParams): void {
@@ -271,7 +276,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           console.log('sightsService data:', data);
-          this.sights = [...data.items];
+          this.sights = data.items.map((item) => ({ ...item, active: false }));
           this.sightsFetching = false;
           this.sightsFetched = true;
           this.showServerError = false;
@@ -299,10 +304,15 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   public setSightForMore(sight?: SightData): void {
-    this.settingsService.setSightForMore(sight);
+    this.sightsService.setSightForMore(sight);
   }
 
   public trackById(_index: number, item: SightData): number {
     return item.post_id;
+  }
+
+  public onCardHover(sight: SightDataLocal, hover = true): void {
+    if (hover) this.sightsService.addActiveSight(sight.post_id);
+    else this.sightsService.deleteActiveSight(sight.post_id);
   }
 }

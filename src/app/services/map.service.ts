@@ -4,8 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
 import { DocumentService, MediaSize } from './document.service';
-import { SightData, SightsData } from './sights.service';
 import { WindowService } from './window.service';
+import { SightData, SightsData, SightsService } from './sights.service';
 
 const { YMAPS_APIKEY } = environment;
 const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
@@ -22,15 +22,22 @@ const activeColor = '#bc3134'; // ffd649
 })
 export class MapService {
   private destroy$ = new Subject();
+  // private activeSights = new Set<number>();
+  private activeSights: number[] = [];
+  private sightsData?: SightsData;
+
   private ymaps?: any;
-  private activeSights = new Set<number>();
+  private map: any;
+  private storage: any;
+  private clusterer: any;
 
   initialized$ = new ReplaySubject<void>();
-  activeSights$ = new Subject<number[]>();
 
   constructor(
     private windowService: WindowService,
     private documentService: DocumentService,
+    // private settingsService: SettingsService,
+    private sightsService: SightsService,
   ) {}
 
   private checkApi(): Promise<void> {
@@ -64,6 +71,7 @@ export class MapService {
           if (this.ymaps) {
             this.ymaps.ready(() => {
               this.initMap(container, sightsData);
+              setTimeout(() => this.initMapSubscriptions(), 500);
               this.initialized$.next();
               subscriber.next();
               subscriber.complete();
@@ -81,17 +89,25 @@ export class MapService {
     this.destroy$.complete();
   }
 
-  private initMap(container: HTMLElement, sightsData: SightsData): any {
-    const map = new this.ymaps.Map(container, {
+  private initMap(container: HTMLElement, sightsData: SightsData): void {
+    this.sightsData = sightsData;
+
+    // Setup map and markers
+    this.map = new this.ymaps.Map(container, {
       center: [52.967631, 36.069584],
       // controls: ['geolocationControl', 'zoomControl'],
       zoom: 12,
     });
 
-    map.markers = this.makeMarkers(sightsData.items);
-    map.markers.forEach((mark: any) => map.geoObjects.add(mark));
+    this.clusterer = new this.ymaps.Clusterer({
+      clusterIconColor: baseColor,
+    });
 
-    const searchControl = map.controls.get('searchControl');
+    this.setMarkers();
+    // this.initMapSubscriptions();
+
+    // Setup map controls
+    const searchControl = this.map.controls.get('searchControl');
     if (searchControl) {
       searchControl.events.add('submit', (event: any) => {
         console.log('searchControl request:', event.originalEvent.request);
@@ -105,18 +121,45 @@ export class MapService {
         console.log('mediaSize', mediaSize);
         if (mediaSize === MediaSize.Mobile) {
           // map.behaviors.disable('scrollZoom');
-          map.controls.remove('zoomControl');
+          this.map.controls.remove('zoomControl');
         } else {
-          map.controls.add('zoomControl');
+          this.map.controls.add('zoomControl');
         }
       });
 
-    console.log('map:', map);
-    return map;
+    console.log('map:', this.map);
   }
 
-  private emitActiveSights(): void {
-    this.activeSights$.next(Array.from(this.activeSights));
+  private setMarkers(update = false): void {
+    const markers = this.makeMarkers(this.sightsData?.items || []);
+
+    this.clusterer.removeAll();
+    this.map.geoObjects.removeAll();
+
+    this.storage = this.ymaps.geoQuery(markers);
+    this.clusterer.add(markers);
+    this.map.geoObjects.add(this.clusterer);
+
+    // center map
+    let needCenter = !update;
+    if (update) {
+      this.storage.each((mark: any) => {
+        const geoObjectState = this.clusterer.getObjectState(mark);
+        if (geoObjectState.isShown === false) needCenter = true;
+      });
+    }
+
+    if (markers.length > 0 && needCenter) {
+      this.map
+        // .setBounds(this.map.geoObjects.getBounds(), { checkZoomRange: true })
+        .setBounds(this.map.geoObjects.getBounds(), { duration: 300 })
+        .then(() => {
+          if (this.map.getZoom() > 16) this.map.setZoom(16);
+        })
+        .catch(() => {
+          // empty
+        });
+    }
   }
 
   private makeMarkers(items: SightData[]): any[] {
@@ -127,6 +170,7 @@ export class MapService {
         const { lat, lng } = item.geolocation;
         const { title } = item;
         // const url = item.permalink;
+        const postId = item.post_id;
         const thumbUrl = item.thumb_url;
         const content = `<h3>{{ properties.title }}</h3>
           ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}
@@ -135,8 +179,7 @@ export class MapService {
         const marker = new this.ymaps.Placemark(
           [lat, lng],
           {
-            postId: item.post_id,
-            // url,
+            postId,
             title,
             thumbUrl,
             clusterCaption: title,
@@ -156,17 +199,24 @@ export class MapService {
         );
 
         marker.events.add(['mouseenter', 'balloonopen'], (e: any) => {
-          const mark = e.get('target');
-          mark.options.set('iconColor', activeColor);
-          this.activeSights.add(item.post_id);
-          this.emitActiveSights();
+          // e.get('target').options.set('iconColor', activeColor);
+          // this.activeSights.add(postId);
+          this.sightsService.addActiveSight(postId);
         });
 
         marker.events.add(['mouseleave', 'balloonclose'], (e: any) => {
-          const mark = e.get('target');
-          mark.options.set('iconColor', baseColor);
-          this.activeSights.delete(item.post_id);
-          this.emitActiveSights();
+          // e.get('target').options.set('iconColor', baseColor);
+          // this.activeSights.delete(postId);
+          this.sightsService.deleteActiveSight(postId);
+        });
+
+        marker.balloon.events.add('click', () => {
+          // const { postId } = e.get('target').properties._data;
+          this.sightsService.setSightForMore(undefined, postId);
+        });
+
+        marker.hint.events.add('click', () => {
+          this.sightsService.setSightForMore(undefined, postId);
         });
 
         markers.push(marker);
@@ -174,5 +224,72 @@ export class MapService {
     });
 
     return markers;
+  }
+
+  private initMapSubscriptions(): void {
+    this.sightsService.activeSights$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((activeSights) => {
+        console.log('$$$ this.activeSights:', this.activeSights);
+        console.log('$$$ activeSights:', activeSights);
+        if (this.arraysNotEquals(this.activeSights, activeSights) === true) {
+          this.colorActiveSights(false);
+          this.activeSights = activeSights;
+          // this.outerActiveSights = activeSights.filter(
+          //   (item) => !this.activeSights.has(item),
+          // );
+          this.colorActiveSights(true);
+        }
+      });
+  }
+
+  private colorActiveSights(active: boolean): void {
+    const color = active ? activeColor : baseColor;
+
+    this.activeSights.forEach((postId) => {
+      this.storage.search(`properties.postId = ${postId}`).each((mark: any) => {
+        const geoObjectState = this.clusterer.getObjectState(mark);
+        if (geoObjectState.isShown) {
+          if (geoObjectState.isClustered) {
+            geoObjectState.cluster.options.set('clusterIconColor', color);
+          } else {
+            mark.options.set('iconColor', color);
+          }
+        }
+      });
+    });
+  }
+
+  update(sightsData: SightsData): void {
+    console.log('mapService update...');
+    if (this.sightsDataHasChanged(sightsData) === true) {
+      console.log('sightsData has changed. LETS ROCK!!');
+      this.sightsData = sightsData;
+      this.setMarkers(true);
+    }
+  }
+
+  private sightsDataHasChanged(sightsData: SightsData): boolean {
+    if (this.sightsData?.items.length !== sightsData.items.length) return true;
+
+    // const compareFn = (a: number, b: number): number => a - b;
+    const ids1 = this.sightsData.items.map((item) => item.post_id); // .sort(compareFn);
+    const ids2 = sightsData.items.map((item) => item.post_id); // .sort(compareFn);
+    // console.log('ids1:', ids1);
+    // console.log('ids2:', ids2);
+
+    return ids1.some((v, i) => v !== ids2[i]);
+  }
+
+  private arraysNotEquals(arr1: number[], arr2: number[]): boolean {
+    if (arr1.length !== arr2.length) return true;
+
+    const compareFn = (a: number, b: number): number => a - b;
+    const sorted1 = arr1.sort(compareFn);
+    const sorted2 = arr2.sort(compareFn);
+    // console.log('sorted1:', sorted1);
+    // console.log('sorted2:', sorted2);
+
+    return sorted1.some((v, i) => v !== sorted2[i]);
   }
 }

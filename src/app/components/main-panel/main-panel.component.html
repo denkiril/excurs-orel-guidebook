@@ -50,6 +50,8 @@
         *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"
         [class.active]="sight.post_id === sightIdForMore || sight.active"
+        (mouseenter)="onCardHover(sight)"
+        (mouseleave)="onCardHover(sight, false)"
       >
         <exogb-sight-card
           [sight]="sight"

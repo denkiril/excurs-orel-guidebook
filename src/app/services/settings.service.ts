@@ -2,29 +2,31 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+
 import {
   FilterBlock,
   FilterParams,
   FILTER_BLOCKS,
-  SightData,
-  SightForMoreData,
-  // SightData,
   SightsFilterParams,
 } from './sights.service';
 
-// TODO
-// browser navigate with skipParse bug
+type FilterQueryParams = Partial<{
+  filter: string;
+  search: string;
+  sight: string;
+}>;
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
+
+// TODO
+// browser navigate with skipParse bug
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  public filterParamsInRoute$ = new Subject<FilterParams>();
-  public sightForMore$ = new Subject<SightForMoreData | undefined>();
-
   private skipParse = false;
+  filterParamsInRoute$ = new Subject<FilterParams>();
 
   groupNames: Record<string, string[]> = Object.fromEntries(
     FILTER_BLOCKS.map((block) => [
@@ -138,12 +140,12 @@ export class SettingsService {
     }
   }
 
-  private parseQueryParams(queryParams: Params): void {
+  private parseQueryParams(queryParams: FilterQueryParams): void {
     console.log('parseQueryParams:', queryParams);
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};
 
-    if (queryParams.filter && typeof queryParams.filter === 'string') {
+    if (queryParams.filter) {
       const blocks = queryParams.filter.split('.');
       blocks.forEach((block) => {
         const [blockName, blockBody] = block.split(':');
@@ -167,11 +169,9 @@ export class SettingsService {
       filterParams.search = queryParams.search;
     }
 
-    this.setSightForMore(
-      undefined,
-      queryParams.sight ? Number(queryParams.sight) : undefined,
-      false,
-    );
+    if (queryParams.sight) {
+      filterParams.sightForMore = queryParams.sight;
+    }
 
     console.log('filterParamsInRoute$.next', filterParams);
     this.filterParamsInRoute$.next(filterParams);
@@ -218,16 +218,7 @@ export class SettingsService {
     return filterParams;
   }
 
-  public setSightForMore(
-    sight?: SightData,
-    sightId?: number,
-    setQP = true,
-  ): void {
-    if (setQP) this.setQueryParam('sight', sight?.post_id || sightId);
-    this.sightForMore$.next(sight || sightId ? { sight, sightId } : undefined);
-  }
-
-  private setQueryParam(key: string, value: any): void {
+  public setQueryParam(key: string, value: any): void {
     console.log('setQueryParam', key, value);
 
     this.skipParse = true;

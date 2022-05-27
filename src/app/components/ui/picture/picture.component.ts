@@ -8,6 +8,9 @@ import {
 } from '@angular/core';
 import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 
+// TODO
+// webp 150x100 иногда нет на проде
+
 @Component({
   selector: 'exogb-picture',
   templateUrl: './picture.component.html',

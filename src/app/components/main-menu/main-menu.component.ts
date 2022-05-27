@@ -17,8 +17,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { DocumentService } from 'src/app/services/document.service';
-import { SettingsService } from 'src/app/services/settings.service';
 import { MapService } from 'src/app/services/map.service';
+import { SightsService } from 'src/app/services/sights.service';
 
 interface MenuItem {
   title: string;
@@ -96,7 +96,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private elRef: ElementRef<HTMLElement>,
     private documentService: DocumentService,
-    private settingsService: SettingsService,
+    private sightsService: SightsService,
     private mapService: MapService,
   ) {}
 
@@ -113,7 +113,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         markDirty(this);
       });
 
-    this.settingsService.sightForMore$
+    this.sightsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.isSightForMore = !!data;

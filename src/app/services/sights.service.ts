@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { SettingsService } from './settings.service';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
 
@@ -83,6 +84,7 @@ export interface GetSightsParams {
 export interface FilterParams {
   sightsFilterParams?: SightsFilterParams;
   search?: string;
+  sightForMore?: string;
 }
 
 export interface SightForMoreData {
@@ -263,11 +265,18 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
+  private activeSights = new Set<number>();
+  private sightForMoreId?: number;
 
   fetching$ = new Subject<boolean>();
   sightsData$ = new ReplaySubject<SightsData>();
+  activeSights$ = new ReplaySubject<number[]>();
+  sightForMore$ = new Subject<SightForMoreData | undefined>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private settingsService: SettingsService,
+  ) {}
 
   /* API methods */
 
@@ -319,7 +328,6 @@ export class SightsService {
     sightsData: SightsData,
     params: GetSightsParams,
   ): SightsData {
-    console.log('filterSights...');
     const sightsFilterParams = params.filterParams.sightsFilterParams || {};
     let items: SightData[] = [];
 
@@ -353,7 +361,6 @@ export class SightsService {
       );
     }
 
-    console.log('--- filterSights items:', items);
     return { items };
   }
 
@@ -389,5 +396,45 @@ export class SightsService {
             map(() => this.sightLinks),
           )
       : of(this.sightLinks);
+  }
+
+  public addActiveSight(sightId: number): void {
+    this.activeSights.add(sightId);
+    this.emitActiveSights();
+  }
+
+  public deleteActiveSight(sightId: number): void {
+    if (sightId !== this.sightForMoreId) {
+      console.log('deleteActiveSight:', sightId);
+      this.activeSights.delete(sightId);
+      this.emitActiveSights();
+    }
+  }
+
+  private emitActiveSights(): void {
+    this.activeSights$.next(Array.from(this.activeSights));
+  }
+
+  public setSightForMore(
+    sight?: SightData,
+    sightId?: number,
+    setQP = true,
+  ): void {
+    const sightForMore = sight || sightId ? { sight, sightId } : undefined;
+    const sightForMoreId = sightForMore
+      ? sightForMore.sight?.post_id || sightForMore.sightId
+      : undefined;
+    console.log('setSightForMore:', sightForMoreId);
+
+    if (this.sightForMoreId) this.activeSights.delete(this.sightForMoreId);
+    if (sightForMoreId) this.activeSights.add(sightForMoreId);
+    if (this.sightForMoreId || sightForMoreId) this.emitActiveSights();
+    this.sightForMoreId = sightForMoreId;
+
+    this.sightForMore$.next(sightForMore);
+
+    if (setQP) {
+      this.settingsService.setQueryParam('sight', this.sightForMoreId);
+    }
   }
 }
