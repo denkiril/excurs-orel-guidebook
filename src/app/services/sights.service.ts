@@ -265,7 +265,7 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
-  private activeSights = new Set<number>();
+  private activeSights: number[] = [];
   private sightForMoreId?: number;
 
   fetching$ = new Subject<boolean>();
@@ -399,16 +399,22 @@ export class SightsService {
   }
 
   public addActiveSight(sightId: number): void {
-    this.activeSights.add(sightId);
+    this.activeSightsAdd(sightId);
     this.emitActiveSights();
   }
 
   public deleteActiveSight(sightId: number): void {
-    if (sightId !== this.sightForMoreId) {
-      console.log('deleteActiveSight:', sightId);
-      this.activeSights.delete(sightId);
-      this.emitActiveSights();
-    }
+    this.activeSightsDelete(sightId);
+    this.emitActiveSights();
+  }
+
+  private activeSightsAdd(sightId: number): void {
+    this.activeSights.push(sightId);
+  }
+
+  private activeSightsDelete(sightId: number): void {
+    const index = this.activeSights.indexOf(sightId);
+    if (index > -1) this.activeSights.splice(index, 1);
   }
 
   private emitActiveSights(): void {
@@ -426,8 +432,8 @@ export class SightsService {
       : undefined;
     console.log('setSightForMore:', sightForMoreId);
 
-    if (this.sightForMoreId) this.activeSights.delete(this.sightForMoreId);
-    if (sightForMoreId) this.activeSights.add(sightForMoreId);
+    if (this.sightForMoreId) this.activeSightsDelete(this.sightForMoreId);
+    if (sightForMoreId) this.activeSightsAdd(sightForMoreId);
     if (this.sightForMoreId || sightForMoreId) this.emitActiveSights();
     this.sightForMoreId = sightForMoreId;
 

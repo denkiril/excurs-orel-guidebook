@@ -59,7 +59,7 @@ enum MENU_BLOCK_NAME {
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject();
-  private isSightForMore = false;
+  // private isSightForMore = false;
 
   opened = false;
   transparent = false;
@@ -105,19 +105,22 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => this.onDocumentClick(event));
 
-    this.documentService.onScroll$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.opened = false;
-        this.transparent = this.isSightForMore;
-        markDirty(this);
-      });
+    // this.documentService.onScroll$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(() => {
+    //     this.opened = false;
+    //     this.transparent = this.isSightForMore;
+    //     markDirty(this);
+    //   });
 
     this.sightsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.isSightForMore = !!data;
-        if (!this.isSightForMore) this.transparent = false;
+        // const isSightForMore = !!data;
+        this.transparent = !!data;
+        this.minimize = true;
+        this.opened = false;
+        markDirty(this);
       });
 
     this.mapService.initialized$

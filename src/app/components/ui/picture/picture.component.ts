@@ -9,7 +9,7 @@ import {
 import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 
 // TODO
-// webp 150x100 иногда нет на проде
+// webp 150x100 иногда нет на проде +
 
 @Component({
   selector: 'exogb-picture',
@@ -57,6 +57,7 @@ export class PictureComponent implements OnChanges, OnInit {
       .map((item) => `${baseUrl}${item.file} ${item.width}w`)
       .join(', ');
     this.srcsetWebp = sizes
+      .filter((item) => item.width !== 150) // webp 150x100 иногда нет на проде
       .map((item) => `${baseUrl}${item.file}.webp ${item.width}w`)
       .join(', ');
     // console.log('sizes:', sizes);

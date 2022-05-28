@@ -24,6 +24,7 @@ export class MapService {
   private destroy$ = new Subject();
   // private activeSights = new Set<number>();
   private activeSights: number[] = [];
+  private mapActiveSights: number[] = [];
   private sightsData?: SightsData;
 
   private ymaps?: any;
@@ -118,19 +119,27 @@ export class MapService {
     this.documentService.getMediaSize$
       .pipe(takeUntil(this.destroy$))
       .subscribe((mediaSize) => {
-        console.log('mediaSize', mediaSize);
-        if (mediaSize === MediaSize.Mobile) {
-          // map.behaviors.disable('scrollZoom');
-          this.map.controls.remove('zoomControl');
-        } else {
-          this.map.controls.add('zoomControl');
-        }
+        // console.log('mediaSize', mediaSize);
+        // const zoomControl = this.map.controls.get('zoomControl');
+        this.map.controls
+          .get('zoomControl')
+          ?.options.set(
+            'size',
+            mediaSize === MediaSize.Mobile ? 'small' : 'large',
+          );
+        // if (mediaSize === MediaSize.Mobile) {
+        //   // map.behaviors.disable('scrollZoom');
+        //   this.map.controls.remove('zoomControl');
+        // } else {
+        //   this.map.controls.add('zoomControl');
+        // }
       });
 
     console.log('map:', this.map);
   }
 
   private setMarkers(update = false): void {
+    this.mapActiveSights = [];
     const markers = this.makeMarkers(this.sightsData?.items || []);
 
     this.clusterer.removeAll();
@@ -198,16 +207,22 @@ export class MapService {
           },
         );
 
-        marker.events.add(['mouseenter', 'balloonopen'], (e: any) => {
+        marker.events.add(['mouseenter', 'balloonopen'], () => {
           // e.get('target').options.set('iconColor', activeColor);
-          // this.activeSights.add(postId);
-          this.sightsService.addActiveSight(postId);
+          const index = this.mapActiveSights.indexOf(postId);
+          if (index === -1) {
+            this.mapActiveSights.push(postId);
+            this.sightsService.addActiveSight(postId);
+          }
         });
 
-        marker.events.add(['mouseleave', 'balloonclose'], (e: any) => {
+        marker.events.add(['mouseleave', 'balloonclose'], () => {
           // e.get('target').options.set('iconColor', baseColor);
-          // this.activeSights.delete(postId);
-          this.sightsService.deleteActiveSight(postId);
+          const index = this.mapActiveSights.indexOf(postId);
+          if (index > -1) {
+            this.mapActiveSights.splice(index, 1);
+            this.sightsService.deleteActiveSight(postId);
+          }
         });
 
         marker.balloon.events.add('click', () => {
@@ -230,14 +245,11 @@ export class MapService {
     this.sightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
-        console.log('$$$ this.activeSights:', this.activeSights);
-        console.log('$$$ activeSights:', activeSights);
+        // console.log('$$$ this.activeSights:', this.activeSights);
+        // console.log('$$$ activeSights:', activeSights);
         if (this.arraysNotEquals(this.activeSights, activeSights) === true) {
           this.colorActiveSights(false);
           this.activeSights = activeSights;
-          // this.outerActiveSights = activeSights.filter(
-          //   (item) => !this.activeSights.has(item),
-          // );
           this.colorActiveSights(true);
         }
       });
@@ -287,8 +299,6 @@ export class MapService {
     const compareFn = (a: number, b: number): number => a - b;
     const sorted1 = arr1.sort(compareFn);
     const sorted2 = arr2.sort(compareFn);
-    // console.log('sorted1:', sorted1);
-    // console.log('sorted2:', sorted2);
 
     return sorted1.some((v, i) => v !== sorted2[i]);
   }

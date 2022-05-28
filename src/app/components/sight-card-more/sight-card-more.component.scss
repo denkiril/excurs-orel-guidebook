@@ -86,14 +86,14 @@
 @media (max-width: $mobile-width) {
   .scrolled-content {
     position: relative;
-    padding-top: 60px;
+    padding-top: 15px;
   }
 
   .close-btn-wrapper {
     width: 39px;
     height: 28px;
     left: auto;
-    top: 60px;
+    top: 15px;
     right: 0;
 
     button {
