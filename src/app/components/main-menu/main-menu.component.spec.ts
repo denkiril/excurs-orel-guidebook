@@ -1,7 +1,9 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { IconsModule } from 'src/app/icons/icons.module';
+import { RouterTestingModule } from '@angular/router/testing';
 
+import { IconsModule } from 'src/app/icons/icons.module';
 import { MainMenuComponent } from './main-menu.component';
 
 describe('MainMenuComponent', () => {
@@ -10,8 +12,13 @@ describe('MainMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        BrowserAnimationsModule,
+        HttpClientTestingModule,
+        RouterTestingModule,
+        IconsModule,
+      ],
       declarations: [MainMenuComponent],
-      imports: [BrowserAnimationsModule, IconsModule],
     }).compileComponents();
   });
 

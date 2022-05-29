@@ -1,6 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
 
 import { PictureComponent } from './picture.component';
+
+const mockImageSizeItem: ImageSizeItem = {
+  file: 'file',
+  height: 100,
+  width: 150,
+};
+
+const mockImage: ImageItem = {
+  alt: '',
+  caption: '',
+  title: 'img title',
+  full: 'img_full',
+  meta: {
+    file: 'img_file',
+    height: 1200,
+    width: 1920,
+    sizes: {
+      large: mockImageSizeItem,
+      medium: mockImageSizeItem,
+      medium_large: mockImageSizeItem,
+      thumbnail: mockImageSizeItem,
+    },
+  },
+};
 
 describe('PictureComponent', () => {
   let component: PictureComponent;
@@ -15,6 +40,7 @@ describe('PictureComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PictureComponent);
     component = fixture.componentInstance;
+    component.image = mockImage;
     fixture.detectChanges();
   });
 
