@@ -49,7 +49,7 @@ export class SearchBarComponent implements ControlValueAccessor {
   }
 
   public checkValue(value: string, event: KeyboardEvent): void {
-    console.log('checkValue', value, event.key);
+    // console.log('checkValue', value, event.key);
     if (event.key === 'Enter') {
       this.searchValue(value);
     } else {
@@ -59,13 +59,13 @@ export class SearchBarComponent implements ControlValueAccessor {
   }
 
   public clearValue(): void {
-    console.log('clearValue', this.value);
+    // console.log('clearValue', this.value);
     markDirty(this);
     if (this.value !== '') this.searchValue('');
   }
 
   public searchValue(value: string): void {
-    console.log('searchValue', value);
+    // console.log('searchValue', value);
     this.value = value.trim();
     markDirty(this);
     this.valueSubmited.emit(this.value);

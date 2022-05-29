@@ -68,8 +68,11 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
 
   private initSight(sight: SightData): void {
     // console.log('initSight', sight);
-    this.sight = this.sight ? { ...this.sight, ...sight } : sight;
-    // this.sight = { ...sight, images: sight.images || [] };
+    this.sight =
+      this.sight?.post_id === sight.post_id
+        ? { ...this.sight, ...sight }
+        : sight;
+
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
 
     if (this.isMuseum) {
@@ -124,7 +127,6 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   }
 
   private convertIntroHTML(intro: string): string {
-    // TODO
     // const parser = new DOMParser();
     // console.log('xml:', parser.parseFromString(intro, 'application/xml'));
     // console.log('text/html:', parser.parseFromString(intro, 'text/html'));
@@ -158,7 +160,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          console.log('getSightById data:', data);
+          // console.log('getSightById data:', data);
           this.initSight(data);
           this.fetching = false;
           this.showServerError = false;

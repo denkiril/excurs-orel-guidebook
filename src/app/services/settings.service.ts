@@ -38,21 +38,21 @@ export class SettingsService {
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
 
   public startParseQueryParams(): void {
-    console.log('startParseQueryParams');
+    // console.log('startParseQueryParams');
     this.activatedRoute.queryParams
       .pipe(debounceTime(300))
       .subscribe((params) => {
-        console.log('upd queryParams... skipParse:', this.skipParse);
+        // console.log('upd queryParams... skipParse:', this.skipParse);
         if (!this.skipParse) this.parseQueryParams(params);
         this.skipParse = false;
-        console.log('skipParse = false');
+        // console.log('skipParse = false');
       });
   }
 
   public getFilterParams(
     filterParamsInRoute: FilterParams,
   ): FilterParams | undefined {
-    console.log('getFilterParams', filterParamsInRoute);
+    // console.log('getFilterParams', filterParamsInRoute);
     // queryParams or localStorage...
     let filterParams: FilterParams | undefined;
     if (Object.keys(filterParamsInRoute).length) {
@@ -69,8 +69,8 @@ export class SettingsService {
           if (!filterParams) {
             filterParams = { sightsFilterParams: sightsParamsLS };
           } else {
-            console.log('define... filterParams:', filterParams);
-            console.log('define... sightsParamsLS:', sightsParamsLS);
+            // console.log('define... filterParams:', filterParams);
+            // console.log('define... sightsParamsLS:', sightsParamsLS);
             const sightsFilterParams = filterParams.sightsFilterParams || {};
 
             Object.keys(sightsFilterParams).forEach((key) => {
@@ -95,7 +95,7 @@ export class SettingsService {
     setLS = true,
     setQP = true,
   ): void {
-    console.log('setFilterParams (setLS, setQP):', setLS, setQP, filterParams);
+    // console.log('setFilterParams (setLS, setQP):', setLS, setQP, filterParams);
     const sightsFilterParams = filterParams.sightsFilterParams || {};
 
     if (setLS && Object.keys(sightsFilterParams).length) {
@@ -109,7 +109,7 @@ export class SettingsService {
       const curQueryParams = this.activatedRoute.snapshot.queryParams;
       const queryParams: Params = {};
       const blockNames = Object.keys(sightsFilterParams);
-      console.log('/// curQueryParams:', curQueryParams);
+      // console.log('/// curQueryParams:', curQueryParams);
 
       if (blockNames.length) {
         const blocks: string[] = [];
@@ -141,7 +141,7 @@ export class SettingsService {
   }
 
   private parseQueryParams(queryParams: FilterQueryParams): void {
-    console.log('parseQueryParams:', queryParams);
+    // console.log('parseQueryParams:', queryParams);
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};
 
@@ -173,7 +173,7 @@ export class SettingsService {
       filterParams.sightForMore = queryParams.sight;
     }
 
-    console.log('filterParamsInRoute$.next', filterParams);
+    // console.log('filterParamsInRoute$.next', filterParams);
     this.filterParamsInRoute$.next(filterParams);
   }
 
@@ -193,7 +193,7 @@ export class SettingsService {
     filterBlocks: FilterBlock[],
     formValue: any,
   ): FilterParams {
-    console.log('--- buildFilterParams formValue:', formValue);
+    // console.log('--- buildFilterParams formValue:', formValue);
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};
 
@@ -219,10 +219,10 @@ export class SettingsService {
   }
 
   public setQueryParam(key: string, value: any): void {
-    console.log('setQueryParam', key, value);
+    // console.log('setQueryParam', key, value);
 
     this.skipParse = true;
-    console.log('skipParse = true');
+    // console.log('skipParse = true');
 
     this.router.navigate([], {
       relativeTo: this.activatedRoute,

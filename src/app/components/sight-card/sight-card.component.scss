@@ -32,11 +32,15 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--label-secondary);
+
+  p {
+    width: fit-content;
+  }
 }
 
 .links-block {
   margin-bottom: 4px;
-  
+
   a {
     margin-right: 12px;
     opacity: 0.6;

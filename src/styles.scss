@@ -141,10 +141,20 @@ body {
     height: 100%;
     width: 56px;
     flex-shrink: 0;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     img {
       width: 48px;
+    }
+
+    .header-logo-loader {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: dashed 1px var(--grey-01);
+      animation: 10s linear infinite loaderRotate;
     }
   }
 
@@ -164,8 +174,16 @@ body {
   }
 }
 
-#header-title-container {
-  margin-left: 56px;
+@keyframes loaderRotate {
+  0% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(1turn);
+  }
+  100% {
+    transform: rotate(3turn);
+  }
 }
 
 @media (max-width: $mobile-width) {

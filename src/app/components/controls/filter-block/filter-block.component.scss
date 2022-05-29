@@ -18,14 +18,23 @@
 
   button.fb-button {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     border: none;
     color: var(--label-secondary);
+    overflow: hidden;
   
     &:enabled:hover,
     &:active,
     &:enabled:focus-visible {
       color: var(--label-primary);
+    }
+
+    .fb-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &.opened {

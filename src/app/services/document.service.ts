@@ -73,7 +73,7 @@ export class DocumentService {
     const width1 = this.windowService.windowRef.innerWidth;
     const width2 = this.documentRef.body.clientWidth;
     const width = init ? width1 : width2;
-    console.log('getMediaSize width:', width, width1, width2);
+    // console.log('getMediaSize width:', width, width1, width2);
 
     if (!width) return undefined;
 

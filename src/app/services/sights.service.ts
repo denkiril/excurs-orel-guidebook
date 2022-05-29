@@ -166,7 +166,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
           },
           {
             name: 'mus',
-            title: 'Музеи',
+            title: 'Государственные музеи',
             value: true,
           },
         ],
@@ -175,7 +175,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
   },
   {
     name: 'okn',
-    title: 'ОКН',
+    title: 'Объекты культурного наследия',
     switchedOn: true,
     opened: false,
     showed: false,
@@ -218,7 +218,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
           {
             name: 'a',
             title: 'Памятник археологии',
-            shortTitle: 'Арх.',
+            shortTitle: 'Архео.',
             value: true,
           },
           {
@@ -290,7 +290,7 @@ export class SightsService {
 
         this.http.get<SightData[]>('sights').subscribe(
           (resp) => {
-            console.log('=== GET resp:', resp);
+            // console.log('=== GET resp:', resp);
             this.sightsData.items = resp;
             this.fetching$.next(false);
             observer.next(this.sightsData);
@@ -306,7 +306,7 @@ export class SightsService {
   }
 
   public getSightById(id: number): Observable<SightDataExt> {
-    console.log('getSightById...', id);
+    // console.log('getSightById...', id);
     // return this.fetchSights().pipe(
     //   delay(2000),
     //   map((sightsData) => sightsData.items[0]),
@@ -317,7 +317,7 @@ export class SightsService {
   /* Other methods */
 
   public getSights(params: GetSightsParams): Observable<SightsData> {
-    console.log('--- getSights params:', params);
+    // console.log('--- getSights params:', params);
     return this.fetchSights().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
       tap((filtSightsData) => this.sightsData$.next(filtSightsData)),
@@ -466,7 +466,7 @@ export class SightsService {
     const sightForMoreId = sightForMore
       ? sightForMore.sight?.post_id || sightForMore.sightId
       : undefined;
-    console.log('setSightForMore:', sightForMoreId);
+    // console.log('setSightForMore:', sightForMoreId);
 
     if (this.sightForMoreId) this.activeSightsDelete(this.sightForMoreId);
     if (sightForMoreId) this.activeSightsAdd(sightForMoreId);

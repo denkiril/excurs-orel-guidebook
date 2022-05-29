@@ -149,8 +149,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.paddingSummand =
       this.mainPanelContainer.nativeElement.clientHeight - BOTTOM_MARGIN + 8;
 
-    console.log('[][] translateYBreakpoint', this.translateYBreakpoint);
-    console.log('[][] paddingSummand', this.paddingSummand);
+    // console.log('[][] translateYBreakpoint', this.translateYBreakpoint);
+    // console.log('[][] paddingSummand', this.paddingSummand);
     this.correctMainPanel(true);
   }
 
@@ -162,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public onExpandBtnClick(): void {
-    console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
+    // console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
 
     const translateY =
       this.translateY < this.translateYBreakpoint - 30 ||
@@ -179,16 +179,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.translateYStart = event.changedTouches[0].pageY - this.translateY;
     this.setTransition(false);
 
-    console.log(
-      'onExpandBtnTouchstart',
-      event.changedTouches[0].pageY,
-      this.translateY,
-      this.translateYStart,
-    );
+    // console.log(
+    //   'onExpandBtnTouchstart',
+    //   event.changedTouches[0].pageY,
+    //   this.translateY,
+    //   this.translateYStart,
+    // );
   }
 
   public onExpandBtnTouchend(): void {
-    console.log('onExpandBtnTouchend');
+    // console.log('onExpandBtnTouchend');
     this.expandButtonPressed = false;
   }
 

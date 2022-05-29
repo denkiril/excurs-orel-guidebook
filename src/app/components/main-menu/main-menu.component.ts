@@ -89,6 +89,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           title: 'Документы',
           link: 'https://excurs-orel.ru/guidebook_/documents/',
         },
+        {
+          title: 'Старый Путеводитель',
+          link: 'https://excurs-orel.ru/guidebook_old/',
+        },
       ],
     },
   };
@@ -130,9 +134,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const h1El = this.documentService.documentRef.getElementById(
-      'header-title-container',
+      'gb-header-container',
     );
-    if (h1El) h1El.remove();
+    if (h1El) h1El.innerHTML = '';
   }
 
   ngOnDestroy(): void {

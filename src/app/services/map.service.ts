@@ -135,7 +135,7 @@ export class MapService {
         // }
       });
 
-    console.log('map:', this.map);
+    // console.log('map:', this.map);
   }
 
   private setMarkers(update = false): void {
@@ -275,9 +275,9 @@ export class MapService {
   }
 
   update(sightsData: SightsData): void {
-    console.log('mapService update...');
+    // console.log('mapService update...');
     if (this.sightsDataHasChanged(sightsData) === true) {
-      console.log('sightsData has changed. LETS ROCK!!');
+      // console.log('sightsData has changed. LETS ROCK!!');
       this.sightsData = sightsData;
       this.setMarkers(true);
     }

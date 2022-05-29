@@ -153,11 +153,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
     });
 
-    console.log('init form:', this.form);
+    // console.log('init form:', this.form);
   }
 
   private initWithFilterParams(filterParamsInRoute: FilterParams): void {
-    console.log('initWithFilterParams:', filterParamsInRoute);
+    // console.log('initWithFilterParams:', filterParamsInRoute);
     const filterParams =
       this.settingsService.getFilterParams(filterParamsInRoute);
 
@@ -180,7 +180,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
 
     this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      console.log('form valueChanges$', this.form.value);
+      // console.log('form valueChanges$', this.form.value);
       this.updateFilterParams();
       // -> filterParamsInRoute -> getSights...
     });
@@ -189,14 +189,14 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private updateFilterBlocks(sightsFilterParams: SightsFilterParams): void {
-    console.log('updateFilterBlocks');
+    // console.log('updateFilterBlocks');
     this.filterBlocks.forEach((block) => {
       block.opened = sightsFilterParams[block.name]?.opened ?? block.opened;
     });
   }
 
   private updateForm(filterParams: FilterParams): void {
-    console.log('updateForm');
+    // console.log('updateForm');
     const options = { emitEvent: false };
     const { sightsFilterParams } = filterParams;
 
@@ -238,7 +238,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private processFilterParams(filterParams: FilterParams): void {
-    console.log('filterParamsInRoute$', filterParams);
+    // console.log('filterParamsInRoute$', filterParams);
     this.updateForm(filterParams);
     this.emitGetSights();
   }
@@ -250,7 +250,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   public onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
-    console.log('onOpenedChange');
+    // console.log('onOpenedChange');
     filterBlock.opened = opened;
     this.updateFilterParams();
   }
@@ -275,7 +275,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          console.log('sightsService data:', data);
+          // console.log('sightsService data:', data);
           this.sights = data.items.map((item) => ({ ...item, active: false }));
           this.sightsFetching = false;
           this.sightsFetched = true;
@@ -283,7 +283,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
           markDirty(this);
         },
         (error) => {
-          console.error('!! Error:', error);
+          // console.error('!! Error:', error);
           this.sightsFetching = false;
           if (!error.ok) this.showServerError = true;
           markDirty(this);
@@ -299,7 +299,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private updateFilterParams(): void {
-    console.log('updateFilterParams');
+    // console.log('updateFilterParams');
     this.settingsService.setFilterParams(this.buildFilterParams());
   }
 
