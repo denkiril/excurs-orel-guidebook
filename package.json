@@ -1,6 +1,6 @@
 {
   "name": "orel-guidebook",
-  "version": "0.0.2",
+  "version": "0.9.0",
   "scripts": {
     "ng": "ng",
     "config": "ts-node ./scripts/setenv.ts",
