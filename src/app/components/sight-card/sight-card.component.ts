@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   SightData,
   OknText,
@@ -14,7 +14,7 @@ import {
 export class SightCardComponent implements OnInit {
   @Input() sight!: SightData;
   @Input() index = 0;
-  @Output() clickMore = new EventEmitter<SightData>();
+  // @Output() clickMore = new EventEmitter<SightData>();
 
   descriptionShort = '';
   descriptionFull = '';
@@ -52,7 +52,7 @@ export class SightCardComponent implements OnInit {
     return { short, full };
   }
 
-  public onClickMore(sight: SightData): void {
-    this.clickMore.emit(sight);
-  }
+  // public onClickMore(sight: SightData): void {
+  //   this.clickMore.emit(sight);
+  // }
 }

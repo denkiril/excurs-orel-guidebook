@@ -48,6 +48,7 @@ export interface SightData {
   sets?: SightSet[];
   okn_id?: string;
   geolocation?: { lat: string; lng: string };
+  nested?: SightData[];
 }
 
 export type SightDataExt = SightData &
@@ -244,17 +245,15 @@ export const FILTER_BLOCKS: FilterBlock[] = [
   },
 ];
 
-// const SIGHTS_ITEMS: SightData[] = [
-//   /* eslint-disable prettier/prettier */
-//   { title: 'Здание банка ФА', category: ['fed'], type: ['aig'], sets: ['main'] },
-//   { title: 'Гостиный дворъ ФИ', category: ['fed'], type: ['his'], sets: ['main'] },
-//   { title: 'Дом купца РА', category: ['reg'], type: ['aig'], sets: ['main'] },
-//   { title: 'Дом, где бывал РИ', category: ['reg'], type: ['his'], sets: ['main'] },
-//   { title: 'Памятник кокой-то', category: ['mst'], type: ['art'] },
-//   { title: 'Музей #1', sets: ['mus'] },
-//   { title: 'Музей #2', sets: ['mus'] },
-//   /* eslint-enable prettier/prettier */
-// ];
+const SIGHTS_WITH_NESTED = [
+  {
+    postId: 905,
+    nested: [1044],
+  },
+];
+
+// TODO
+// nested - from back
 
 @Injectable({
   providedIn: 'root',
@@ -267,6 +266,7 @@ export class SightsService {
   private sightLinks: SightLink[] = [];
   private activeSights: number[] = [];
   private sightForMoreId?: number;
+  private nestedSights: { [key: number]: number[] } = {};
 
   fetching$ = new Subject<boolean>();
   sightsData$ = new ReplaySubject<SightsData>();
@@ -354,11 +354,39 @@ export class SightsService {
 
     items = [...new Set(items)];
 
+    // Filter by search
     if (params.filterParams.search) {
       const searchStr = params.filterParams.search.toLowerCase();
       items = items.filter((item) =>
         item.title.toLowerCase().includes(searchStr),
       );
+    }
+
+    // Filter nested
+    this.nestedSights = {};
+    const allNested: SightData[] = [];
+    SIGHTS_WITH_NESTED.forEach((swn) => {
+      const holder = items.find((item) => item.post_id === swn.postId);
+      if (holder) {
+        const nestedItems = items.filter((item) =>
+          swn.nested.includes(item.post_id),
+        );
+        if (nestedItems.length) {
+          holder.nested = nestedItems;
+          allNested.push(...nestedItems);
+          nestedItems.forEach((nestedItem) => {
+            const id = nestedItem.post_id;
+            const holdersIds = this.nestedSights[id] || [];
+            holdersIds.push(holder.post_id);
+            this.nestedSights[id] = holdersIds;
+          });
+        }
+      }
+    });
+
+    if (allNested.length) {
+      const nestedIds = new Set<number>(allNested.map((item) => item.post_id));
+      items = items.filter((item) => !nestedIds.has(item.post_id));
     }
 
     return { items };
@@ -409,12 +437,16 @@ export class SightsService {
   }
 
   private activeSightsAdd(sightId: number): void {
-    this.activeSights.push(sightId);
+    const ids = this.nestedSights[sightId] || [sightId];
+    this.activeSights.push(...ids);
   }
 
   private activeSightsDelete(sightId: number): void {
-    const index = this.activeSights.indexOf(sightId);
-    if (index > -1) this.activeSights.splice(index, 1);
+    const ids = this.nestedSights[sightId] || [sightId];
+    ids.forEach((id) => {
+      const index = this.activeSights.indexOf(id);
+      if (index > -1) this.activeSights.splice(index, 1);
+    });
   }
 
   private emitActiveSights(): void {
@@ -422,10 +454,14 @@ export class SightsService {
   }
 
   public setSightForMore(
-    sight?: SightData,
+    sightData?: SightData,
     sightId?: number,
     setQP = true,
   ): void {
+    const sight =
+      !sightData && sightId
+        ? this.sightsData.items.find((item) => item.post_id === sightId)
+        : undefined;
     const sightForMore = sight || sightId ? { sight, sightId } : undefined;
     const sightForMoreId = sightForMore
       ? sightForMore.sight?.post_id || sightForMore.sightId

@@ -9,6 +9,18 @@
     {{ sight.title }}
   </div>
 
+  <ul *ngIf="sight.nested?.length" class="sight-nested">
+    <li *ngFor="let nested of sight.nested">
+      <a
+        [routerLink]="[]"
+        [queryParams]="{ sight: nested.post_id }"
+        queryParamsHandling="merge"
+      >
+        + {{ nested.title }}
+      </a>
+    </li>
+  </ul>
+
   <div class="sight-description">
     <p [title]="descriptionFull">{{ descriptionShort }}</p>
     <p *ngIf="sight.location" [title]="'Местонахождение: ' + sight.location">
@@ -16,10 +28,14 @@
     </p>
   </div>
 
-  <div class="sight-description">
-    <button type="button" class="link-btn" (click)="onClickMore(sight)">
+  <div class="sight-description links-block">
+    <a
+      [routerLink]="[]"
+      [queryParams]="{ sight: sight.post_id }"
+      queryParamsHandling="merge"
+    >
       Подробнее...
-    </button>
+    </a>
     <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
       Перейти
       <mat-icon svgIcon="open_in_new"></mat-icon>
@@ -27,11 +43,16 @@
   </div>
 </div>
 
-<img
+<a
   *ngIf="sight.thumb_url"
-  class="sight-image"
-  [attr.loading]="index > 6 ? 'lazy' : 'eager'"
-  [src]="sight.thumb_url"
-  title="Подробнее..."
-  (click)="onClickMore(sight)"
-/>
+  [routerLink]="[]"
+  [queryParams]="{ sight: sight.post_id }"
+  queryParamsHandling="merge"
+>
+  <img
+    class="sight-image"
+    [attr.loading]="index > 6 ? 'lazy' : 'eager'"
+    [src]="sight.thumb_url"
+    title="Подробнее..."
+  />
+</a>

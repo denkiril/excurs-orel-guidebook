@@ -106,6 +106,12 @@
   top: 0;
   pointer-events: none;
 
+  @media (max-width: $mobile-width) {
+    &.minimize {
+      display: none;
+    }
+  }
+
   .menu-panel {
     width: calc(100% - 2px);
     border: solid 1px var(--grey-01);

@@ -68,6 +68,21 @@
         class="sight-content"
         [innerHTML]="articleHTML"
       ></div>
+
+      <div *ngIf="sight.nested?.length" class="sight-nested-block">
+        <h3>См. также:</h3>
+        <ul>
+          <li *ngFor="let nested of sight.nested">
+            <a
+              [routerLink]="[]"
+              [queryParams]="{ sight: nested.post_id }"
+              queryParamsHandling="merge"
+            >
+              {{ nested.title }}
+            </a>
+          </li>
+        </ul>
+      </div>
     </ng-container>
 
     <div *ngIf="!fetching || showServerError" class="content-footer">

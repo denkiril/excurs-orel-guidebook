@@ -45,7 +45,16 @@
   ></exogb-loader>
 
   <ng-container *ngIf="sightsFetched">
-    <div *ngIf="sights.length; else noSightsTemplate" class="cards-container">
+    <div class="summary-text" [class.empty]="!sights.length">
+      <p>
+        {{
+          sights.length
+            ? 'Найдено объектов: ' + sights.length
+            : 'Достопримечательностей по вашему запросу не найдено'
+        }}
+      </p>
+    </div>
+    <div *ngIf="sights.length" class="cards-container">
       <div
         *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"
@@ -53,19 +62,11 @@
         (mouseenter)="onCardHover(sight)"
         (mouseleave)="onCardHover(sight, false)"
       >
-        <exogb-sight-card
-          [sight]="sight"
-          [index]="i"
-          (clickMore)="setSightForMore($event)"
-        ></exogb-sight-card>
+        <exogb-sight-card [sight]="sight" [index]="i"></exogb-sight-card>
       </div>
     </div>
   </ng-container>
 </div>
-
-<ng-template #noSightsTemplate>
-  <p class="empty-text">Достопримечательностей по вашему запросу не найдено</p>
-</ng-template>
 
 <ng-template
   #filterGroupTemplate

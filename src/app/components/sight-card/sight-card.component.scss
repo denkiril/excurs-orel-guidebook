@@ -21,17 +21,24 @@
   }
 }
 
+.sight-nested {
+  font-size: 15px;
+  line-height: 21px;
+  margin-left: 8px;
+  list-style-type: none;
+}
+
 .sight-description {
   font-size: 14px;
   line-height: 20px;
   color: var(--label-secondary);
+}
 
-  .link-btn {
+.links-block {
+  margin-bottom: 4px;
+  
+  a {
     margin-right: 12px;
-  }
-
-  a,
-  .link-btn {
     opacity: 0.6;
 
     &:hover {
@@ -41,6 +48,7 @@
 }
 
 .sight-image {
+  display: block;
   height: 88px;
   cursor: pointer;
 }

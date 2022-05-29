@@ -23,7 +23,7 @@
   </button>
 </div>
 
-<div class="menu-panel-container" [class.hide]="minimize">
+<div class="menu-panel-container" [ngClass]="{ minimize: minimize }">
   <div
     class="menu-panel"
     [class.opened]="opened"

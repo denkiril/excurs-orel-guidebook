@@ -181,9 +181,11 @@ export class MapService {
         // const url = item.permalink;
         const postId = item.post_id;
         const thumbUrl = item.thumb_url;
-        const content = `<h3>{{ properties.title }}</h3>
-          ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}
-        `;
+        const nested = item.nested?.length
+          ? `<p>+ ${item.nested.map((s) => s.title).join('</p><p>')}</p>`
+          : '';
+        const content = `<header><h3>{{ properties.title }}</h3>${nested}</header>
+          ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}`;
 
         const marker = new this.ymaps.Placemark(
           [lat, lng],

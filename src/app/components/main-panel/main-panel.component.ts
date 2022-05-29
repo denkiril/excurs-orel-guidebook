@@ -28,7 +28,7 @@ import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 
 // TODO:
-// totalCount
+// totalCount +
 // Справка (большой тултип?)
 // Фильтрация по имени (вхождению строки)?
 // Настройки фильтра в queryParams - search +
@@ -36,7 +36,7 @@ import { CustomValidators } from 'src/app/core/custom-validators';
 // Fix openClose transition +-
 // Show images setting
 // Lazy loading images +-
-// Lazy loading sights
+// Lazy loading sights (pagination)
 // Карточка объекта, и кнопка назад +
 // Карточка объекта в роуте +
 // Офлайн-режим
@@ -303,9 +303,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.settingsService.setFilterParams(this.buildFilterParams());
   }
 
-  public setSightForMore(sight?: SightData): void {
-    this.sightsService.setSightForMore(sight);
-  }
+  // public setSightForMore(sight?: SightData): void {
+  //   this.sightsService.setSightForMore(sight);
+  // }
 
   public trackById(_index: number, item: SightData): number {
     return item.post_id;
