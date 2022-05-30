@@ -19,13 +19,13 @@ type FilterQueryParams = Partial<{
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
 // TODO
-// browser navigate with skipParse bug
+// browser navigate with skipParse bug +
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  private skipParse = false;
+  // private skipParse = false;
   filterParamsInRoute$ = new Subject<FilterParams>();
 
   groupNames: Record<string, string[]> = Object.fromEntries(
@@ -40,11 +40,12 @@ export class SettingsService {
   public startParseQueryParams(): void {
     // console.log('startParseQueryParams');
     this.activatedRoute.queryParams
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(100))
       .subscribe((params) => {
         // console.log('upd queryParams... skipParse:', this.skipParse);
-        if (!this.skipParse) this.parseQueryParams(params);
-        this.skipParse = false;
+        // if (!this.skipParse)
+        this.parseQueryParams(params);
+        // this.skipParse = false;
         // console.log('skipParse = false');
       });
   }
@@ -221,7 +222,7 @@ export class SettingsService {
   public setQueryParam(key: string, value: any): void {
     // console.log('setQueryParam', key, value);
 
-    this.skipParse = true;
+    // this.skipParse = true;
     // console.log('skipParse = true');
 
     this.router.navigate([], {

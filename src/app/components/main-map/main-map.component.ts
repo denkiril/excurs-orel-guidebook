@@ -42,9 +42,13 @@ export class MainMapComponent implements OnInit, OnDestroy {
     this.sightsService.sightsData$
       .pipe(takeUntil(this.destroy$))
       .subscribe((sightsData) => {
-        // console.log('MAP GOT sightsData$...');
-        if (!this.isMapInitialized) this.initMap(sightsData);
-        else this.updateMap(sightsData);
+        console.log('MAP GOT sightsData$...', this.isMapInitialized);
+        if (!this.isMapInitialized) {
+          this.isMapInitialized = true;
+          this.initMap(sightsData);
+        } else {
+          this.updateMap(sightsData);
+        }
       });
   }
 
@@ -59,8 +63,8 @@ export class MainMapComponent implements OnInit, OnDestroy {
       .init(this.container.nativeElement, sightsData)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        // console.log('mapService init!');
-        this.isMapInitialized = true;
+        console.log('mapService init!');
+        // this.isMapInitialized = true;
       });
   }
 

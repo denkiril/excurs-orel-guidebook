@@ -198,7 +198,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private updateForm(filterParams: FilterParams): void {
     // console.log('updateForm');
     const options = { emitEvent: false };
-    const { sightsFilterParams } = filterParams;
+    const { sightsFilterParams, search, sightForMore } = filterParams;
 
     if (sightsFilterParams) {
       this.filterBlocks.forEach((block) => {
@@ -226,15 +226,13 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.form.patchValue({ search: filterParams.search || '' }, options);
+    this.form.patchValue({ search: search || '' }, options);
 
-    if (filterParams.sightForMore) {
-      this.sightsService.setSightForMore(
-        undefined,
-        Number(filterParams.sightForMore),
-        false,
-      );
-    }
+    this.sightsService.setSightForMore(
+      undefined,
+      sightForMore ? Number(sightForMore) : undefined,
+      false,
+    );
   }
 
   private processFilterParams(filterParams: FilterParams): void {

@@ -250,6 +250,14 @@ const SIGHTS_WITH_NESTED = [
     postId: 905,
     nested: [1044],
   },
+  {
+    postId: 924,
+    nested: [1043],
+  },
+  {
+    postId: 938,
+    nested: [1022],
+  },
 ];
 
 // TODO
@@ -453,6 +461,17 @@ export class SightsService {
     this.activeSights$.next(Array.from(this.activeSights));
   }
 
+  private processActiveSights(
+    addId: number | undefined,
+    deleteId: number | undefined,
+  ): void {
+    this.sightsData$.subscribe(() => {
+      if (addId) this.activeSightsAdd(addId);
+      if (deleteId) this.activeSightsDelete(deleteId);
+      if (addId || deleteId) this.emitActiveSights();
+    });
+  }
+
   public setSightForMore(
     sightData?: SightData,
     sightId?: number,
@@ -468,9 +487,7 @@ export class SightsService {
       : undefined;
     // console.log('setSightForMore:', sightForMoreId);
 
-    if (this.sightForMoreId) this.activeSightsDelete(this.sightForMoreId);
-    if (sightForMoreId) this.activeSightsAdd(sightForMoreId);
-    if (this.sightForMoreId || sightForMoreId) this.emitActiveSights();
+    this.processActiveSights(sightForMoreId, this.sightForMoreId);
     this.sightForMoreId = sightForMoreId;
 
     this.sightForMore$.next(sightForMore);

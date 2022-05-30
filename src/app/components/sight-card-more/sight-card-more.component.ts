@@ -155,24 +155,30 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     this.fetching = true;
     markDirty(this);
 
-    this.sightsService
-      .getSightById(this.sightId)
+    this.sightsService.sightsData$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (data) => {
-          // console.log('getSightById data:', data);
-          this.initSight(data);
-          this.fetching = false;
-          this.showServerError = false;
-          markDirty(this);
-        },
-        (error) => {
-          console.error('getSightById error:', error);
-          this.fetching = false;
-          this.showServerError = true;
-          markDirty(this);
-        },
-      );
+      .subscribe(() => {
+        if (this.sightId) {
+          this.sightsService
+            .getSightById(this.sightId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+              (data) => {
+                // console.log('getSightById data:', data);
+                this.initSight(data);
+                this.fetching = false;
+                this.showServerError = false;
+                markDirty(this);
+              },
+              (error) => {
+                console.error('getSightById error:', error);
+                this.fetching = false;
+                this.showServerError = true;
+                markDirty(this);
+              },
+            );
+        }
+      });
   }
 
   public close(): void {

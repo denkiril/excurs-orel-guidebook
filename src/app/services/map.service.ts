@@ -16,6 +16,7 @@ const activeColor = '#bc3134'; // ffd649
 
 // TODO:
 // ymaps search hints
+// (Yandex Maps JS API): api is already enabled on this page with same namespace (script add twice)...
 
 @Injectable({
   providedIn: 'root',
@@ -276,11 +277,13 @@ export class MapService {
 
   update(sightsData: SightsData): void {
     // console.log('mapService update...');
-    if (this.sightsDataHasChanged(sightsData) === true) {
-      // console.log('sightsData has changed. LETS ROCK!!');
-      this.sightsData = sightsData;
-      this.setMarkers(true);
-    }
+    this.initialized$.subscribe(() => {
+      if (this.sightsDataHasChanged(sightsData) === true) {
+        // console.log('sightsData has changed. LETS ROCK!!');
+        this.sightsData = sightsData;
+        this.setMarkers(true);
+      }
+    });
   }
 
   private sightsDataHasChanged(sightsData: SightsData): boolean {
