@@ -314,7 +314,7 @@ export class SightsService {
   }
 
   public getSightById(id: number): Observable<SightDataExt> {
-    console.log('getSightById...', id);
+    // console.log('getSightById...', id);
     // return this.fetchSights().pipe(
     //   delay(2000),
     //   map((sightsData) => sightsData.items[0]),
@@ -446,7 +446,6 @@ export class SightsService {
 
   private activeSightsAdd(sightId: number): void {
     const ids = this.nestedSights[sightId] || [sightId];
-    console.log('activeSightsAdd', sightId, ids);
     this.activeSights.push(...ids);
   }
 
@@ -486,7 +485,7 @@ export class SightsService {
     const sightForMoreId = sightForMore
       ? sightForMore.sight?.post_id || sightForMore.sightId
       : undefined;
-    console.log('setSightForMore:', sightForMoreId);
+    // console.log('setSightForMore:', sightForMoreId);
 
     this.processActiveSights(sightForMoreId, this.sightForMoreId);
     this.sightForMoreId = sightForMoreId;

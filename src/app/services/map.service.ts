@@ -248,8 +248,8 @@ export class MapService {
     this.sightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
-        console.log('$$$ this.activeSights:', this.activeSights);
-        console.log('$$$ activeSights:', activeSights);
+        // console.log('$$$ this.activeSights:', this.activeSights);
+        // console.log('$$$ activeSights:', activeSights);
         if (this.arraysNotEquals(this.activeSights, activeSights) === true) {
           this.colorActiveSights(false);
           this.activeSights = activeSights;

@@ -196,7 +196,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private updateForm(filterParams: FilterParams): void {
-    console.log('updateForm');
+    // console.log('updateForm');
     const options = { emitEvent: false };
     const { sightsFilterParams, search, sightForMore } = filterParams;
 
@@ -236,7 +236,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private processFilterParams(filterParams: FilterParams): void {
-    console.log('filterParamsInRoute$', filterParams);
+    // console.log('filterParamsInRoute$', filterParams);
     this.updateForm(filterParams);
     this.emitGetSights();
   }
