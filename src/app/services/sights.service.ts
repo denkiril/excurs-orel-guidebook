@@ -250,6 +250,14 @@ const SIGHTS_WITH_NESTED = [
     postId: 905,
     nested: [1044],
   },
+  {
+    postId: 924,
+    nested: [1043],
+  },
+  {
+    postId: 938,
+    nested: [1022],
+  },
 ];
 
 // TODO
@@ -306,7 +314,7 @@ export class SightsService {
   }
 
   public getSightById(id: number): Observable<SightDataExt> {
-    // console.log('getSightById...', id);
+    console.log('getSightById...', id);
     // return this.fetchSights().pipe(
     //   delay(2000),
     //   map((sightsData) => sightsData.items[0]),
@@ -438,6 +446,7 @@ export class SightsService {
 
   private activeSightsAdd(sightId: number): void {
     const ids = this.nestedSights[sightId] || [sightId];
+    console.log('activeSightsAdd', sightId, ids);
     this.activeSights.push(...ids);
   }
 
@@ -453,6 +462,17 @@ export class SightsService {
     this.activeSights$.next(Array.from(this.activeSights));
   }
 
+  private processActiveSights(
+    addId: number | undefined,
+    deleteId: number | undefined,
+  ): void {
+    this.sightsData$.subscribe(() => {
+      if (addId) this.activeSightsAdd(addId);
+      if (deleteId) this.activeSightsDelete(deleteId);
+      if (addId || deleteId) this.emitActiveSights();
+    });
+  }
+
   public setSightForMore(
     sightData?: SightData,
     sightId?: number,
@@ -466,11 +486,9 @@ export class SightsService {
     const sightForMoreId = sightForMore
       ? sightForMore.sight?.post_id || sightForMore.sightId
       : undefined;
-    // console.log('setSightForMore:', sightForMoreId);
+    console.log('setSightForMore:', sightForMoreId);
 
-    if (this.sightForMoreId) this.activeSightsDelete(this.sightForMoreId);
-    if (sightForMoreId) this.activeSightsAdd(sightForMoreId);
-    if (this.sightForMoreId || sightForMoreId) this.emitActiveSights();
+    this.processActiveSights(sightForMoreId, this.sightForMoreId);
     this.sightForMoreId = sightForMoreId;
 
     this.sightForMore$.next(sightForMore);
