@@ -485,11 +485,11 @@ export class SightsService {
     const sightForMoreId = sightForMore
       ? sightForMore.sight?.post_id || sightForMore.sightId
       : undefined;
-    // console.log('setSightForMore:', sightForMoreId);
 
     this.processActiveSights(sightForMoreId, this.sightForMoreId);
     this.sightForMoreId = sightForMoreId;
 
+    // console.log('setSightForMore:', sightForMore);
     this.sightForMore$.next(sightForMore);
 
     if (setQP) {

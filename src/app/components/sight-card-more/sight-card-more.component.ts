@@ -50,6 +50,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   ) {}
 
   ngOnChanges(): void {
+    // console.log('SimpleChanges:', changes);
     this.sightId =
       this.sightForMore.sight?.post_id || this.sightForMore.sightId;
     const sight =
@@ -67,11 +68,11 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   }
 
   private initSight(sight: SightData): void {
-    // console.log('initSight', sight);
     this.sight =
       this.sight?.post_id === sight.post_id
         ? { ...this.sight, ...sight }
         : sight;
+    // console.log('initSight', this.sight);
 
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
 
@@ -155,30 +156,24 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     this.fetching = true;
     markDirty(this);
 
-    this.sightsService.sightsData$
+    this.sightsService
+      .getSightById(this.sightId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.sightId) {
-          this.sightsService
-            .getSightById(this.sightId)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(
-              (data) => {
-                // console.log('getSightById data:', data);
-                this.initSight(data);
-                this.fetching = false;
-                this.showServerError = false;
-                markDirty(this);
-              },
-              (error) => {
-                console.error('getSightById error:', error);
-                this.fetching = false;
-                this.showServerError = true;
-                markDirty(this);
-              },
-            );
-        }
-      });
+      .subscribe(
+        (data) => {
+          // console.log('getSightById data:', data);
+          this.initSight(data);
+          this.fetching = false;
+          this.showServerError = false;
+          markDirty(this);
+        },
+        (error) => {
+          console.error('getSightById error:', error);
+          this.fetching = false;
+          this.showServerError = true;
+          markDirty(this);
+        },
+      );
   }
 
   public close(): void {
