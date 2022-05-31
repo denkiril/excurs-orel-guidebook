@@ -6,6 +6,7 @@ import {
   OnChanges,
   Output,
   ɵmarkDirty as markDirty,
+  SimpleChanges,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -49,17 +50,21 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     private sanitizer: DomSanitizer,
   ) {}
 
-  ngOnChanges(): void {
-    // console.log('SimpleChanges:', changes);
-    this.sightId =
-      this.sightForMore.sight?.post_id || this.sightForMore.sightId;
-    const sight =
-      this.sightForMore.sight ||
-      this.sights.find((item) => item.post_id === this.sightId);
+  ngOnChanges(changes: SimpleChanges): void {
+    // console.log('SimpleChanges:', JSON.stringify(changes.sightForMore));
+    const { currentValue, previousValue } = changes.sightForMore;
+    const curId = currentValue.sight?.post_id || currentValue.sightId;
+    const prevId = previousValue?.sight?.post_id || previousValue?.sightId;
+    // console.log('curId, prevId', curId, prevId);
+    if (curId !== prevId) {
+      this.sightId = curId;
+      const sight =
+        this.sightForMore.sight ||
+        this.sights.find((item) => item.post_id === this.sightId);
 
-    if (sight) this.initSight(sight);
-
-    this.getSight();
+      if (sight) this.initSight(sight);
+      this.getSight();
+    }
   }
 
   ngOnDestroy(): void {
