@@ -6,6 +6,7 @@ import {
   OnChanges,
   Output,
   ɵmarkDirty as markDirty,
+  SimpleChanges,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -49,16 +50,21 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     private sanitizer: DomSanitizer,
   ) {}
 
-  ngOnChanges(): void {
-    this.sightId =
-      this.sightForMore.sight?.post_id || this.sightForMore.sightId;
-    const sight =
-      this.sightForMore.sight ||
-      this.sights.find((item) => item.post_id === this.sightId);
+  ngOnChanges(changes: SimpleChanges): void {
+    // console.log('SimpleChanges:', JSON.stringify(changes.sightForMore));
+    const { currentValue, previousValue } = changes.sightForMore;
+    const curId = currentValue.sight?.post_id || currentValue.sightId;
+    const prevId = previousValue?.sight?.post_id || previousValue?.sightId;
+    // console.log('curId, prevId', curId, prevId);
+    if (curId !== prevId) {
+      this.sightId = curId;
+      const sight =
+        this.sightForMore.sight ||
+        this.sights.find((item) => item.post_id === this.sightId);
 
-    if (sight) this.initSight(sight);
-
-    this.getSight();
+      if (sight) this.initSight(sight);
+      this.getSight();
+    }
   }
 
   ngOnDestroy(): void {
@@ -67,11 +73,11 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   }
 
   private initSight(sight: SightData): void {
-    // console.log('initSight', sight);
     this.sight =
       this.sight?.post_id === sight.post_id
         ? { ...this.sight, ...sight }
         : sight;
+    // console.log('initSight', this.sight);
 
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
 
@@ -155,30 +161,24 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     this.fetching = true;
     markDirty(this);
 
-    this.sightsService.sightsData$
+    this.sightsService
+      .getSightById(this.sightId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.sightId) {
-          this.sightsService
-            .getSightById(this.sightId)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(
-              (data) => {
-                // console.log('getSightById data:', data);
-                this.initSight(data);
-                this.fetching = false;
-                this.showServerError = false;
-                markDirty(this);
-              },
-              (error) => {
-                console.error('getSightById error:', error);
-                this.fetching = false;
-                this.showServerError = true;
-                markDirty(this);
-              },
-            );
-        }
-      });
+      .subscribe(
+        (data) => {
+          // console.log('getSightById data:', data);
+          this.initSight(data);
+          this.fetching = false;
+          this.showServerError = false;
+          markDirty(this);
+        },
+        (error) => {
+          console.error('getSightById error:', error);
+          this.fetching = false;
+          this.showServerError = true;
+          markDirty(this);
+        },
+      );
   }
 
   public close(): void {
