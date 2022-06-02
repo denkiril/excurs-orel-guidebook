@@ -18,9 +18,6 @@ type FilterQueryParams = Partial<{
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
-// TODO
-// browser navigate with skipParse bug +
-
 @Injectable({
   providedIn: 'root',
 })

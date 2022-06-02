@@ -27,22 +27,6 @@ import {
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 
-// TODO:
-// totalCount +
-// Справка (большой тултип?)
-// Фильтрация по имени (вхождению строки)?
-// Настройки фильтра в queryParams - search +
-// Вывод объектов на карте +
-// Fix openClose transition +-
-// Show images setting
-// Lazy loading images +-
-// Lazy loading sights (pagination)
-// Карточка объекта, и кнопка назад +
-// Карточка объекта в роуте +
-// Офлайн-режим
-// Свой набор достопр-тей: избранное, в роуте
-// Sights sorting. Default? Manual?
-
 interface SightDataLocal extends SightData {
   active: boolean;
 }
