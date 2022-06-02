@@ -26,9 +26,6 @@ import { SightForMoreData, SightsService } from './services/sights.service';
 const TOP_MARGIN = 80;
 const BOTTOM_MARGIN = 128;
 
-// TODO:
-// Add map layout on movePanel upper center
-
 @Component({
   selector: 'exogb-root',
   templateUrl: './app.component.html',

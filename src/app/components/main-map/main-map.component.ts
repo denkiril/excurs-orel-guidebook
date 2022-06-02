@@ -12,9 +12,6 @@ import { takeUntil } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
 import { SightsData, SightsService } from 'src/app/services/sights.service';
 
-// TODO
-// Loader for map ?
-
 @Component({
   selector: 'exogb-main-map',
   templateUrl: './main-map.component.html',
@@ -42,7 +39,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
     this.sightsService.sightsData$
       .pipe(takeUntil(this.destroy$))
       .subscribe((sightsData) => {
-        console.log('MAP GOT sightsData$...', this.isMapInitialized);
+        // console.log('MAP GOT sightsData$...', this.isMapInitialized);
         if (!this.isMapInitialized) {
           this.isMapInitialized = true;
           this.initMap(sightsData);
@@ -63,7 +60,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
       .init(this.container.nativeElement, sightsData)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        console.log('mapService init!');
+        // console.log('mapService init!');
         // this.isMapInitialized = true;
       });
   }

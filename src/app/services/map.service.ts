@@ -14,10 +14,6 @@ const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
 const baseColor = '#005281'; // 015a8d
 const activeColor = '#bc3134'; // ffd649
 
-// TODO:
-// ymaps search hints
-// (Yandex Maps JS API): api is already enabled on this page with same namespace (script add twice)...
-
 @Injectable({
   providedIn: 'root',
 })

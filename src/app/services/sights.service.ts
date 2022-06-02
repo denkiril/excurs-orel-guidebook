@@ -260,9 +260,6 @@ const SIGHTS_WITH_NESTED = [
   },
 ];
 
-// TODO
-// nested - from back
-
 @Injectable({
   providedIn: 'root',
 })
