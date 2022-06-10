@@ -6,8 +6,8 @@ type WindowExtended = Window &
       systemLanguage?: string;
       userLanguage?: string;
     };
-    gtag?: (action: string, name: string, params?: any) => void;
-    ym?: (id: number, action: string, name: string) => void;
+    gtag?: (command: string, action: string, params?: any) => void;
+    ym?: (id: number, method: string, target: string, params?: any) => void;
     ymaps?: any;
   };
 

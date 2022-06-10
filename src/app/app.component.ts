@@ -22,6 +22,7 @@ import { takeUntil } from 'rxjs/operators';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
 import { SightForMoreData, SightsService } from './services/sights.service';
+import { AnalyticsService } from './services/analytics.service';
 
 const TOP_MARGIN = 80;
 const BOTTOM_MARGIN = 128;
@@ -73,6 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // private utilitiesService: UtilitiesService,
     // private settingsService: SettingsService,
     private sightsService: SightsService,
+    private analyticsService: AnalyticsService,
   ) {}
 
   // @HostListener('window:resize')
@@ -95,6 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit(): void {
+    this.analyticsService.sendEvent('app start');
     this.calcVars();
 
     this.documentService.onResize$

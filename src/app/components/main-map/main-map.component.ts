@@ -9,6 +9,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { AnalyticsService } from 'src/app/services/analytics.service';
 import { MapService } from 'src/app/services/map.service';
 import { SightsData, SightsService } from 'src/app/services/sights.service';
 
@@ -33,6 +34,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
   constructor(
     private mapService: MapService,
     private sightsService: SightsService,
+    private analyticsService: AnalyticsService,
   ) {}
 
   ngOnInit(): void {
@@ -56,13 +58,14 @@ export class MainMapComponent implements OnInit, OnDestroy {
   }
 
   private initMap(sightsData: SightsData): void {
+    this.analyticsService.sendEvent('initMap start');
     this.mapService
       .init(this.container.nativeElement, sightsData)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        // console.log('mapService init!');
-        // this.isMapInitialized = true;
-      });
+      .subscribe(
+        () => this.analyticsService.sendEvent('initMap ok'),
+        () => this.analyticsService.sendEvent('initMap fail'),
+      );
   }
 
   private updateMap(sightsData: SightsData): void {
