@@ -295,7 +295,7 @@ export class SightsService {
 
         this.http.get<SightData[]>('sights').subscribe(
           (resp) => {
-            // console.log('=== GET resp:', resp);
+            console.log('=== GET resp:', resp);
             this.sightsData.items = resp;
             this.fetching$.next(false);
             observer.next(this.sightsData);
@@ -393,6 +393,15 @@ export class SightsService {
       const nestedIds = new Set<number>(allNested.map((item) => item.post_id));
       items = items.filter((item) => !nestedIds.has(item.post_id));
     }
+
+    // Sort
+    const mainItems = items.filter(
+      (item) => item.sets?.length && item.sets[0] === 'main',
+    );
+    const musItems = items.filter(
+      (item) => item.sets?.length && item.sets[0] === 'mus',
+    );
+    items = [...mainItems, ...musItems];
 
     return { items };
   }
