@@ -35,3 +35,4 @@ platformBrowserDynamic()
 // Show images setting ?
 // Офлайн-режим ?
 // webp from api data ?
+// Фото ЭО на карте (pagination)

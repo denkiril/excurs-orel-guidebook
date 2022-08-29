@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { IconsModule } from './icons/icons.module';
@@ -25,6 +25,19 @@ import { SecondPanelComponent } from './components/second-panel/second-panel.com
 import { PictureComponent } from './components/ui/picture/picture.component';
 import { SightImagesComponent } from './components/sight-images/sight-images.component';
 import { SightLinksDirective } from './directives/sight-links.directive';
+import { ParamsGuard } from './core/params.guard';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: AppComponent,
+    canActivate: [ParamsGuard],
+  },
+  {
+    path: '**',
+    redirectTo: '',
+  },
+];
 
 @NgModule({
   declarations: [
@@ -54,7 +67,7 @@ import { SightLinksDirective } from './directives/sight-links.directive';
     ReactiveFormsModule,
     IconsModule,
     HttpClientModule,
-    RouterModule.forRoot([]),
+    RouterModule.forRoot(routes),
   ],
   providers: [
     {

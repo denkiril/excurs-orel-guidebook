@@ -3,18 +3,13 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+import { GBQueryParams } from '../core/params.guard';
 import {
   FilterBlock,
   FilterParams,
   FILTER_BLOCKS,
   SightsFilterParams,
 } from './sights.service';
-
-type FilterQueryParams = Partial<{
-  filter: string;
-  search: string;
-  sight: string;
-}>;
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
@@ -138,7 +133,7 @@ export class SettingsService {
     }
   }
 
-  private parseQueryParams(queryParams: FilterQueryParams): void {
+  private parseQueryParams(queryParams: GBQueryParams): void {
     // console.log('parseQueryParams:', queryParams);
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};

@@ -13,7 +13,7 @@ export class AnalyticsService {
   sendEvent(action: string): void {
     const { gtag, ym } = this.windowService.windowRef;
     const label = 'test_label';
-    // console.log('sendEvent', action);
+    console.log('sendEvent', action);
 
     if (gtag) {
       // https://developers.google.com/analytics/devguides/collection/gtagjs/events?hl=ru
