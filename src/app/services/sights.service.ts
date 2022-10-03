@@ -286,6 +286,7 @@ export class SightsService {
   private readonly activeSights: number[] = [];
   private sightForMoreId?: number;
   private nestedSights: { [key: number]: number[] } = {};
+  private readonly sightsDataFetched$ = new ReplaySubject<void>();
 
   fetching$ = new Subject<boolean>();
   sightsData$ = new Subject<SightsData>(); // ReplaySubject (?)
@@ -339,7 +340,10 @@ export class SightsService {
     // console.log('--- getSights params:', params);
     return this.fetchSights().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
-      tap((filtSightsData) => this.sightsData$.next(filtSightsData)),
+      tap((filtSightsData) => {
+        this.sightsData$.next(filtSightsData);
+        this.sightsDataFetched$.next();
+      }),
     );
   }
 
@@ -490,14 +494,14 @@ export class SightsService {
   }
 
   private emitActiveSights(): void {
-    this.activeSights$.next(Array.from(this.activeSights));
+    this.activeSights$.next(Array.from(new Set(this.activeSights)));
   }
 
   private processActiveSights(
     addId: number | undefined,
     deleteId: number | undefined,
   ): void {
-    this.sightsData$.subscribe(() => {
+    this.sightsDataFetched$.subscribe(() => {
       if (addId) this.activeSightsAdd(addId);
       if (deleteId) this.activeSightsDelete(deleteId);
       if (addId || deleteId) this.emitActiveSights();
