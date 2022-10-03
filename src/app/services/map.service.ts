@@ -18,7 +18,7 @@ const activeColor = '#bc3134'; // ffd649
   providedIn: 'root',
 })
 export class MapService {
-  private destroy$ = new Subject();
+  private readonly destroy$ = new Subject();
   // private activeSights = new Set<number>();
   private activeSights: number[] = [];
   private mapActiveSights: number[] = [];
@@ -27,15 +27,15 @@ export class MapService {
   private ymaps?: any;
   private map: any;
   private storage: any;
-  private clusterer: any;
+  // private clusterer: any;
 
   initialized$ = new ReplaySubject<void>();
 
   constructor(
-    private windowService: WindowService,
-    private documentService: DocumentService,
+    private readonly windowService: WindowService,
+    private readonly documentService: DocumentService,
     // private settingsService: SettingsService,
-    private sightsService: SightsService,
+    private readonly sightsService: SightsService,
   ) {}
 
   private checkApi(): Promise<void> {
@@ -97,9 +97,9 @@ export class MapService {
       zoom: 12,
     });
 
-    this.clusterer = new this.ymaps.Clusterer({
-      clusterIconColor: baseColor,
-    });
+    // this.clusterer = new this.ymaps.Clusterer({
+    //   clusterIconColor: baseColor,
+    // });
 
     this.setMarkers();
     // this.initMapSubscriptions();
@@ -139,20 +139,24 @@ export class MapService {
     this.mapActiveSights = [];
     const markers = this.makeMarkers(this.sightsData?.items || []);
 
-    this.clusterer.removeAll();
+    // this.clusterer.removeAll();
     this.map.geoObjects.removeAll();
-
     this.storage = this.ymaps.geoQuery(markers);
-    this.clusterer.add(markers);
-    this.map.geoObjects.add(this.clusterer);
+    // this.clusterer.add(markers);
+    // this.map.geoObjects.add(this.clusterer);
+    this.storage.addToMap(this.map);
+    // console.log('[map]:', this.map);
+    // console.log('[storage]:', this.storage);
 
     // center map
-    let needCenter = !update;
+    let needCenter = true;
     if (update) {
-      this.storage.each((mark: any) => {
-        const geoObjectState = this.clusterer.getObjectState(mark);
-        if (geoObjectState.isShown === false) needCenter = true;
-      });
+      // this.storage.each((mark: any) => {
+      //   const geoObjectState = this.clusterer.getObjectState(mark);
+      //   if (geoObjectState.isShown === false) needCenter = true;
+      // });
+      const shownObjects = this.storage.searchIntersect(this.map);
+      needCenter = shownObjects.getLength() < markers.length;
     }
 
     if (markers.length > 0 && needCenter) {
@@ -259,14 +263,15 @@ export class MapService {
 
     this.activeSights.forEach((postId) => {
       this.storage.search(`properties.postId = ${postId}`).each((mark: any) => {
-        const geoObjectState = this.clusterer.getObjectState(mark);
-        if (geoObjectState.isShown) {
-          if (geoObjectState.isClustered) {
-            geoObjectState.cluster.options.set('clusterIconColor', color);
-          } else {
-            mark.options.set('iconColor', color);
-          }
-        }
+        // const geoObjectState = this.clusterer.getObjectState(mark);
+        // if (geoObjectState.isShown) {
+        //   if (geoObjectState.isClustered) {
+        //     geoObjectState.cluster.options.set('clusterIconColor', color);
+        //   } else {
+        //     mark.options.set('iconColor', color);
+        //   }
+        // }
+        mark.options.set('iconColor', color);
       });
     });
   }

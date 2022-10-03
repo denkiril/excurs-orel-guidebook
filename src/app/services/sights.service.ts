@@ -98,6 +98,7 @@ interface FilterControl {
   title: string;
   shortTitle?: string;
   value: boolean;
+  // type?: 'toggle';
 }
 
 interface FilterGroup {
@@ -241,6 +242,19 @@ export const FILTER_BLOCKS: FilterBlock[] = [
           },
         ],
       },
+      // {
+      //   name: 'egrkn',
+      //   title: 'Загрузить данные из госреестра',
+      //   controls: [
+      //     {
+      //       name: 'go',
+      //       title: 'Загрузить данные госреестра по Орлу',
+      //       shortTitle: 'по Орлу',
+      //       value: false,
+      //       type: 'toggle',
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
@@ -269,18 +283,18 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
-  private activeSights: number[] = [];
+  private readonly activeSights: number[] = [];
   private sightForMoreId?: number;
   private nestedSights: { [key: number]: number[] } = {};
 
   fetching$ = new Subject<boolean>();
-  sightsData$ = new ReplaySubject<SightsData>();
+  sightsData$ = new Subject<SightsData>(); // ReplaySubject (?)
   activeSights$ = new ReplaySubject<number[]>();
   sightForMore$ = new Subject<SightForMoreData | undefined>();
 
   constructor(
-    private http: HttpClient,
-    private settingsService: SettingsService,
+    private readonly http: HttpClient,
+    private readonly settingsService: SettingsService,
   ) {}
 
   /* API methods */
@@ -310,7 +324,7 @@ export class SightsService {
     });
   }
 
-  public getSightById(id: number): Observable<SightDataExt> {
+  getSightById(id: number): Observable<SightDataExt> {
     // console.log('getSightById...', id);
     // return this.fetchSights().pipe(
     //   delay(2000),
@@ -321,7 +335,7 @@ export class SightsService {
 
   /* Other methods */
 
-  public getSights(params: GetSightsParams): Observable<SightsData> {
+  getSights(params: GetSightsParams): Observable<SightsData> {
     // console.log('--- getSights params:', params);
     return this.fetchSights().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
@@ -334,24 +348,35 @@ export class SightsService {
     params: GetSightsParams,
   ): SightsData {
     const sightsFilterParams = params.filterParams.sightsFilterParams || {};
+    // console.log('filterSights sightsFilterParams:', sightsFilterParams);
     let items: SightData[] = [];
 
     Object.keys(sightsFilterParams).forEach((blockName) => {
       if (sightsFilterParams[blockName].switchedOn) {
+        // console.log('switchedOn:', blockName);
         const { groups } = sightsFilterParams[blockName];
-        const groupNames = Object.keys(groups);
+        // const groupNames = Object.keys(groups);
+        // console.log('groups:', groups);
 
         items = items.concat(
           sightsData.items
-            .filter((item) =>
-              groupNames.every(
-                (name) =>
-                  (name === 'okn_category' ||
-                    name === 'okn_type' ||
-                    name === 'sets') &&
-                  item[name]?.some((value: string) => groups[name][value]),
-              ),
-            )
+            .filter((item) => {
+              if (blockName === 'okn') {
+                return (
+                  item.okn_category?.some(
+                    (value) => groups.okn_category[value],
+                  ) && item.okn_type?.some((value) => groups.okn_type[value])
+                );
+              }
+              return item.sets?.some((value) => groups.sets[value]);
+              // return groupNames.every(
+              //   (name) =>
+              //     (name === 'okn_category' ||
+              //       name === 'okn_type' ||
+              //       name === 'sets') &&
+              //     item[name]?.some((value: string) => groups[name][value]),
+              // );
+            })
             .slice(0, params.limit),
         );
       }
@@ -403,10 +428,11 @@ export class SightsService {
     );
     items = [...mainItems, ...musItems];
 
+    // console.log('filterSights items:', items);
     return { items };
   }
 
-  public getSightLinks(links: string[]): Observable<SightLink[]> {
+  getSightLinks(links: string[]): Observable<SightLink[]> {
     const addSlash = (str: string): string => {
       return str[str.length - 1] === '/' ? str : `${str}/`;
     };
@@ -440,12 +466,12 @@ export class SightsService {
       : of(this.sightLinks);
   }
 
-  public addActiveSight(sightId: number): void {
+  addActiveSight(sightId: number): void {
     this.activeSightsAdd(sightId);
     this.emitActiveSights();
   }
 
-  public deleteActiveSight(sightId: number): void {
+  deleteActiveSight(sightId: number): void {
     this.activeSightsDelete(sightId);
     this.emitActiveSights();
   }
@@ -478,11 +504,7 @@ export class SightsService {
     });
   }
 
-  public setSightForMore(
-    sightData?: SightData,
-    sightId?: number,
-    setQP = true,
-  ): void {
+  setSightForMore(sightData?: SightData, sightId?: number, setQP = true): void {
     const sight =
       !sightData && sightId
         ? this.sightsData.items.find((item) => item.post_id === sightId)

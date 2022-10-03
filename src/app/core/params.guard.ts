@@ -18,7 +18,7 @@ export type GBQueryParams = Partial<Record<GBQueryParamsKey, string>>;
   providedIn: 'root',
 })
 export class ParamsGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -41,6 +41,13 @@ export class ParamsGuard implements CanActivate {
             return obj;
           }, {})
         : null;
+
+    // if (
+    //   queryParamsKeys.length === 0 ||
+    //   (newQueryParams !== null && Object.keys(newQueryParams).length === 0)
+    // ) {
+    //   newQueryParams = { filter: 'tur:main,mus.okn:f;a,g,h,i' };
+    // }
 
     return newQueryParams
       ? this.router.createUrlTree([], {
