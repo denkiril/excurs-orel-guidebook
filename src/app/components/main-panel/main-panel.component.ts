@@ -58,22 +58,23 @@ interface SightDataLocal extends SightData {
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
   getSights$ = new Subject();
-  private destroy$ = new Subject();
+  private readonly destroy$ = new Subject();
 
-  public readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
+  readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
-  public form!: FormGroup;
-  public sights: SightDataLocal[] = [];
-  public sightIdForMore?: number;
-  public showServerError = false;
-  private limit?: number;
-  public sightsFetching = false;
-  public sightsFetched = false;
+  form!: FormGroup;
+  sights: SightDataLocal[] = [];
+  showServerError = false;
+  private readonly limit?: number;
+  sightsFetching = false;
+  sightsFetched = false;
+  private cachedFormValue: any = {};
+  private activeSights: number[] = [];
 
   constructor(
     // private mapService: MapService,
-    private sightsService: SightsService,
-    private settingsService: SettingsService,
+    private readonly sightsService: SightsService,
+    private readonly settingsService: SettingsService,
   ) {}
 
   ngOnInit(): void {
@@ -88,8 +89,15 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.sightsService.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.sightIdForMore = data?.sight?.post_id || data?.sightId;
-        markDirty(this);
+        // console.log('main-panel sightForMore$', JSON.stringify(data));
+        const sightIdForMore = data?.sight?.post_id || data?.sightId;
+        const sight = this.sights.find((s) => s.post_id === sightIdForMore);
+        if (sight) {
+          sight.active = true;
+          markDirty(this);
+        } else {
+          this.updateSightsActive();
+        }
       });
 
     this.settingsService.startParseQueryParams();
@@ -97,10 +105,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.sightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
-        this.sights.forEach((sight) => {
-          sight.active = activeSights.includes(sight.post_id);
-        });
-        markDirty(this);
+        this.activeSights = activeSights;
+        this.updateSightsActive();
       });
   }
 
@@ -160,13 +166,20 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$), debounceTime(300))
       .subscribe(() => {
         this.getSights();
-        markDirty(this);
+        // markDirty(this);
       });
 
     this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // console.log('form valueChanges$', this.form.value);
+      // console.log('form valueChanges$', value);
+      // const changed = this.getChangedFormControls(value);
+      // console.log('changed:', changed);
+      //   if (changed.includes('egrkn') && changed.length === 1) {
+      //     console.log('Download!!'); // TODO 'egrkn', 'okn_category', 'okn_type'
+      //   } else {
       this.updateFilterParams();
       // -> filterParamsInRoute -> getSights...
+      //   }
+      this.emitGetSights();
     });
 
     this.emitGetSights();
@@ -219,29 +232,59 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     );
   }
 
+  private getChangedFormControls(formValue: any): string[] {
+    const controls: string[] = [];
+
+    Object.keys(formValue).forEach((key) => {
+      const value = formValue[key];
+      const cachedValue = this.cachedFormValue[key];
+      if (
+        cachedValue === undefined ||
+        ((typeof value === 'string' ||
+          typeof value === 'boolean' ||
+          typeof value === 'number') &&
+          value !== cachedValue) ||
+        (typeof value === 'object' &&
+          value !== null &&
+          (typeof cachedValue !== 'object' ||
+            JSON.stringify(value) !== JSON.stringify(cachedValue)))
+      ) {
+        this.cachedFormValue[key] =
+          typeof value === 'object' && value !== null ? { ...value } : value;
+        controls.push(key);
+      }
+    });
+    // console.log('cachedFormValue:', this.cachedFormValue);
+
+    return controls;
+  }
+
   private processFilterParams(filterParams: FilterParams): void {
     // console.log('filterParamsInRoute$', filterParams);
     this.updateForm(filterParams);
-    this.emitGetSights();
+    // this.emitGetSights(); // ???
   }
 
-  public animationDone(filterBlock: FilterBlock): void {
+  animationDone(filterBlock: FilterBlock): void {
     // the toState, fromState and totalTime data is accessible from the event variable
     filterBlock.showed = filterBlock.opened;
     markDirty(this);
   }
 
-  public onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
     // console.log('onOpenedChange');
     filterBlock.opened = opened;
-    this.updateFilterParams();
+    this.updateFilterParams(); // TODO бывает GET только из-за закрытия таба (egrkn?)
   }
 
-  public emitGetSights(): void {
+  emitGetSights(): void {
+    // console.log('emitGetSights');
     this.getSights$.next();
   }
 
   private getSights(): void {
+    // console.log('getSights', this.form.valid);
     if (this.form.invalid) return;
 
     const params: GetSightsParams = {
@@ -285,15 +328,19 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.settingsService.setFilterParams(this.buildFilterParams());
   }
 
-  // public setSightForMore(sight?: SightData): void {
-  //   this.sightsService.setSightForMore(sight);
-  // }
+  private updateSightsActive(): void {
+    this.sights.forEach((sight) => {
+      sight.active = this.activeSights.includes(sight.post_id);
+    });
+    markDirty(this);
+  }
 
-  public trackById(_index: number, item: SightData): number {
+  trackById(_index: number, item: SightData): number {
     return item.post_id;
   }
 
-  public onCardHover(sight: SightDataLocal, hover = true): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onCardHover(sight: SightDataLocal, hover = true): void {
     if (hover) this.sightsService.addActiveSight(sight.post_id);
     else this.sightsService.deleteActiveSight(sight.post_id);
   }

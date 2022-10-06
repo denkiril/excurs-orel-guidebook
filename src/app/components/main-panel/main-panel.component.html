@@ -58,7 +58,7 @@
       <div
         *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"
-        [class.active]="sight.post_id === sightIdForMore || sight.active"
+        [class.active]="sight.active"
         (mouseenter)="onCardHover(sight)"
         (mouseleave)="onCardHover(sight, false)"
       >
@@ -75,10 +75,11 @@
   [formGroup]="form"
 >
   <div
-    class="fb-row"
-    [ngClass]="{
-      'not-checked': form.get(group.name)?.errors?.notChecked
-    }"
+    [ngClass]="[
+      'fb-row',
+      'fb-row-' + group.name,
+      form.get(group.name)?.errors?.notChecked ? 'not-checked' : ''
+    ]"
     [formGroupName]="group.name"
   >
     <div *ngIf="group.title" class="fb-col-title" [title]="group.title">
@@ -90,8 +91,18 @@
       class="fb-cols"
       [class.is--rows]="group.title === undefined"
     >
-      <div *ngFor="let control of group.controls" class="fb-col">
+      <div
+        *ngFor="let control of group.controls"
+        class="fb-col"
+        [ngSwitch]="control.type"
+      >
+        <exogb-toggle
+          *ngSwitchCase="'toggle'"
+          [formControlName]="control.name"
+          [controlTitle]="control.title"
+        ></exogb-toggle>
         <exogb-checkbox
+          *ngSwitchDefault
           [formControlName]="control.name"
           [controlTitle]="control.title"
           [textRight]="control.shortTitle || control.title"

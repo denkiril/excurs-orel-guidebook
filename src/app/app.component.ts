@@ -56,25 +56,25 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('mainPanel', { static: true, read: ElementRef })
   mainPanel!: ElementRef;
 
-  private destroy$ = new Subject();
-  public isMobile = false;
-  public translateY = 0;
+  private readonly destroy$ = new Subject();
+  isMobile = false;
+  translateY = 0;
   private translateYStart = 0;
   private paddingSummand = 0;
   private translateYBreakpoint = -400;
-  public expandButtonPressed = false;
-  public sightForMore?: SightForMoreData;
-  public showSightForMore = false;
+  expandButtonPressed = false;
+  sightForMore?: SightForMoreData;
+  showSightForMore = false;
 
   // eslint-disable-next-line max-params
   constructor(
-    private renderer: Renderer2,
-    private windowService: WindowService,
-    private documentService: DocumentService,
+    private readonly renderer: Renderer2,
+    private readonly windowService: WindowService,
+    private readonly documentService: DocumentService,
     // private utilitiesService: UtilitiesService,
     // private settingsService: SettingsService,
-    private sightsService: SightsService,
-    private analyticsService: AnalyticsService,
+    private readonly sightsService: SightsService,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   // @HostListener('window:resize')
@@ -161,7 +161,8 @@ export class AppComponent implements OnInit, OnDestroy {
     markDirty(this);
   }
 
-  public onExpandBtnClick(): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onExpandBtnClick(): void {
     // console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
 
     const translateY =
@@ -174,7 +175,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setTransition(true);
   }
 
-  public onExpandBtnTouchstart(event: TouchEvent): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onExpandBtnTouchstart(event: TouchEvent): void {
     this.expandButtonPressed = true;
     this.translateYStart = event.changedTouches[0].pageY - this.translateY;
     this.setTransition(false);
@@ -187,7 +189,8 @@ export class AppComponent implements OnInit, OnDestroy {
     // );
   }
 
-  public onExpandBtnTouchend(): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onExpandBtnTouchend(): void {
     // console.log('onExpandBtnTouchend');
     this.expandButtonPressed = false;
   }
@@ -237,19 +240,19 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onClosePanel(): void {
+  // eslint-disable-next-line sort-class-members/sort-class-members
+  onClosePanel(): void {
     this.showSightForMore = false;
     markDirty(this);
   }
 
-  public animationDone(event: AnimationEvent): void {
+  animationDone(event: AnimationEvent): void {
     // the toState, fromState and totalTime data is accessible from the event variable
-    // console.log('animationDone', this.showSightForMore, this.sightForMore);
     // console.log('animationDone', event);
     // if (this.sightForMore && !this.showSightForMore) {
     if (this.sightForMore && event.toState === 'closed') {
       this.sightForMore = undefined;
-      this.sightsService.setSightForMore();
+      this.sightsService.setSightForMore(undefined);
       // markDirty(this);
     }
   }

@@ -27,9 +27,12 @@ export class SettingsService {
     ]),
   );
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+  ) {}
 
-  public startParseQueryParams(): void {
+  startParseQueryParams(): void {
     // console.log('startParseQueryParams');
     this.activatedRoute.queryParams
       .pipe(debounceTime(100))
@@ -42,9 +45,7 @@ export class SettingsService {
       });
   }
 
-  public getFilterParams(
-    filterParamsInRoute: FilterParams,
-  ): FilterParams | undefined {
+  getFilterParams(filterParamsInRoute: FilterParams): FilterParams | undefined {
     // console.log('getFilterParams', filterParamsInRoute);
     // queryParams or localStorage...
     let filterParams: FilterParams | undefined;
@@ -83,7 +84,7 @@ export class SettingsService {
     return filterParams;
   }
 
-  public setFilterParams(
+  setFilterParams(
     filterParams: FilterParams,
     setLS = true,
     setQP = true,
@@ -182,10 +183,7 @@ export class SettingsService {
     return Object.fromEntries(str.split(',').map((key) => [key, true]));
   }
 
-  public buildFilterParams(
-    filterBlocks: FilterBlock[],
-    formValue: any,
-  ): FilterParams {
+  buildFilterParams(filterBlocks: FilterBlock[], formValue: any): FilterParams {
     // console.log('--- buildFilterParams formValue:', formValue);
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};
@@ -211,7 +209,7 @@ export class SettingsService {
     return filterParams;
   }
 
-  public setQueryParam(key: string, value: any): void {
+  setQueryParam(key: string, value: any): void {
     // console.log('setQueryParam', key, value);
 
     // this.skipParse = true;

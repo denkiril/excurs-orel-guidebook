@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
@@ -471,11 +471,13 @@ export class SightsService {
   }
 
   addActiveSight(sightId: number): void {
+    // console.log('addActiveSight', sightId);
     this.activeSightsAdd(sightId);
     this.emitActiveSights();
   }
 
   deleteActiveSight(sightId: number): void {
+    // console.log('deleteActiveSight', sightId);
     this.activeSightsDelete(sightId);
     this.emitActiveSights();
   }
@@ -494,6 +496,7 @@ export class SightsService {
   }
 
   private emitActiveSights(): void {
+    // console.log('-- emitActiveSights');
     this.activeSights$.next(Array.from(new Set(this.activeSights)));
   }
 
@@ -501,7 +504,9 @@ export class SightsService {
     addId: number | undefined,
     deleteId: number | undefined,
   ): void {
-    this.sightsDataFetched$.subscribe(() => {
+    // console.log('processActiveSights...');
+    this.sightsDataFetched$.pipe(first()).subscribe(() => {
+      // console.log('processActiveSights | addId, deleteId:', addId, deleteId);
       if (addId) this.activeSightsAdd(addId);
       if (deleteId) this.activeSightsDelete(deleteId);
       if (addId || deleteId) this.emitActiveSights();
@@ -509,6 +514,7 @@ export class SightsService {
   }
 
   setSightForMore(sightData?: SightData, sightId?: number, setQP = true): void {
+    // console.log('setSightForMore', sightData, sightId, setQP);
     const sight =
       !sightData && sightId
         ? this.sightsData.items.find((item) => item.post_id === sightId)
@@ -521,11 +527,10 @@ export class SightsService {
     this.processActiveSights(sightForMoreId, this.sightForMoreId);
     this.sightForMoreId = sightForMoreId;
 
-    // console.log('setSightForMore:', sightForMore);
-    this.sightForMore$.next(sightForMore);
-
     if (setQP) {
       this.settingsService.setQueryParam('sight', this.sightForMoreId);
+    } else {
+      this.sightForMore$.next(sightForMore);
     }
   }
 }
