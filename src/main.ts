@@ -35,5 +35,5 @@ platformBrowserDynamic()
 // Офлайн-режим ?
 // webp from api data ?
 // Фото ЭО на карте (pagination)
-// ! fantom active bug (click marker, click checkbox)
-// ! localStorage unavailable bug
+// fantom active bug (click marker, click checkbox) +
+// localStorage unavailable bug +

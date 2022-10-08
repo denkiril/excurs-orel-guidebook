@@ -10,6 +10,7 @@ import {
   FILTER_BLOCKS,
   SightsFilterParams,
 } from './sights.service';
+import { StorageService } from './storage.service';
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
@@ -30,6 +31,7 @@ export class SettingsService {
   constructor(
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
+    private readonly storageService: StorageService,
   ) {}
 
   startParseQueryParams(): void {
@@ -53,7 +55,7 @@ export class SettingsService {
       filterParams = filterParamsInRoute;
     }
 
-    const filterParamsStr = localStorage.getItem(FILTER_PARAMS_LS_ITEM);
+    const filterParamsStr = this.storageService.getItem(FILTER_PARAMS_LS_ITEM);
     let sightsParamsLS: SightsFilterParams | undefined;
     if (filterParamsStr) {
       try {
@@ -93,7 +95,7 @@ export class SettingsService {
     const sightsFilterParams = filterParams.sightsFilterParams || {};
 
     if (setLS && Object.keys(sightsFilterParams).length) {
-      localStorage.setItem(
+      this.storageService.setItem(
         FILTER_PARAMS_LS_ITEM,
         JSON.stringify(sightsFilterParams),
       );

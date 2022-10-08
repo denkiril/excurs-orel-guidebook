@@ -137,6 +137,7 @@ export class MapService {
 
   private setMarkers(update = false): void {
     this.mapActiveSights = [];
+    this.sightsService.deleteAllActiveSights();
     const markers = this.makeMarkers(this.sightsData?.items || []);
 
     // this.clusterer.removeAll();
@@ -248,8 +249,8 @@ export class MapService {
     this.sightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
-        // console.log('$$$ this.activeSights:', this.activeSights);
-        // console.log('$$$ activeSights:', activeSights);
+        // console.log('$$$ cached activeSights:', this.activeSights);
+        // console.log('$$$ new activeSights:', activeSights);
         if (this.arraysNotEquals(this.activeSights, activeSights) === true) {
           this.colorActiveSights(false);
           this.activeSights = activeSights;

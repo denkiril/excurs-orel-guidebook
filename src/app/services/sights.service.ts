@@ -283,7 +283,7 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
-  private readonly activeSights: number[] = [];
+  private activeSights: number[] = [];
   private sightForMoreId?: number;
   private nestedSights: { [key: number]: number[] } = {};
   private readonly sightsDataFetched$ = new ReplaySubject<void>();
@@ -482,6 +482,11 @@ export class SightsService {
     this.emitActiveSights();
   }
 
+  deleteAllActiveSights(): void {
+    this.activeSights = [];
+    this.emitActiveSights();
+  }
+
   private activeSightsAdd(sightId: number): void {
     const ids = this.nestedSights[sightId] || [sightId];
     this.activeSights.push(...ids);
@@ -496,7 +501,7 @@ export class SightsService {
   }
 
   private emitActiveSights(): void {
-    // console.log('-- emitActiveSights');
+    // console.log('-- emitActiveSights', this.activeSights);
     this.activeSights$.next(Array.from(new Set(this.activeSights)));
   }
 
