@@ -22,7 +22,7 @@ describe('MainPanelComponent', () => {
       imports: [
         BrowserAnimationsModule,
         HttpClientTestingModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([]),
         FormsModule,
         ReactiveFormsModule,
         IconsModule,

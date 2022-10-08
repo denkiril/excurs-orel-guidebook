@@ -8,7 +8,7 @@ describe('SettingsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule.withRoutes([])],
     });
     service = TestBed.inject(SettingsService);
   });

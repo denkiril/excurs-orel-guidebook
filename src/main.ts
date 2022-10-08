@@ -19,7 +19,6 @@ platformBrowserDynamic()
   .catch((err) => console.error(err));
 
 // TODO
-// read me
 // Sights sorting. Default? Manual?
 // Справка (большой тултип?)
 // ОКН от Минкульта
@@ -36,3 +35,5 @@ platformBrowserDynamic()
 // Офлайн-режим ?
 // webp from api data ?
 // Фото ЭО на карте (pagination)
+// ! fantom active bug (click marker, click checkbox)
+// ! localStorage unavailable bug

@@ -9,7 +9,7 @@ describe('MapService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
     });
     service = TestBed.inject(MapService);
   });

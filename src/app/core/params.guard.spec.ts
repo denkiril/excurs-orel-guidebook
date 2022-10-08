@@ -8,7 +8,7 @@ describe('ParamsGuard', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule.withRoutes([])],
     });
     guard = TestBed.inject(ParamsGuard);
   });

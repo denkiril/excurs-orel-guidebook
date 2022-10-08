@@ -10,7 +10,7 @@ describe('MainMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       declarations: [MainMapComponent],
     }).compileComponents();
   });

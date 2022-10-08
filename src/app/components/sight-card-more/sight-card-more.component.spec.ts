@@ -11,7 +11,11 @@ describe('SightCardMoreComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, IconsModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        IconsModule,
+      ],
       declarations: [SightCardMoreComponent],
     }).compileComponents();
   });

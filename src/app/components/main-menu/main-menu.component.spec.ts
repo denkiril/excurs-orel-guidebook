@@ -15,7 +15,7 @@ describe('MainMenuComponent', () => {
       imports: [
         BrowserAnimationsModule,
         HttpClientTestingModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([]),
         IconsModule,
       ],
       declarations: [MainMenuComponent],

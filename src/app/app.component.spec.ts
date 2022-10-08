@@ -9,14 +9,13 @@ import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MainPanelComponent } from './components/main-panel/main-panel.component';
 import { SearchBarComponent } from './components/controls/search-bar/search-bar.component';
 import { LoaderComponent } from './components/controls/loader/loader.component';
-
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([]),
         NoopAnimationsModule,
         HttpClientTestingModule,
         IconsModule,
