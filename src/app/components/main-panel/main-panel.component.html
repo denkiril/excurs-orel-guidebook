@@ -46,10 +46,8 @@
   ></exogb-loader>
 
   <ng-container *ngIf="sightsFetched">
-    <div class="summary-text" [class.empty]="!sights.length">
-      <p *ngIf="sights.length || sightsFetching; else noSightsTemplate">
-        Найдено объектов: {{ sightsIndicator }}
-      </p>
+    <div class="summary-text">
+      <p>Найдено объектов: {{ sightsIndicator }}</p>
     </div>
     <div *ngIf="sights.length" class="cards-container">
       <div class="cards-cover" [class.blocked]="sightsFetching"></div>
@@ -110,8 +108,4 @@
       </div>
     </div>
   </div>
-</ng-template>
-
-<ng-template #noSightsTemplate>
-  <p>Достопримечательностей по вашему запросу не найдено</p>
 </ng-template>
