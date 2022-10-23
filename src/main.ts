@@ -37,3 +37,4 @@ platformBrowserDynamic()
 // Фото ЭО на карте (pagination)
 // fantom active bug (click marker, click checkbox) +
 // localStorage unavailable bug +
+// custom user-scalable (a11y)?

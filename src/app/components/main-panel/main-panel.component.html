@@ -38,6 +38,7 @@
   </div>
 
   <exogb-loader
+    *ngIf="!sightsFetched"
     [showSpinner]="sightsFetching"
     [showServerError]="!sightsFetching && showServerError"
     [disabled]="form.invalid"
@@ -45,16 +46,11 @@
   ></exogb-loader>
 
   <ng-container *ngIf="sightsFetched">
-    <div class="summary-text" [class.empty]="!sights.length">
-      <p>
-        {{
-          sights.length
-            ? 'Найдено объектов: ' + sights.length
-            : 'Достопримечательностей по вашему запросу не найдено'
-        }}
-      </p>
+    <div class="summary-text">
+      <p>Найдено объектов: {{ sightsIndicator }}</p>
     </div>
     <div *ngIf="sights.length" class="cards-container">
+      <div class="cards-cover" [class.blocked]="sightsFetching"></div>
       <div
         *ngFor="let sight of sights; index as i; trackBy: trackById"
         class="card-container"

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { delay, first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
@@ -288,7 +288,6 @@ export class SightsService {
   private nestedSights: { [key: number]: number[] } = {};
   private readonly sightsDataFetched$ = new ReplaySubject<void>();
 
-  fetching$ = new Subject<boolean>();
   sightsData$ = new Subject<SightsData>(); // ReplaySubject (?)
   activeSights$ = new ReplaySubject<number[]>();
   sightForMore$ = new Subject<SightForMoreData | undefined>();
@@ -306,22 +305,37 @@ export class SightsService {
         observer.next(this.sightsData);
         observer.complete();
       } else {
-        this.fetching$.next(true);
-
         this.http.get<SightData[]>('sights').subscribe(
           (resp) => {
             console.log('=== GET resp:', resp);
             this.sightsData.items = resp;
-            this.fetching$.next(false);
             observer.next(this.sightsData);
             observer.complete();
           },
           (error) => {
-            this.fetching$.next(false);
             observer.error(error);
+            observer.complete();
           },
         );
       }
+    });
+  }
+
+  private fetchingSights(): Observable<SightsData> {
+    return new Observable<SightsData>((observer) => {
+      forkJoin({
+        sightsData: this.fetchSights(),
+        delay: of(undefined).pipe(delay(400)),
+      }).subscribe(
+        (resp) => {
+          observer.next(resp.sightsData);
+          observer.complete();
+        },
+        (error) => {
+          observer.error(error);
+          observer.complete();
+        },
+      );
     });
   }
 
@@ -338,7 +352,7 @@ export class SightsService {
 
   getSights(params: GetSightsParams): Observable<SightsData> {
     // console.log('--- getSights params:', params);
-    return this.fetchSights().pipe(
+    return this.fetchingSights().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
       tap((filtSightsData) => {
         this.sightsData$.next(filtSightsData);

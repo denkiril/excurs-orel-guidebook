@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoggerService } from './logger.service';
 import { WindowService } from './window.service';
 
 const YM_ID = 52494430;
@@ -8,12 +9,15 @@ const CATEGORY_NAME = 'exogb';
   providedIn: 'root',
 })
 export class AnalyticsService {
-  constructor(private readonly windowService: WindowService) {}
+  constructor(
+    private readonly windowService: WindowService,
+    private readonly loggerService: LoggerService,
+  ) {}
 
   sendEvent(action: string): void {
     const { gtag, ym } = this.windowService.windowRef;
     const label = 'test_label';
-    console.log('sendEvent', action);
+    this.loggerService.devLog('sendEvent', action);
 
     if (gtag) {
       // https://developers.google.com/analytics/devguides/collection/gtagjs/events?hl=ru
