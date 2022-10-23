@@ -26,10 +26,14 @@ import {
 } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
+import { LoggerService } from 'src/app/services/logger.service';
+import { WindowService } from 'src/app/services/window.service';
 
 interface SightDataLocal extends SightData {
   active: boolean;
 }
+
+const DOT = ' .';
 
 @Component({
   selector: 'exogb-main-panel',
@@ -68,11 +72,14 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private readonly limit?: number;
   sightsFetching = false;
   sightsFetched = false;
+  sightsIndicator = '';
+  private intervalID: any;
   private cachedFormValue: any = {};
   private activeSights: number[] = [];
 
   constructor(
-    // private mapService: MapService,
+    private readonly windowService: WindowService,
+    private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly settingsService: SettingsService,
   ) {}
@@ -113,6 +120,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.intervalID) {
+      this.windowService.windowRef.clearInterval(this.intervalID);
+    }
   }
 
   private initForm(): void {
@@ -292,28 +302,46 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       filterParams: this.buildFilterParams(),
     };
 
-    this.sightsFetching = true;
-    markDirty(this);
+    this.setSightsFetching(true);
 
     this.sightsService
       .getSights(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          // console.log('sightsService data:', data);
+          this.loggerService.devLog('sightsService data:', data);
           this.sights = data.items.map((item) => ({ ...item, active: false }));
-          this.sightsFetching = false;
           this.sightsFetched = true;
           this.showServerError = false;
-          markDirty(this);
+          this.setSightsFetching(false);
         },
         (error) => {
-          // console.error('!! Error:', error);
-          this.sightsFetching = false;
-          if (!error.ok) this.showServerError = true;
-          markDirty(this);
+          this.loggerService.error(error);
+          if (!error.ok) this.showServerError = true; // TODO auto-reload?
+          this.setSightsFetching(false);
         },
       );
+  }
+
+  private setSightsFetching(isFetching: boolean): void {
+    this.sightsFetching = isFetching;
+    if (this.intervalID) {
+      this.windowService.windowRef.clearInterval(this.intervalID);
+    }
+
+    if (this.sightsFetched && this.sightsFetching) {
+      this.sightsIndicator = DOT;
+
+      this.intervalID = this.windowService.windowRef.setInterval(() => {
+        this.sightsIndicator += DOT;
+        if (this.sightsIndicator.length > 10) this.sightsIndicator = DOT;
+        this.loggerService.devLog('intervalID', this.intervalID);
+        markDirty(this);
+      }, 300);
+    } else {
+      this.sightsIndicator = this.sights.length.toString();
+    }
+    markDirty(this);
   }
 
   private buildFilterParams(): FilterParams {
