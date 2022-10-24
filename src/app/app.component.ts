@@ -25,7 +25,7 @@ import { SightForMoreData, SightsService } from './services/sights.service';
 import { AnalyticsService } from './services/analytics.service';
 
 const TOP_MARGIN = 80;
-const BOTTOM_MARGIN = 128;
+const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px); [app.component.scss]
 
 @Component({
   selector: 'exogb-root',
@@ -256,8 +256,8 @@ export class AppComponent implements OnInit, OnDestroy {
   onSearchInputFocus(): void {
     // search & mobile keyboard bugfix
     if (this.isMobile) {
-      this.setTransition(true);
-      this.setTranslateY(-64);
+      this.setTransition(false);
+      this.setTranslateY(0);
     }
   }
 }
