@@ -5,7 +5,7 @@
 <!-- <div class="main-panel-container" [@expandPanel]="expandPanelState"> -->
 <div class="main-container">
   <div #mainPanelContainer class="main-panel-container">
-    <exogb-main-panel #mainPanel>
+    <exogb-main-panel #mainPanel (searchInputFocused)="onSearchInputFocus()">
       <div
         *ngIf="isMobile"
         class="expand-button"

@@ -1,7 +1,9 @@
 import {
   Component,
+  EventEmitter,
   OnDestroy,
   OnInit,
+  Output,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
@@ -61,6 +63,8 @@ const DOT = ' .';
   ],
 })
 export class MainPanelComponent implements OnInit, OnDestroy {
+  @Output() searchInputFocused = new EventEmitter<void>();
+
   getSights$ = new Subject();
   private readonly destroy$ = new Subject();
 
@@ -281,7 +285,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     markDirty(this);
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
     // console.log('onOpenedChange');
     filterBlock.opened = opened;
@@ -367,9 +370,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     return item.post_id;
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onCardHover(sight: SightDataLocal, hover = true): void {
     if (hover) this.sightsService.addActiveSight(sight.post_id);
     else this.sightsService.deleteActiveSight(sight.post_id);
+  }
+
+  onSearchInputFocus(): void {
+    this.searchInputFocused.emit();
   }
 }

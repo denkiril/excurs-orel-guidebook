@@ -161,7 +161,6 @@ export class AppComponent implements OnInit, OnDestroy {
     markDirty(this);
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnClick(): void {
     // console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
 
@@ -175,7 +174,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setTransition(true);
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnTouchstart(event: TouchEvent): void {
     this.expandButtonPressed = true;
     this.translateYStart = event.changedTouches[0].pageY - this.translateY;
@@ -189,7 +187,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // );
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnTouchend(): void {
     // console.log('onExpandBtnTouchend');
     this.expandButtonPressed = false;
@@ -240,7 +237,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onClosePanel(): void {
     this.showSightForMore = false;
     markDirty(this);
@@ -254,6 +250,14 @@ export class AppComponent implements OnInit, OnDestroy {
       this.sightForMore = undefined;
       this.sightsService.setSightForMore(undefined);
       // markDirty(this);
+    }
+  }
+
+  onSearchInputFocus(): void {
+    // search & mobile keyboard bugfix
+    if (this.isMobile) {
+      this.setTransition(true);
+      this.setTranslateY(-64);
     }
   }
 }

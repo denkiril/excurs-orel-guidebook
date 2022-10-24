@@ -19,13 +19,13 @@ const MEDIA_BREAKPOINTS = {
   providedIn: 'root',
 })
 export class DocumentService {
-  public getMediaSize$ = new BehaviorSubject<MediaSize | undefined>(
+  getMediaSize$ = new BehaviorSubject<MediaSize | undefined>(
     this.getMediaSize(true),
   );
 
   constructor(
-    @Inject(DOCUMENT) private document: Document,
-    private windowService: WindowService,
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly windowService: WindowService,
   ) {
     this.init();
   }
@@ -34,7 +34,7 @@ export class DocumentService {
     return this.document;
   }
 
-  public onFocus$: Observable<Event> = fromEvent(
+  onFocus$: Observable<Event> = fromEvent(
     this.windowService.windowRef,
     'focus',
   ).pipe(
@@ -42,20 +42,20 @@ export class DocumentService {
     share(),
   );
 
-  public onResize$: Observable<Event> = fromEvent(
+  onResize$: Observable<Event> = fromEvent(
     this.windowService.windowRef,
     'resize',
   ).pipe(debounceTime(300), share());
 
-  public onScroll$: Observable<Event> = fromEvent(
+  onScroll$: Observable<Event> = fromEvent(
     this.windowService.windowRef,
     'scroll',
     { capture: true },
   ).pipe(debounceTime(20), share());
 
-  public onClick$: Observable<Event> = fromEvent(this.documentRef, 'click');
+  onClick$: Observable<Event> = fromEvent(this.documentRef, 'click');
 
-  public onTouchmove$: Observable<TouchEvent> = fromEvent<TouchEvent>(
+  onTouchmove$: Observable<TouchEvent> = fromEvent<TouchEvent>(
     this.documentRef,
     'touchmove',
   );
