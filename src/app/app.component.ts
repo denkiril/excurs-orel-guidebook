@@ -24,8 +24,8 @@ import { DocumentService, MediaSize } from './services/document.service';
 import { SightForMoreData, SightsService } from './services/sights.service';
 import { AnalyticsService } from './services/analytics.service';
 
-const TOP_MARGIN = 80;
-const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px); [app.component.scss]
+const TOP_MARGIN = 50; // height: calc(100vh - {TOP_MARGIN}px); [app.component.scss]
+const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px);
 
 @Component({
   selector: 'exogb-root',
@@ -62,6 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private translateYStart = 0;
   private paddingSummand = 0;
   private translateYBreakpoint = -400;
+  private translateYTop = -680;
   expandButtonPressed = false;
   sightForMore?: SightForMoreData;
   showSightForMore = false;
@@ -145,11 +146,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.translateYBreakpoint = -Math.floor(
       this.windowService.windowRef.innerHeight / 2,
     );
-
+    this.translateYTop = -Math.floor(
+      this.windowService.windowRef.innerHeight - BOTTOM_MARGIN - TOP_MARGIN,
+    );
     this.paddingSummand =
       this.mainPanelContainer.nativeElement.clientHeight - BOTTOM_MARGIN + 8;
 
     // console.log('[][] translateYBreakpoint', this.translateYBreakpoint);
+    // console.log('[][] translateYTop', this.translateYTop);
     // console.log('[][] paddingSummand', this.paddingSummand);
     this.correctMainPanel(true);
   }
@@ -195,8 +199,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private movePanel(event: TouchEvent): void {
     const { pageY } = event.changedTouches[0];
     const translateY = pageY - this.translateYStart;
-    // console.log('pageY, translateY:', pageY, translateY);
-    if (pageY > TOP_MARGIN && translateY <= 0) this.setTranslateY(translateY);
+    // if (pageY > TOP_MARGIN && translateY <= 0) {
+    if (translateY > this.translateYTop && translateY <= 0) {
+      // console.log('pageY, translateY:', pageY, translateY);
+      this.setTranslateY(translateY);
+    }
   }
 
   private setTranslateY(translateY: number): void {
@@ -257,7 +264,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // search & mobile keyboard bugfix
     if (this.isMobile) {
       this.setTransition(false);
-      this.setTranslateY(0);
+      this.setTranslateY(this.translateYTop);
     }
   }
 }

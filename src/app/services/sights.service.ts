@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { delay, first, map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
+import { first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
@@ -325,7 +325,7 @@ export class SightsService {
     return new Observable<SightsData>((observer) => {
       forkJoin({
         sightsData: this.fetchSights(),
-        delay: of(undefined).pipe(delay(400)),
+        delay: timer(400),
       }).subscribe(
         (resp) => {
           observer.next(resp.sightsData);
