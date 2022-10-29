@@ -66,6 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
   expandButtonPressed = false;
   sightForMore?: SightForMoreData;
   showSightForMore = false;
+  fixMainPanel = false;
 
   // eslint-disable-next-line max-params
   constructor(
@@ -168,20 +169,28 @@ export class AppComponent implements OnInit, OnDestroy {
   onExpandBtnClick(): void {
     // console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
 
-    const translateY =
-      this.translateY < this.translateYBreakpoint - 30 ||
-      this.translateY > this.translateYBreakpoint + 30
-        ? this.translateYBreakpoint
-        : 0;
+    if (this.fixMainPanel) {
+      this.setMainPanelFixed(false, this.translateYBreakpoint);
+    } else {
+      const translateY =
+        this.translateY < this.translateYBreakpoint - 30 ||
+        this.translateY > this.translateYBreakpoint + 30
+          ? this.translateYBreakpoint
+          : 0;
 
-    this.setTranslateY(translateY);
-    this.setTransition(true);
+      this.setTranslateY(translateY);
+      this.setTransition(true);
+    }
   }
 
   onExpandBtnTouchstart(event: TouchEvent): void {
-    this.expandButtonPressed = true;
-    this.translateYStart = event.changedTouches[0].pageY - this.translateY;
-    this.setTransition(false);
+    if (this.fixMainPanel) {
+      this.setMainPanelFixed(false, this.translateYBreakpoint);
+    } else {
+      this.expandButtonPressed = true;
+      this.translateYStart = event.changedTouches[0].pageY - this.translateY;
+      this.setTransition(false);
+    }
 
     // console.log(
     //   'onExpandBtnTouchstart',
@@ -215,7 +224,7 @@ export class AppComponent implements OnInit, OnDestroy {
       `translateY(${translateY}px)`,
     );
 
-    if (this.isMobile) this.correctMainPanel();
+    if (this.isMobile) this.correctMainPanel(this.fixMainPanel);
   }
 
   private correctMainPanel(reset = false): void {
@@ -263,8 +272,14 @@ export class AppComponent implements OnInit, OnDestroy {
   onSearchInputFocus(): void {
     // search & mobile keyboard bugfix
     if (this.isMobile) {
-      this.setTransition(false);
-      this.setTranslateY(this.translateYTop);
+      this.setMainPanelFixed(true, 0);
     }
+  }
+
+  private setMainPanelFixed(fixed: boolean, translateY: number): void {
+    this.fixMainPanel = fixed;
+    this.setTranslateY(translateY);
+    this.setTransition(false);
+    markDirty(this);
   }
 }

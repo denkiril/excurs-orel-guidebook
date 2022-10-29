@@ -21,6 +21,16 @@
   min-width: 350px;
   max-width: 50%;
   z-index: 50;
+
+  &.fixed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    z-index: 110;
+  }
 }
 
 .main-map-container {
