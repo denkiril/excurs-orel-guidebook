@@ -38,3 +38,5 @@ platformBrowserDynamic()
 // fantom active bug (click marker, click checkbox) +
 // localStorage unavailable bug +
 // custom user-scalable (a11y)?
+// search & mobile keyboard bug +
+// ! active nested not highlighted on map, also in-route active

@@ -7,6 +7,7 @@
     [placeholder]="placeholder"
     [disabled]="!enabled"
     (keyup)="enabled && checkValue(searchInput.value, $event)"
+    (focus)="onInputFocus()"
   />
 
   <mat-icon

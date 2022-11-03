@@ -4,7 +4,10 @@
 
 <div class="scrolled-content scroller" [formGroup]="form">
   <div class="search-bar">
-    <exogb-search-bar formControlName="search"></exogb-search-bar>
+    <exogb-search-bar
+      formControlName="search"
+      (inputFocused)="onSearchInputFocus()"
+    ></exogb-search-bar>
   </div>
 
   <div class="filter-blocks-container">

@@ -24,8 +24,8 @@ import { DocumentService, MediaSize } from './services/document.service';
 import { SightForMoreData, SightsService } from './services/sights.service';
 import { AnalyticsService } from './services/analytics.service';
 
-const TOP_MARGIN = 80;
-const BOTTOM_MARGIN = 128;
+const TOP_MARGIN = 50; // height: calc(100vh - {TOP_MARGIN}px); [app.component.scss]
+const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px);
 
 @Component({
   selector: 'exogb-root',
@@ -62,9 +62,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private translateYStart = 0;
   private paddingSummand = 0;
   private translateYBreakpoint = -400;
+  private translateYTop = -680;
   expandButtonPressed = false;
   sightForMore?: SightForMoreData;
   showSightForMore = false;
+  fixMainPanel = false;
 
   // eslint-disable-next-line max-params
   constructor(
@@ -145,11 +147,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.translateYBreakpoint = -Math.floor(
       this.windowService.windowRef.innerHeight / 2,
     );
-
+    this.translateYTop = -Math.floor(
+      this.windowService.windowRef.innerHeight - BOTTOM_MARGIN - TOP_MARGIN,
+    );
     this.paddingSummand =
       this.mainPanelContainer.nativeElement.clientHeight - BOTTOM_MARGIN + 8;
 
     // console.log('[][] translateYBreakpoint', this.translateYBreakpoint);
+    // console.log('[][] translateYTop', this.translateYTop);
     // console.log('[][] paddingSummand', this.paddingSummand);
     this.correctMainPanel(true);
   }
@@ -161,25 +166,31 @@ export class AppComponent implements OnInit, OnDestroy {
     markDirty(this);
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnClick(): void {
     // console.log('onExpandBtnClick', this.translateY, this.translateYBreakpoint);
 
-    const translateY =
-      this.translateY < this.translateYBreakpoint - 30 ||
-      this.translateY > this.translateYBreakpoint + 30
-        ? this.translateYBreakpoint
-        : 0;
+    if (this.fixMainPanel) {
+      this.setMainPanelFixed(false, this.translateYBreakpoint);
+    } else {
+      const translateY =
+        this.translateY < this.translateYBreakpoint - 30 ||
+        this.translateY > this.translateYBreakpoint + 30
+          ? this.translateYBreakpoint
+          : 0;
 
-    this.setTranslateY(translateY);
-    this.setTransition(true);
+      this.setTranslateY(translateY);
+      this.setTransition(true);
+    }
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnTouchstart(event: TouchEvent): void {
-    this.expandButtonPressed = true;
-    this.translateYStart = event.changedTouches[0].pageY - this.translateY;
-    this.setTransition(false);
+    if (this.fixMainPanel) {
+      this.setMainPanelFixed(false, this.translateYBreakpoint);
+    } else {
+      this.expandButtonPressed = true;
+      this.translateYStart = event.changedTouches[0].pageY - this.translateY;
+      this.setTransition(false);
+    }
 
     // console.log(
     //   'onExpandBtnTouchstart',
@@ -189,7 +200,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // );
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onExpandBtnTouchend(): void {
     // console.log('onExpandBtnTouchend');
     this.expandButtonPressed = false;
@@ -198,8 +208,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private movePanel(event: TouchEvent): void {
     const { pageY } = event.changedTouches[0];
     const translateY = pageY - this.translateYStart;
-    // console.log('pageY, translateY:', pageY, translateY);
-    if (pageY > TOP_MARGIN && translateY <= 0) this.setTranslateY(translateY);
+    // if (pageY > TOP_MARGIN && translateY <= 0) {
+    if (translateY > this.translateYTop && translateY <= 0) {
+      // console.log('pageY, translateY:', pageY, translateY);
+      this.setTranslateY(translateY);
+    }
   }
 
   private setTranslateY(translateY: number): void {
@@ -211,7 +224,7 @@ export class AppComponent implements OnInit, OnDestroy {
       `translateY(${translateY}px)`,
     );
 
-    if (this.isMobile) this.correctMainPanel();
+    if (this.isMobile) this.correctMainPanel(this.fixMainPanel);
   }
 
   private correctMainPanel(reset = false): void {
@@ -240,7 +253,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  // eslint-disable-next-line sort-class-members/sort-class-members
   onClosePanel(): void {
     this.showSightForMore = false;
     markDirty(this);
@@ -255,5 +267,19 @@ export class AppComponent implements OnInit, OnDestroy {
       this.sightsService.setSightForMore(undefined);
       // markDirty(this);
     }
+  }
+
+  onSearchInputFocus(): void {
+    // search & mobile keyboard bugfix
+    if (this.isMobile) {
+      this.setMainPanelFixed(true, 0);
+    }
+  }
+
+  private setMainPanelFixed(fixed: boolean, translateY: number): void {
+    this.fixMainPanel = fixed;
+    this.setTranslateY(translateY);
+    this.setTransition(false);
+    markDirty(this);
   }
 }
