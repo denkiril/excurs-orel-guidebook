@@ -6,7 +6,7 @@ import {
   SimpleChanges,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
-import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
+import { ImageItem, ImageSizeItem } from 'src/app/models/sights.models';
 
 @Component({
   selector: 'exogb-picture',

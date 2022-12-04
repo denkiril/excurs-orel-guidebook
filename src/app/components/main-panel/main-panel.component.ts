@@ -18,14 +18,14 @@ import { Subject } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
 import {
-  FilterBlock,
-  FilterParams,
-  FILTER_BLOCKS,
-  GetSightsParams,
   SightData,
+  FilterBlock,
+  FILTER_BLOCKS,
+  FilterParams,
   SightsFilterParams,
-  SightsService,
-} from 'src/app/services/sights.service';
+  GetSightsParams,
+} from 'src/app/models/sights.models';
+import { SightsService } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 import { LoggerService } from 'src/app/services/logger.service';

@@ -19,8 +19,8 @@ import {
   SightData,
   SightDataExt,
   SightForMoreData,
-  SightsService,
-} from 'src/app/services/sights.service';
+} from 'src/app/models/sights.models';
+import { SightsService } from 'src/app/services/sights.service';
 
 @Component({
   selector: 'exogb-sight-card-more',
@@ -46,8 +46,8 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   articleHTML?: SafeHtml;
 
   constructor(
-    private sightsService: SightsService,
-    private sanitizer: DomSanitizer,
+    private readonly sightsService: SightsService,
+    private readonly sanitizer: DomSanitizer,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -155,7 +155,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     return html;
   }
 
-  public getSight(): void {
+  getSight(): void {
     if (!this.sightId) return;
 
     this.fetching = true;
@@ -181,7 +181,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
       );
   }
 
-  public close(): void {
+  close(): void {
     this.closeCard.emit();
   }
 }

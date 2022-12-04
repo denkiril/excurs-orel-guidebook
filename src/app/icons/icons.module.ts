@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 
+/* eslint-disable import/no-webpack-loader-syntax */
 import expand_less from '!!raw-loader!./svg/expand_less.svg';
 import expand_more from '!!raw-loader!./svg/expand_more.svg';
 import chevron_right from '!!raw-loader!./svg/chevron_right.svg';
@@ -11,6 +12,7 @@ import search from '!!raw-loader!./svg/search.svg';
 import close from '!!raw-loader!./svg/close.svg';
 import refresh from '!!raw-loader!./svg/refresh.svg';
 import museum from '!!raw-loader!./svg/museum.svg';
+/* eslint-enable import/no-webpack-loader-syntax */
 
 @NgModule({
   declarations: [],

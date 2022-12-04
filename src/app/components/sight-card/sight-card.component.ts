@@ -4,7 +4,7 @@ import {
   OknText,
   OKN_TYPES,
   OKN_CATEGORIES,
-} from 'src/app/services/sights.service';
+} from 'src/app/models/sights.models';
 
 @Component({
   selector: 'exogb-sight-card',

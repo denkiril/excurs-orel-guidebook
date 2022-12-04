@@ -34,7 +34,7 @@ export class ToggleComponent
   @Input() controlTitle: string | undefined;
   @Input() disabled: boolean | undefined;
   @Output() changeChecked: EventEmitter<boolean> = new EventEmitter();
-  @ViewChild('knob') private knob: ElementRef | undefined;
+  @ViewChild('knob') private readonly knob: ElementRef | undefined;
 
   onChange: any = () => {
     // do nothing
@@ -45,8 +45,8 @@ export class ToggleComponent
   };
 
   constructor(
-    private renderer: Renderer2,
-    private changeDetector: ChangeDetectorRef,
+    private readonly renderer: Renderer2,
+    private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
   ngAfterContentInit(): void {

@@ -4,7 +4,7 @@ import {
   OnChanges,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
-import { ImageItem } from 'src/app/services/sights.service';
+import { ImageItem } from 'src/app/models/sights.models';
 
 type ContentType = 'text' | 'sight';
 

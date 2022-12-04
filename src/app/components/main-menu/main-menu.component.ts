@@ -58,7 +58,7 @@ enum MENU_BLOCK_NAME {
   ],
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
-  private destroy$ = new Subject();
+  private readonly destroy$ = new Subject();
   // private isSightForMore = false;
 
   opened = false;
@@ -98,10 +98,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   constructor(
-    private elRef: ElementRef<HTMLElement>,
-    private documentService: DocumentService,
-    private sightsService: SightsService,
-    private mapService: MapService,
+    private readonly elRef: ElementRef<HTMLElement>,
+    private readonly documentService: DocumentService,
+    private readonly sightsService: SightsService,
+    private readonly mapService: MapService,
   ) {}
 
   ngOnInit(): void {

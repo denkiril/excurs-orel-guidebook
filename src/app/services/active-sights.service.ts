@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { SightsService, UpdateActiveSightsData } from './sights.service';
+
+import { UpdateActiveSightsData } from '../models/sights.models';
+import { SightsService } from './sights.service';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +46,8 @@ export class ActiveSightsService {
     });
   }
 
-  private emitActiveSights(tag: string): void {
-    console.log(`-- emitActiveSights from ${tag}`, this.activeSights);
+  private emitActiveSights(_tag: string): void {
+    // console.log(`-- emitActiveSights from ${_tag}`, this.activeSights);
     this.activeSights$.next(Array.from(new Set(this.activeSights)));
   }
 

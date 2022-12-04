@@ -27,7 +27,7 @@ export class FilterBlockComponent implements ControlValueAccessor {
 
   @Output() openedChange = new EventEmitter<boolean>();
 
-  public switchedOn = true;
+  switchedOn = true;
 
   onChange: any = () => {
     // do nothing
@@ -54,13 +54,13 @@ export class FilterBlockComponent implements ControlValueAccessor {
   //   this.disabled = isDisabled;
   // }
 
-  public toggleOpened(): void {
+  toggleOpened(): void {
     this.opened = !this.opened;
     this.openedChange.emit(this.opened);
     markDirty(this);
   }
 
-  public switch(): void {
+  switch(): void {
     this.switchedOn = !this.switchedOn;
     this.onChange(this.switchedOn);
     this.onTouched();

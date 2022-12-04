@@ -5,11 +5,11 @@ import { debounceTime } from 'rxjs/operators';
 
 import { GBQueryParams } from '../core/params.guard';
 import {
-  FilterBlock,
   FilterParams,
   FILTER_BLOCKS,
   SightsFilterParams,
-} from './sights.service';
+  FilterBlock,
+} from '../models/sights.models';
 import { StorageService } from './storage.service';
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';

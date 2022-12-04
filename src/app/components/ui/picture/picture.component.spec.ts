@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImageItem, ImageSizeItem } from 'src/app/services/sights.service';
+import { ImageSizeItem, ImageItem } from 'src/app/models/sights.models';
 
 import { PictureComponent } from './picture.component';
 

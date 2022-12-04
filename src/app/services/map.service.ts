@@ -3,9 +3,10 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
+import { SightsData, SightData } from '../models/sights.models';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
-import { SightData, SightsData, SightsService } from './sights.service';
+import { SightsService } from './sights.service';
 import { ActiveSightsService } from './active-sights.service';
 
 const { YMAPS_APIKEY } = environment;

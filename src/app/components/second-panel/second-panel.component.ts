@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SightForMoreData } from 'src/app/services/sights.service';
+import { SightForMoreData } from 'src/app/models/sights.models';
 
 @Component({
   selector: 'exogb-second-panel',

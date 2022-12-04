@@ -14,9 +14,9 @@ export class SightLinksDirective implements AfterViewInit {
   // @Input() exogbSightLinks?: number;
 
   constructor(
-    private el: ElementRef<HTMLElement>,
-    private router: Router,
-    private sightsService: SightsService,
+    private readonly el: ElementRef<HTMLElement>,
+    private readonly router: Router,
+    private readonly sightsService: SightsService,
   ) {}
 
   ngAfterViewInit(): void {

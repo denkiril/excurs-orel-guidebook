@@ -9,9 +9,10 @@ import {
 import { of, race, Subject } from 'rxjs';
 import { delay, first, takeUntil } from 'rxjs/operators';
 
+import { SightsData } from 'src/app/models/sights.models';
 import { AnalyticsService } from 'src/app/services/analytics.service';
 import { MapService } from 'src/app/services/map.service';
-import { SightsData, SightsService } from 'src/app/services/sights.service';
+import { SightsService } from 'src/app/services/sights.service';
 
 @Component({
   selector: 'exogb-main-map',

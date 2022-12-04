@@ -19,9 +19,10 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { SightForMoreData } from './models/sights.models';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
-import { SightForMoreData, SightsService } from './services/sights.service';
+import { SightsService } from './services/sights.service';
 import { AnalyticsService } from './services/analytics.service';
 
 const TOP_MARGIN = 50; // height: calc(100vh - {TOP_MARGIN}px); [app.component.scss]
