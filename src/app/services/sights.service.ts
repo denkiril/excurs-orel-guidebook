@@ -149,6 +149,11 @@ export interface SightLink {
   title?: string;
 }
 
+export interface UpdateActiveSightsData {
+  addId?: number;
+  deleteId?: number;
+}
+
 export const FILTER_BLOCKS: FilterBlock[] = [
   {
     name: 'tur',
@@ -283,14 +288,13 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
-  private activeSights: number[] = [];
   private sightForMoreId?: number;
   private nestedSights: { [key: number]: number[] } = {};
   private readonly sightsDataFetched$ = new ReplaySubject<void>();
 
   sightsData$ = new Subject<SightsData>(); // ReplaySubject (?)
-  activeSights$ = new ReplaySubject<number[]>();
   sightForMore$ = new Subject<SightForMoreData | undefined>();
+  needUpdateActiveSights$ = new Subject<UpdateActiveSightsData>();
 
   constructor(
     private readonly http: HttpClient,
@@ -450,6 +454,10 @@ export class SightsService {
     return { items };
   }
 
+  getSightsIds(sightId: number): number[] {
+    return this.nestedSights[sightId] || [sightId];
+  }
+
   getSightLinks(links: string[]): Observable<SightLink[]> {
     const addSlash = (str: string): string => {
       return str[str.length - 1] === '/' ? str : `${str}/`;
@@ -484,54 +492,6 @@ export class SightsService {
       : of(this.sightLinks);
   }
 
-  addActiveSight(sightId: number): void {
-    // console.log('addActiveSight', sightId);
-    this.activeSightsAdd(sightId);
-    this.emitActiveSights();
-  }
-
-  deleteActiveSight(sightId: number): void {
-    // console.log('deleteActiveSight', sightId);
-    this.activeSightsDelete(sightId);
-    this.emitActiveSights();
-  }
-
-  deleteAllActiveSights(): void {
-    this.activeSights = [];
-    this.emitActiveSights();
-  }
-
-  private activeSightsAdd(sightId: number): void {
-    const ids = this.nestedSights[sightId] || [sightId];
-    this.activeSights.push(...ids);
-  }
-
-  private activeSightsDelete(sightId: number): void {
-    const ids = this.nestedSights[sightId] || [sightId];
-    ids.forEach((id) => {
-      const index = this.activeSights.indexOf(id);
-      if (index > -1) this.activeSights.splice(index, 1);
-    });
-  }
-
-  private emitActiveSights(): void {
-    // console.log('-- emitActiveSights', this.activeSights);
-    this.activeSights$.next(Array.from(new Set(this.activeSights)));
-  }
-
-  private processActiveSights(
-    addId: number | undefined,
-    deleteId: number | undefined,
-  ): void {
-    // console.log('processActiveSights...');
-    this.sightsDataFetched$.pipe(first()).subscribe(() => {
-      // console.log('processActiveSights | addId, deleteId:', addId, deleteId);
-      if (addId) this.activeSightsAdd(addId);
-      if (deleteId) this.activeSightsDelete(deleteId);
-      if (addId || deleteId) this.emitActiveSights();
-    });
-  }
-
   setSightForMore(sightData?: SightData, sightId?: number, setQP = true): void {
     // console.log('setSightForMore', sightData, sightId, setQP);
     const sight =
@@ -551,5 +511,14 @@ export class SightsService {
     } else {
       this.sightForMore$.next(sightForMore);
     }
+  }
+
+  private processActiveSights(
+    addId: number | undefined,
+    deleteId: number | undefined,
+  ): void {
+    this.sightsDataFetched$.pipe(first()).subscribe(() => {
+      this.needUpdateActiveSights$.next({ addId, deleteId });
+    });
   }
 }

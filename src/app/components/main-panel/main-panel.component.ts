@@ -30,9 +30,10 @@ import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 import { LoggerService } from 'src/app/services/logger.service';
 import { WindowService } from 'src/app/services/window.service';
+import { ActiveSightsService } from 'src/app/services/active-sights.service';
 
 interface SightDataLocal extends SightData {
-  active: boolean;
+  active?: boolean;
 }
 
 const DOT = ' .';
@@ -85,6 +86,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     private readonly windowService: WindowService,
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
+    private readonly activeSightsService: ActiveSightsService,
     private readonly settingsService: SettingsService,
   ) {}
 
@@ -113,7 +115,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
     this.settingsService.startParseQueryParams();
 
-    this.sightsService.activeSights$
+    this.activeSightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
         this.activeSights = activeSights;
@@ -313,7 +315,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.loggerService.devLog('sightsService data:', data);
-          this.sights = data.items.map((item) => ({ ...item, active: false }));
+          this.sights = data.items; // .map((item) => ({ ...item, active: false }));
+          this.updateSightsActive();
           this.sightsFetched = true;
           this.showServerError = false;
           this.setSightsFetching(false);
@@ -371,8 +374,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   onCardHover(sight: SightDataLocal, hover = true): void {
-    if (hover) this.sightsService.addActiveSight(sight.post_id);
-    else this.sightsService.deleteActiveSight(sight.post_id);
+    if (hover) this.activeSightsService.add(sight.post_id);
+    else this.activeSightsService.delete(sight.post_id);
   }
 
   onSearchInputFocus(): void {

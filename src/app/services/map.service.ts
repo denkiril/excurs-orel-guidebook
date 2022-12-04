@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
 import { SightData, SightsData, SightsService } from './sights.service';
+import { ActiveSightsService } from './active-sights.service';
 
 const { YMAPS_APIKEY } = environment;
 const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
@@ -36,6 +37,7 @@ export class MapService {
     private readonly documentService: DocumentService,
     // private settingsService: SettingsService,
     private readonly sightsService: SightsService,
+    private readonly activeSightsService: ActiveSightsService,
   ) {}
 
   private checkApi(): Promise<void> {
@@ -88,6 +90,7 @@ export class MapService {
   }
 
   private initMap(container: HTMLElement, sightsData: SightsData): void {
+    // console.log('initMap');
     this.sightsData = sightsData;
 
     // Setup map and markers
@@ -136,8 +139,7 @@ export class MapService {
   }
 
   private setMarkers(update = false): void {
-    this.mapActiveSights = [];
-    this.sightsService.deleteAllActiveSights();
+    // console.log('setMarkers', update);
     const markers = this.makeMarkers(this.sightsData?.items || []);
 
     // this.clusterer.removeAll();
@@ -152,6 +154,8 @@ export class MapService {
     // center map
     let needCenter = true;
     if (update) {
+      this.mapActiveSights = [];
+      this.activeSightsService.clear();
       // this.storage.each((mark: any) => {
       //   const geoObjectState = this.clusterer.getObjectState(mark);
       //   if (geoObjectState.isShown === false) needCenter = true;
@@ -216,7 +220,7 @@ export class MapService {
           const index = this.mapActiveSights.indexOf(postId);
           if (index === -1) {
             this.mapActiveSights.push(postId);
-            this.sightsService.addActiveSight(postId);
+            this.activeSightsService.add(postId);
           }
         });
 
@@ -225,7 +229,7 @@ export class MapService {
           const index = this.mapActiveSights.indexOf(postId);
           if (index > -1) {
             this.mapActiveSights.splice(index, 1);
-            this.sightsService.deleteActiveSight(postId);
+            this.activeSightsService.delete(postId);
           }
         });
 
@@ -246,7 +250,7 @@ export class MapService {
   }
 
   private initMapSubscriptions(): void {
-    this.sightsService.activeSights$
+    this.activeSightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
       .subscribe((activeSights) => {
         // console.log('$$$ cached activeSights:', this.activeSights);

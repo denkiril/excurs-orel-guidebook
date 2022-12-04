@@ -19,11 +19,12 @@ platformBrowserDynamic()
   .catch((err) => console.error(err));
 
 // TODO
-// Sights sorting. Default? Manual?
+// Sights sorting. Default (+) Manual?
 // Справка (большой тултип?)
 // ОКН от Минкульта
 // SEO на ОКН (SSR)
-// тех. метрики
+// SEO для /guidebook/?filter=tur:main,mus.okn:f;a,g,h,i и т.п. (?)
+// тех. метрики, логирование
 // Lazy loading sights (pagination)
 // nested - from back
 // Свой набор достопр-тей: избранное, в роуте
@@ -39,4 +40,4 @@ platformBrowserDynamic()
 // localStorage unavailable bug +
 // custom user-scalable (a11y)?
 // search & mobile keyboard bug +
-// ! active nested not highlighted on map, also in-route active
+// active on init (by route) not highlighted on map +
