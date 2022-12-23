@@ -92,7 +92,7 @@ interface FilterControl {
   title: string;
   shortTitle?: string;
   value: boolean;
-  // type?: 'toggle';
+  type?: 'toggle';
 }
 
 interface FilterGroup {

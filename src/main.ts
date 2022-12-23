@@ -41,3 +41,4 @@ platformBrowserDynamic()
 // custom user-scalable (a11y)?
 // search & mobile keyboard bug +
 // active on init (by route) not highlighted on map +
+// route changing not trigger fetch +

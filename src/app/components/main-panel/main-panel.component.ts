@@ -187,15 +187,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       // console.log('form valueChanges$', value);
-      // const changed = this.getChangedFormControls(value);
-      // console.log('changed:', changed);
-      //   if (changed.includes('egrkn') && changed.length === 1) {
-      //     console.log('Download!!'); // TODO 'egrkn', 'okn_category', 'okn_type'
-      //   } else {
       this.updateFilterParams();
-      // -> filterParamsInRoute -> getSights...
-      //   }
-      this.emitGetSights();
     });
 
     this.emitGetSights();
@@ -248,11 +240,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     );
   }
 
-  private getChangedFormControls(formValue: any): string[] {
+  private getChangedFormControls(): string[] {
     const controls: string[] = [];
 
-    Object.keys(formValue).forEach((key) => {
-      const value = formValue[key];
+    Object.keys(this.form.value).forEach((key) => {
+      const value = this.form.value[key];
       const cachedValue = this.cachedFormValue[key];
       if (
         cachedValue === undefined ||
@@ -276,9 +268,17 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private processFilterParams(filterParams: FilterParams): void {
-    // console.log('filterParamsInRoute$', filterParams);
-    this.updateForm(filterParams);
-    // this.emitGetSights(); // ???
+    // console.log('processFilterParams', filterParams);
+    this.updateForm(filterParams); // change form -> upd route -> upd form (?)
+
+    const changed = this.getChangedFormControls();
+    if (changed.filter((item) => item !== 'egrkn').length) {
+      this.emitGetSights();
+    }
+    if (changed.includes('egrkn')) {
+      console.log('[||] egrkn value:', this.form.value.egrkn);
+      // TODO fetch or hide OKN...
+    }
   }
 
   animationDone(filterBlock: FilterBlock): void {
@@ -290,11 +290,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
     // console.log('onOpenedChange');
     filterBlock.opened = opened;
-    this.updateFilterParams(); // TODO бывает GET только из-за закрытия таба (egrkn?)
+    this.updateFilterParams(); // TODO setLS only?
   }
 
   emitGetSights(): void {
-    // console.log('emitGetSights');
+    // console.log('>> emitGetSights');
     this.getSights$.next();
   }
 
@@ -341,7 +341,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       this.intervalID = this.windowService.windowRef.setInterval(() => {
         this.sightsIndicator += DOT;
         if (this.sightsIndicator.length > 10) this.sightsIndicator = DOT;
-        this.loggerService.devLog('intervalID', this.intervalID);
+        // this.loggerService.devLog('intervalID', this.intervalID);
         markDirty(this);
       }, 300);
     } else {
