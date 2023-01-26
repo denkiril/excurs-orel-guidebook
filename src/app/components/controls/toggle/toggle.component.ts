@@ -31,8 +31,8 @@ export class ToggleComponent
   implements AfterContentInit, AfterViewInit, ControlValueAccessor
 {
   @Input() checked = false;
+  @Input() enabled = true;
   @Input() controlTitle: string | undefined;
-  @Input() disabled: boolean | undefined;
   @Output() changeChecked: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('knob') private readonly knob: ElementRef | undefined;
 
@@ -72,7 +72,7 @@ export class ToggleComponent
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.enabled = !isDisabled;
   }
 
   change(): void {

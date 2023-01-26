@@ -42,3 +42,4 @@ platformBrowserDynamic()
 // search & mobile keyboard bug +
 // active on init (by route) not highlighted on map +
 // route changing not trigger fetch +
+// switch off "tur" when all checkboxes off (UI and route)? 3rd state of toggle?

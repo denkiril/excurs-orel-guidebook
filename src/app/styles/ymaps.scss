@@ -1,0 +1,26 @@
+@media (max-width: $mobile-width) {
+  .ymaps-2-1-79-controls__toolbar_left {
+    margin-left: 64px;
+  }
+
+  .ymaps-2-1-79-searchbox-input {
+    margin-left: 48px;
+  }
+}
+
+.ymc-template {
+  cursor: pointer;
+
+  header {
+    margin-bottom: 8px;
+
+    h3 {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  &.ymc-hint {
+    margin-top: 4px;
+  }
+}
