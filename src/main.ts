@@ -30,7 +30,7 @@ platformBrowserDynamic()
 // Свой набор достопр-тей: избранное, в роуте
 // Лого адаптировать
 // ymaps search hints
-// Loader for map ?
+// Loader for map and ymaps onerror reloading
 // Фильтрация по имени (вхождению строки)?
 // Show images setting ?
 // Офлайн-режим ?

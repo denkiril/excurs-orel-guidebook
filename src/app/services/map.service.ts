@@ -61,6 +61,7 @@ export class MapService {
       const completeError = (err?: any): void => {
         // eslint-disable-next-line no-console
         console.error('MapService.init error!', err);
+        // TODO Add reloading
         subscriber.error();
         subscriber.complete();
       };

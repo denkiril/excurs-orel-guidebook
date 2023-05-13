@@ -26,6 +26,7 @@ import { PictureComponent } from './components/ui/picture/picture.component';
 import { SightImagesComponent } from './components/sight-images/sight-images.component';
 import { SightLinksDirective } from './directives/sight-links.directive';
 import { ParamsGuard } from './core/params.guard';
+import { StringTickerPipe } from './pipes/string-ticker.pipe';
 
 const routes: Routes = [
   {
@@ -58,6 +59,7 @@ const routes: Routes = [
     PictureComponent,
     SightImagesComponent,
     SightLinksDirective,
+    StringTickerPipe,
   ],
   imports: [
     BrowserModule,

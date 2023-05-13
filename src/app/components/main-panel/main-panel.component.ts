@@ -14,7 +14,7 @@ import {
   animate,
 } from '@angular/animations';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, timer } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
 import {
@@ -29,14 +29,11 @@ import { SightsService } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 import { LoggerService } from 'src/app/services/logger.service';
-import { WindowService } from 'src/app/services/window.service';
 import { ActiveSightsService } from 'src/app/services/active-sights.service';
 
 interface SightDataLocal extends SightData {
   active?: boolean;
 }
-
-const DOT = ' .';
 
 @Component({
   selector: 'exogb-main-panel',
@@ -68,6 +65,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   getSights$ = new Subject();
   private readonly destroy$ = new Subject();
+  private readonly tickerDestroy$ = new Subject();
 
   readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
@@ -77,13 +75,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private readonly limit?: number;
   sightsFetching = false;
   sightsFetched = false;
-  sightsIndicator = '';
-  private intervalID: any;
+  ticker = 0;
   private cachedFormValue: any = {};
   private activeSights: number[] = [];
 
   constructor(
-    private readonly windowService: WindowService,
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
@@ -126,9 +122,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.intervalID) {
-      this.windowService.windowRef.clearInterval(this.intervalID);
-    }
+    this.tickerDestroy$.next();
+    this.tickerDestroy$.complete();
   }
 
   private initForm(): void {
@@ -331,23 +326,17 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   private setSightsFetching(isFetching: boolean): void {
     this.sightsFetching = isFetching;
-    if (this.intervalID) {
-      this.windowService.windowRef.clearInterval(this.intervalID);
-    }
+    markDirty(this);
 
     if (this.sightsFetched && this.sightsFetching) {
-      this.sightsIndicator = DOT;
-
-      this.intervalID = this.windowService.windowRef.setInterval(() => {
-        this.sightsIndicator += DOT;
-        if (this.sightsIndicator.length > 10) this.sightsIndicator = DOT;
-        // this.loggerService.devLog('intervalID', this.intervalID);
-        markDirty(this);
-      }, 300);
-    } else {
-      this.sightsIndicator = this.sights.length.toString();
+      this.tickerDestroy$.next();
+      timer(0, 300)
+        .pipe(takeUntil(this.tickerDestroy$))
+        .subscribe((value) => {
+          this.ticker = value;
+          markDirty(this);
+        });
     }
-    markDirty(this);
   }
 
   private buildFilterParams(): FilterParams {

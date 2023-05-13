@@ -50,7 +50,10 @@
 
   <ng-container *ngIf="sightsFetched">
     <div class="summary-text">
-      <p>Найдено объектов: {{ sightsIndicator }}</p>
+      <p>
+        Найдено объектов:
+        {{ sightsFetching ? (' .' | stringTicker: 5:ticker) : sights.length }}
+      </p>
     </div>
     <div *ngIf="sights.length" class="cards-container">
       <div class="cards-cover" [class.blocked]="sightsFetching"></div>
