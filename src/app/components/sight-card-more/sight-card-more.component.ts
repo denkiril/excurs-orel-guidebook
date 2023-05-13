@@ -1,12 +1,10 @@
 import {
   Component,
   EventEmitter,
-  Input,
+  OnInit,
   OnDestroy,
-  OnChanges,
   Output,
   ɵmarkDirty as markDirty,
-  SimpleChanges,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -18,22 +16,25 @@ import {
   OKN_TYPES,
   SightData,
   SightDataExt,
-  SightForMoreData,
+  SightId,
+  SightType,
 } from 'src/app/models/sights.models';
 import { SightsService } from 'src/app/services/sights.service';
+import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 
 @Component({
   selector: 'exogb-sight-card-more',
   templateUrl: './sight-card-more.component.html',
   styleUrls: ['./sight-card-more.component.scss'],
 })
-export class SightCardMoreComponent implements OnChanges, OnDestroy {
-  @Input() sightForMore!: SightForMoreData;
-  @Input() sights: SightData[] = [];
-
+export class SightCardMoreComponent implements OnInit, OnDestroy {
   @Output() closeCard = new EventEmitter<void>();
 
-  destroy$ = new Subject();
+  private readonly destroy$ = new Subject();
+  private sightId?: SightId;
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  readonly SightType = SightType;
   sight?: SightDataExt;
   typeText = '';
   districtText = '';
@@ -41,30 +42,25 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   isMuseum = false;
   showServerError = false;
   fetching = false;
-  sightId?: number;
   introHTML?: SafeHtml;
   articleHTML?: SafeHtml;
 
   constructor(
     private readonly sightsService: SightsService,
     private readonly sanitizer: DomSanitizer,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // console.log('SimpleChanges:', JSON.stringify(changes.sightForMore));
-    const { currentValue, previousValue } = changes.sightForMore;
-    const curId = currentValue.sight?.post_id || currentValue.sightId;
-    const prevId = previousValue?.sight?.post_id || previousValue?.sightId;
-    // console.log('curId, prevId', curId, prevId);
-    if (curId !== prevId) {
-      this.sightId = curId;
-      const sight =
-        this.sightForMore.sight ||
-        this.sights.find((item) => item.post_id === this.sightId);
-
-      if (sight) this.initSight(sight);
-      this.getSight();
-    }
+  ngOnInit(): void {
+    this.filterParamsStore.state$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ sightForMore }) => {
+        // console.log('SightCardMoreComponent sightForMore', sightForMore);
+        if (this.sightId !== sightForMore) {
+          this.sightId = sightForMore;
+          this.getSight();
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -73,10 +69,7 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
   }
 
   private initSight(sight: SightData): void {
-    this.sight =
-      this.sight?.post_id === sight.post_id
-        ? { ...this.sight, ...sight }
-        : sight;
+    this.sight = sight;
     // console.log('initSight', this.sight);
 
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
@@ -162,20 +155,28 @@ export class SightCardMoreComponent implements OnChanges, OnDestroy {
     markDirty(this);
 
     this.sightsService
-      .getSightById(this.sightId)
+      .getSightDataExt$(this.sightId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          // console.log('getSightById data:', data);
-          this.initSight(data);
+          // console.log('getSightDataExt data:', data);
+          if (data) {
+            this.initSight(data);
+          } else {
+            this.close();
+          }
           this.fetching = false;
           this.showServerError = false;
           markDirty(this);
         },
         (error) => {
-          console.error('getSightById error:', error);
+          console.error('getSightDataExt error:', error);
+          if (error.status === 404) {
+            this.close();
+          } else {
+            this.showServerError = true;
+          }
           this.fetching = false;
-          this.showServerError = true;
           markDirty(this);
         },
       );

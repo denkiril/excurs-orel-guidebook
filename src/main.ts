@@ -21,7 +21,7 @@ platformBrowserDynamic()
 // TODO
 // Sights sorting. Default (+) Manual?
 // Справка (большой тултип?)
-// ОКН от Минкульта
+// ОКН от Минкульта +
 // SEO на ОКН (SSR)
 // SEO для /guidebook/?filter=tur:main,mus.okn:f;a,g,h,i и т.п. (?)
 // тех. метрики, логирование
@@ -43,3 +43,5 @@ platformBrowserDynamic()
 // active on init (by route) not highlighted on map +
 // route changing not trigger fetch +
 // switch off "tur" when all checkboxes off (UI and route)? 3rd state of toggle?
+// egrkn additionalCoordinates - show polygon on map on more mode
+// fly to object on map (button near geolocation)

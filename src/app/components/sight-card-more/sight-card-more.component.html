@@ -18,6 +18,12 @@
       <p *ngIf="sight.location">
         <span class="label">Местонахождение:</span> {{ sight.location }}
       </p>
+      <p>
+        <span class="label">Координаты:</span>
+        <span [class.alert]="!sight.geolocation">
+          {{ sight.geolocation | geolocation }}
+        </span>
+      </p>
       <p *ngIf="sight.okn_id">
         <span class="label">Номер в реестре ОКН:</span> {{ sight.okn_id }}
       </p>
@@ -32,7 +38,7 @@
         {{ sight.okn_date }}
       </p>
       <p *ngIf="sight.registry_date">
-        <span class="label">Год постановки на охрану:</span>
+        <span class="label">Дата постановки на охрану:</span>
         {{ sight.registry_date }}
       </p>
       <p *ngIf="sight.founding_date">
@@ -57,7 +63,7 @@
       <div class="sight-images">
         <exogb-sight-images
           *ngIf="sight.images?.length"
-          [sightId]="sightId"
+          [sightId]="sight.id"
           [images]="sight.images || []"
         ></exogb-sight-images>
       </div>
@@ -72,29 +78,36 @@
       <div *ngIf="sight.nested?.length" class="sight-nested-block">
         <h3>См. также:</h3>
         <ul>
-          <li *ngFor="let nested of sight.nested">
+          <li *ngFor="let nested of sight.nested" [ngSwitch]="nested.type">
             <a
+              *ngSwitchCase="SightType.DEFAULT"
               [routerLink]="[]"
-              [queryParams]="{ sight: nested.post_id }"
+              [queryParams]="{ sight: nested.id }"
               queryParamsHandling="merge"
             >
               {{ nested.title }}
+            </a>
+            <a
+              *ngSwitchCase="SightType.EGRKN"
+              [href]="nested.egrknData?.egrknUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ nested.title }} (на сайте госреестра)
+              <mat-icon svgIcon="open_in_new"></mat-icon>
             </a>
           </li>
         </ul>
       </div>
     </ng-container>
 
-    <div *ngIf="!fetching || showServerError" class="content-footer">
-      <a
-        *ngIf="sight && sight.permalink"
-        [href]="sight.permalink"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Открыть страницу объекта
-        <mat-icon svgIcon="open_in_new"></mat-icon>
-      </a>
+    <div *ngIf="sight && (!fetching || showServerError)" class="content-footer">
+      <p *ngIf="sight.permalink" class="link">
+        <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
+          Открыть страницу объекта
+          <mat-icon svgIcon="open_in_new"></mat-icon>
+        </a>
+      </p>
     </div>
 
     <div *ngIf="fetching || showServerError" class="loader">

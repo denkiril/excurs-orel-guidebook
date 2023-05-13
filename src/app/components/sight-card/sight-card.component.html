@@ -1,19 +1,19 @@
-<div>
-  <div class="sight-title">
-    <mat-icon
-      *ngIf="isMuseum"
-      svgIcon="museum"
-      aria-hidden="false"
-      aria-label="Museum icon"
-    ></mat-icon>
-    {{ sight.title }}
-  </div>
+<div class="sight-title" [class.active]="active">
+  <mat-icon
+    *ngIf="isMuseum"
+    svgIcon="museum"
+    aria-hidden="false"
+    aria-label="Museum icon"
+  ></mat-icon>
+  {{ sight.title }}
+</div>
 
+<div class="sight-info">
   <ul *ngIf="sight.nested?.length" class="sight-nested">
     <li *ngFor="let nested of sight.nested">
       <a
         [routerLink]="[]"
-        [queryParams]="{ sight: nested.post_id }"
+        [queryParams]="{ sight: nested.id }"
         queryParamsHandling="merge"
       >
         + {{ nested.title }}
@@ -26,17 +26,28 @@
     <p *ngIf="sight.location" [title]="'Местонахождение: ' + sight.location">
       {{ sight.location }}
     </p>
+    <p>
+      <span *ngIf="!sight.geolocation">Координаты:</span>
+      <span [class.alert]="!sight.geolocation">
+        {{ sight.geolocation | geolocation }}
+      </span>
+    </p>
   </div>
 
   <div class="sight-description links-block">
     <a
       [routerLink]="[]"
-      [queryParams]="{ sight: sight.post_id }"
+      [queryParams]="{ sight: sight.id }"
       queryParamsHandling="merge"
     >
       Подробнее...
     </a>
-    <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
+    <a
+      *ngIf="sight.permalink"
+      [href]="sight.permalink"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       Перейти
       <mat-icon svgIcon="open_in_new"></mat-icon>
     </a>
@@ -44,15 +55,17 @@
 </div>
 
 <a
-  *ngIf="sight.thumb_url"
   [routerLink]="[]"
-  [queryParams]="{ sight: sight.post_id }"
+  [queryParams]="{ sight: sight.id }"
   queryParamsHandling="merge"
+  class="sight-anchor"
 >
   <img
-    class="sight-image"
-    [attr.loading]="index > 6 ? 'lazy' : 'eager'"
+    *ngIf="sight.thumb_url"
     [src]="sight.thumb_url"
+    [attr.loading]="index > 6 ? 'lazy' : 'eager'"
     title="Подробнее..."
+    class="sight-image"
   />
+  <mat-icon *ngIf="!sight.thumb_url" svgIcon="quick_reference_all"></mat-icon>
 </a>

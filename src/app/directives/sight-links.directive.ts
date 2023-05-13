@@ -39,7 +39,7 @@ export class SightLinksDirective implements AfterViewInit {
             const linkAttr = el.getAttribute('data-link') as string;
             const sightLink = sightLinks.find((item) => item.link === linkAttr);
             if (sightLink) {
-              el.setAttribute('data-sightid', sightLink.sightId.toString());
+              el.setAttribute('data-sightid', sightLink.sightId);
               if (sightLink.title) el.setAttribute('title', sightLink.title);
               el.classList.add('data-link');
             }

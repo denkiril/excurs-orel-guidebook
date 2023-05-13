@@ -52,17 +52,16 @@
     <div class="summary-text">
       <p>Найдено объектов: {{ sightsIndicator }}</p>
     </div>
-    <div *ngIf="sights.length" class="cards-container">
+    <div *ngIf="sights.length; else emptyResultTempl" class="cards-container">
       <div class="cards-cover" [class.blocked]="sightsFetching"></div>
-      <div
+      <exogb-sight-card
         *ngFor="let sight of sights; index as i; trackBy: trackById"
-        class="card-container"
-        [class.active]="sight.active"
+        [sight]="sight"
+        [index]="i"
+        [active]="!!sight.active"
         (mouseenter)="onCardHover(sight)"
         (mouseleave)="onCardHover(sight, false)"
-      >
-        <exogb-sight-card [sight]="sight" [index]="i"></exogb-sight-card>
-      </div>
+      ></exogb-sight-card>
     </div>
   </ng-container>
 </div>
@@ -95,11 +94,20 @@
         class="fb-col"
         [ngSwitch]="control.type"
       >
-        <exogb-toggle
-          *ngSwitchCase="'toggle'"
-          [formControlName]="control.name"
-          [controlTitle]="control.title"
-        ></exogb-toggle>
+        <div *ngSwitchCase="'toggle'" class="toggle-container">
+          <exogb-toggle
+            [formControlName]="control.name"
+            [controlTitle]="control.title"
+            [enabled]="block.switchedOn"
+          ></exogb-toggle>
+          <mat-icon
+            *ngIf="showEgrknError"
+            svgIcon="warning"
+            class="warning-icon"
+            aria-hidden="false"
+            aria-label="warning icon"
+          ></mat-icon>
+        </div>
         <exogb-checkbox
           *ngSwitchDefault
           [formControlName]="control.name"
@@ -111,4 +119,8 @@
       </div>
     </div>
   </div>
+</ng-template>
+
+<ng-template #emptyResultTempl>
+  <p class="summary-text primary">Попробуйте изменить настройки фильтра ☝</p>
 </ng-template>

@@ -4,14 +4,14 @@ import {
   OnChanges,
   ɵmarkDirty as markDirty,
 } from '@angular/core';
-import { ImageItem } from 'src/app/models/sights.models';
+import { ImageItem, SightId } from 'src/app/models/sights.models';
 
 type ContentType = 'text' | 'sight';
 
 interface ContentPart {
   type: ContentType;
   content: string;
-  sightId?: number;
+  sightId?: SightId;
 }
 
 interface ImageItemLocal extends ImageItem {
@@ -26,7 +26,7 @@ interface ImageItemLocal extends ImageItem {
 })
 export class SightImagesComponent implements OnChanges {
   @Input() images: ImageItem[] = [];
-  @Input() sightId?: number;
+  @Input() sightId?: SightId;
 
   topImage?: ImageItemLocal;
 
@@ -72,7 +72,7 @@ export class SightImagesComponent implements OnChanges {
         lastIdx = idx2 + 1;
         const str = value.substring(idx1, lastIdx);
         const sepIdx = str.indexOf('|');
-        const sightId = Number(str.substring(str.indexOf('=') + 1, sepIdx));
+        const sightId = str.substring(str.indexOf('=') + 1, sepIdx);
         parts.push({
           type: sightId !== this.sightId ? 'sight' : 'text',
           content: str.substring(sepIdx + 1, str.length - 1),
