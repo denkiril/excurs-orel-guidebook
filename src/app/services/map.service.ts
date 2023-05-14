@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, ReplaySubject, Subject, of, throwError } from 'rxjs';
+import {
+  delay,
+  retryWhen,
+  take,
+  takeUntil,
+  concat,
+  catchError,
+} from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
 import { SightsData, SightData } from '../models/sights.models';
@@ -12,6 +19,7 @@ import { ActiveSightsService } from './active-sights.service';
 const { YMAPS_APIKEY } = environment;
 const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
 const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
+const YMAPS_SCRIPT_ID = 'YMapsScriptID';
 
 const baseColor = '#005281'; // 015a8d
 const activeColor = '#bc3134'; // ffd649
@@ -21,7 +29,6 @@ const activeColor = '#bc3134'; // ffd649
 })
 export class MapService {
   private readonly destroy$ = new Subject();
-  // private activeSights = new Set<number>();
   private activeSights: number[] = [];
   private mapActiveSights: number[] = [];
   private sightsData?: SightsData;
@@ -36,53 +43,74 @@ export class MapService {
   constructor(
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
-    // private settingsService: SettingsService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
   ) {}
 
-  private checkApi(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.windowService.windowRef.ymaps) {
-        resolve();
-      } else {
-        const script = document.createElement('script');
-        script.src = YMAPS_API_URL;
-        script.async = true;
-        script.onload = (): void => resolve();
-        script.onerror = (): void => reject();
-        document.body.appendChild(script);
-      }
+  private checkApi$(): Observable<void> {
+    return this.windowService.windowRef.ymaps
+      ? of()
+      : this.addScript$().pipe(
+          // Если запрос возвращает ошибку (например сервер недоступен), делаем ещё 2 попытки с задержкой 5 сек,
+          // после чего кидаем ошибку. TODO retryWhen и concat - deprecated, refac after upgrade rxjs to 7+
+          // retry({ count: 3, delay: 5000 }) [?]
+          retryWhen((error) =>
+            error.pipe(delay(5000), take(2), concat(throwError(error))),
+          ),
+          catchError((error) => {
+            return throwError(error);
+          }),
+        );
+  }
+
+  private addScript$(): Observable<void> {
+    const { documentRef } = this.documentService;
+
+    return new Observable<void>((subscriber) => {
+      const script = documentRef.createElement('script');
+      script.src = YMAPS_API_URL;
+      script.id = YMAPS_SCRIPT_ID;
+      script.async = true;
+      script.onload = (): void => {
+        subscriber.next();
+        subscriber.complete();
+      };
+      script.onerror = (): void => {
+        console.error('MapService.addScript error!');
+        documentRef.getElementById(YMAPS_SCRIPT_ID)?.remove();
+        subscriber.error();
+      };
+      documentRef.body.appendChild(script);
     });
   }
 
-  init(container: HTMLElement, sightsData: SightsData): Observable<void> {
+  init$(container: HTMLElement, sightsData: SightsData): Observable<void> {
     return new Observable((subscriber) => {
       const completeError = (err?: any): void => {
-        // eslint-disable-next-line no-console
         console.error('MapService.init error!', err);
-        // TODO Add reloading
         subscriber.error();
-        subscriber.complete();
       };
 
-      this.checkApi()
-        .then(() => {
-          this.ymaps = this.windowService.windowRef.ymaps;
+      this.checkApi$()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          () => {
+            this.ymaps = this.windowService.windowRef.ymaps;
 
-          if (this.ymaps) {
-            this.ymaps.ready(() => {
-              this.initMap(container, sightsData);
-              setTimeout(() => this.initMapSubscriptions(), 500);
-              this.initialized$.next();
-              subscriber.next();
-              subscriber.complete();
-            });
-          } else {
-            completeError();
-          }
-        })
-        .catch((err) => completeError(err));
+            if (this.ymaps) {
+              this.ymaps.ready(() => {
+                this.initMap(container, sightsData);
+                setTimeout(() => this.initMapSubscriptions(), 500);
+                this.initialized$.next();
+                subscriber.next();
+                subscriber.complete();
+              });
+            } else {
+              completeError('no ymaps');
+            }
+          },
+          () => completeError('checkApi'),
+        );
     });
   }
 

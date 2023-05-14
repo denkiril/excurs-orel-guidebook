@@ -4,10 +4,10 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
-  // ɵmarkDirty as markDirty,
+  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { of, race, Subject } from 'rxjs';
-import { delay, first, takeUntil } from 'rxjs/operators';
+import { delay, finalize, first, takeUntil } from 'rxjs/operators';
 
 import { SightsData } from 'src/app/models/sights.models';
 import { AnalyticsService } from 'src/app/services/analytics.service';
@@ -23,7 +23,8 @@ export class MainMapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLElement>;
 
   private readonly destroy$ = new Subject();
-  // private isMapInitialized = false;
+  mapInitializing = true;
+  showMapInitError = false;
 
   // winW = 0;
   // winH = 0;
@@ -52,9 +53,14 @@ export class MainMapComponent implements OnInit, OnDestroy {
 
   private initMap(sightsData: SightsData): void {
     this.analyticsService.sendEvent('initMap start');
+    this.setMapInitializing(true);
+
     this.mapService
-      .init(this.container.nativeElement, sightsData)
-      .pipe(takeUntil(this.destroy$))
+      .init$(this.container.nativeElement, sightsData)
+      .pipe(
+        finalize(() => this.setMapInitializing(false)),
+        takeUntil(this.destroy$),
+      )
       .subscribe(
         () => {
           this.analyticsService.sendEvent('initMap ok');
@@ -64,17 +70,19 @@ export class MainMapComponent implements OnInit, OnDestroy {
             .subscribe((data) => {
               // console.log('sightsData$ updated', data);
               this.mapService.update(data);
-              // console.log('MAP GOT sightsData$...', this.isMapInitialized);
-              // if (!this.isMapInitialized) {
-              //   this.isMapInitialized = true;
-              //   this.initMap(data);
-              // } else {
-              //   this.updateMap(sightsData);
-              // }
             });
         },
-        () => this.analyticsService.sendEvent('initMap fail'),
+        () => {
+          this.analyticsService.sendEvent('initMap fail');
+          this.showMapInitError = true;
+          markDirty(this);
+        },
       );
+  }
+
+  private setMapInitializing(value: boolean): void {
+    this.mapInitializing = value;
+    markDirty(this);
   }
 
   // private updateMap(sightsData: SightsData): void {

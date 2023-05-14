@@ -1,4 +1,14 @@
-<div #container class="map-container"></div>
+<div *ngIf="mapInitializing" class="absolute-container">
+  <exogb-spinner></exogb-spinner>
+</div>
+<div *ngIf="showMapInitError" class="error-message-container">
+  <p class="error-message">
+    Не удалось загрузить карту.<br />
+    Попробуйте перезагрузить страницу позже.
+  </p>
+</div>
+
+<div #container class="absolute-container map-container"></div>
 
 <!-- <div>
   <p>winW: {{ winW }}</p>

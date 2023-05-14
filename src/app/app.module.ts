@@ -28,7 +28,7 @@ import { SightLinksDirective } from './directives/sight-links.directive';
 import { ParamsGuard } from './core/params.guard';
 import { StringTickerPipe } from './pipes/string-ticker.pipe';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     component: AppComponent,
