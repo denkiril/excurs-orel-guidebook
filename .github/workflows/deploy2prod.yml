@@ -8,6 +8,7 @@ on:
 env:
   API_URL: ${{ secrets.API_URL }}
   YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
+  MKRF_OPENDATA_APIKEY: ${{ secrets.MKRF_OPENDATA_APIKEY }}
 
 jobs:
   tests:
