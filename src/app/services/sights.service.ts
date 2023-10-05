@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
 import {
   SightsData,
@@ -45,13 +45,9 @@ export class SightsService {
   private sightLinks: SightLink[] = [];
   private nestedSights: { [key: string]: string[] } = {};
 
+  private readonly fetchingSightsSubject = new ReplaySubject<SightsData>();
   private readonly sightsDataSubject = new Subject<SightsData>(); // ReplaySubject (?)
   readonly sightsData$ = this.sightsDataSubject.asObservable();
-
-  private requestSightsStarted = false;
-  private readonly requestSightsSubject = new ReplaySubject<
-    SightResponseItem[]
-  >();
 
   constructor(
     private readonly egrknService: EgrknService,
@@ -64,43 +60,21 @@ export class SightsService {
 
   private fetchSights$(): Observable<SightsData> {
     // console.log('fetchSights...');
-    return new Observable<SightsData>((observer) => {
-      if (this.sightsData.items.length) {
-        // TODO ?
-        this.sightsData.items = this.sightsData.items.map((item) => ({
-          ...item,
-          nested: undefined,
-        }));
-        observer.next(this.sightsData);
-        observer.complete();
-      } else {
-        this.requestSights$().subscribe(
-          (items) => {
-            // console.log('=== GET resp:', items);
-            this.sightsData.items = items.map((item) =>
-              this.prepareExoSight(item),
-            );
-            observer.next(this.sightsData);
-            observer.complete();
-          },
-          () => {
-            observer.next({ items: [], errors: ['FETCH_SIGHTS_ERROR'] });
-            observer.complete();
-          },
-        );
-      }
-    });
-  }
-
-  private requestSights$(): Observable<SightResponseItem[]> {
-    if (this.requestSightsStarted) {
-      return this.requestSightsSubject.asObservable();
+    if (this.sightsData.items.length) {
+      this.sightsData.items = this.sightsData.items.map((item) => ({
+        ...item,
+        nested: undefined,
+      }));
+      return of(this.sightsData);
     }
 
-    this.requestSightsStarted = true;
-    return this.requestService
-      .getApi<SightResponseItem[]>('sights')
-      .pipe(tap((resp) => this.requestSightsSubject.next(resp)));
+    return this.requestService.getApi<SightResponseItem[]>('sights').pipe(
+      tap((items) => {
+        this.sightsData.items = items.map((item) => this.prepareExoSight(item));
+      }),
+      map(() => this.sightsData),
+      catchError(() => of({ items: [], errors: ['FETCH_SIGHTS_ERROR'] })),
+    );
   }
 
   private prepareExoSight(item: SightResponseItem): SightData {
@@ -112,6 +86,7 @@ export class SightsService {
   }
 
   private fetchingSights$(withDelay?: boolean): Observable<ExtSightsData> {
+    // console.log('fetchingSights...');
     return new Observable<ExtSightsData>((observer) => {
       forkJoin({
         sightsData: this.fetchSights$(),
@@ -121,11 +96,13 @@ export class SightsService {
         delay: timer(withDelay ? 300 : 0),
       }).subscribe({
         next: ({ sightsData, egrknData }) => {
-          observer.next({
+          const data: ExtSightsData = {
             items: [...sightsData.items, ...egrknData.items],
             errors: [...(sightsData.errors ?? []), ...(egrknData.errors ?? [])],
-          });
+          };
+          observer.next(data);
           observer.complete();
+          this.fetchingSightsSubject.next(data);
         },
       });
     });
@@ -146,27 +123,26 @@ export class SightsService {
       case SightType.DEFAULT:
         // TODO refac (частично дублируется логика при фильтрации списка)
         return this.getSightById$(sightId).pipe(
-          switchMap((sight) => this.addNested$(sight)),
-          switchMap((sight) => this.addEgrknData$(sight)),
+          switchMap((sight) => this.handleSightDataExt$(sight)),
+          // switchMap((sight) => this.addEgrknData$(sight)),
         );
       default:
         return of(undefined);
     }
   }
 
-  private addNested$(sight: SightDataExt): Observable<SightDataExt> {
-    return this.fetchingSights$().pipe(
+  private handleSightDataExt$(sight: SightDataExt): Observable<SightDataExt> {
+    return this.fetchingSightsSubject.pipe(
       map(({ items }) => {
-        // console.log('addNested items:', items.length);
         const swnItem = SIGHTS_WITH_NESTED.find(
           (swn) => swn.sightId === sight.id,
         );
-        // console.log('addNested swnItem:', swnItem);
         const nested = swnItem
           ? items.filter(({ id }) => swnItem.nested.includes(id))
           : undefined;
         return { ...sight, nested };
       }),
+      switchMap((item) => this.addEgrknData$(item)),
     );
   }
 
@@ -367,7 +343,6 @@ export class SightsService {
     return [...mainItems, ...musItems, ...otherItems];
   }
 
-  // TODO test
   getSightsIds(sightId: SightId): SightId[] {
     return this.nestedSights[sightId] || [sightId];
   }

@@ -8,7 +8,7 @@ export type SightSet = 'main' | 'mus';
 
 export type District = '1' | '2' | '3';
 
-export type SightsDataError = 'FETCH_SIGHTS_ERROR' | 'FETCH_EGRKN_ERROR';
+export type SightsDataError = string; // 'FETCH_SIGHTS_ERROR' | 'FETCH_EGRKN_ERROR';
 
 export type SightId = string;
 

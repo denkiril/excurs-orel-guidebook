@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { RequestService } from 'src/app/services/request.service';
@@ -31,9 +31,6 @@ import {
 export class EgrknService {
   private sightDataItems: SightDataExt[] = [];
 
-  private requestEgrknDataStarted = false;
-  private readonly requestEgrknDataSubject = new ReplaySubject<EgrknResponse>();
-
   constructor(private readonly requestService: RequestService) {}
 
   getEgrknSights$(): Observable<EgrknSights> {
@@ -64,10 +61,8 @@ export class EgrknService {
   }
 
   private fetchEgrknData$(): Observable<EgrknSights> {
-    // console.log('fetchEgrknData...');
     return this.requestEgrknData$().pipe(
       tap(({ data }) => {
-        // console.log('fetchEgrknData:', data);
         this.sightDataItems = this.prepareSightData(data);
       }),
       map(() => ({ items: this.sightDataItems })),
@@ -75,20 +70,14 @@ export class EgrknService {
   }
 
   private requestEgrknData$(): Observable<EgrknResponse> {
-    if (this.requestEgrknDataStarted) {
-      return this.requestEgrknDataSubject.asObservable();
-    }
-
-    this.requestEgrknDataStarted = true;
-    return this.requestService.getUrl<EgrknResponse>(GET_EGRKN_URL).pipe(
-      catchError(() =>
-        // FETCH_EGRKN_ERROR TODO ?
-        this.requestService
-          .getUrl<EgrknResponse>(LOCAL_EGRKN_URL)
-          .pipe(tap((resp) => this.requestEgrknDataSubject.next(resp))),
-      ),
-      tap((resp) => this.requestEgrknDataSubject.next(resp)),
-    );
+    return this.requestService
+      .getMkrfOpendata<EgrknResponse>(GET_EGRKN_URL)
+      .pipe(
+        catchError(() =>
+          // FETCH_EGRKN_ERROR TODO ?
+          this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL),
+        ),
+      );
   }
 
   private prepareSightData(egrknItems: EgrknItem[]): SightDataExt[] {
