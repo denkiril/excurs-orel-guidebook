@@ -24,12 +24,14 @@ import {
   FilterParams,
   SightsFilterParams,
   GetSightsParams,
+  SightId,
 } from 'src/app/models/sights.models';
 import { SightsService } from 'src/app/services/sights.service';
 import { SettingsService } from 'src/app/services/settings.service';
 import { CustomValidators } from 'src/app/core/custom-validators';
 import { LoggerService } from 'src/app/services/logger.service';
 import { ActiveSightsService } from 'src/app/services/active-sights.service';
+import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 
 interface SightDataLocal extends SightData {
   active?: boolean;
@@ -76,40 +78,27 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   sightsFetching = false;
   sightsFetched = false;
   ticker = 0;
+  showEgrknError = false;
   private cachedFormValue: any = {};
-  private activeSights: number[] = [];
+  private activeSights: SightId[] = [];
 
   constructor(
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
     private readonly settingsService: SettingsService,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
 
-    this.settingsService.filterParamsInRoute$
-      .pipe(first())
+    this.settingsService
+      .startParseQueryParams$()
+      .pipe(first(), takeUntil(this.destroy$))
       .subscribe((params) => {
         this.initWithFilterParams(params);
       });
-
-    this.sightsService.sightForMore$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        // console.log('main-panel sightForMore$', JSON.stringify(data));
-        const sightIdForMore = data?.sight?.post_id || data?.sightId;
-        const sight = this.sights.find((s) => s.post_id === sightIdForMore);
-        if (sight) {
-          sight.active = true;
-          markDirty(this);
-        } else {
-          this.updateSightsActive();
-        }
-      });
-
-    this.settingsService.startParseQueryParams();
 
     this.activeSightsService.activeSights$
       .pipe(takeUntil(this.destroy$))
@@ -169,12 +158,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       this.updateForm(filterParams);
     }
 
-    this.settingsService.filterParamsInRoute$
+    this.filterParamsStore.state$
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => this.processFilterParams(params));
 
     this.getSights$
-      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .pipe(takeUntil(this.destroy$), debounceTime(200))
       .subscribe(() => {
         this.getSights();
         // markDirty(this);
@@ -196,9 +185,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private updateForm(filterParams: FilterParams): void {
-    // console.log('updateForm');
+    // console.log('updateForm', JSON.stringify(filterParams));
     const options = { emitEvent: false };
-    const { sightsFilterParams, search, sightForMore } = filterParams;
+    const { sightsFilterParams, search } = filterParams;
 
     if (sightsFilterParams) {
       this.filterBlocks.forEach((block) => {
@@ -227,12 +216,6 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     }
 
     this.form.patchValue({ search: search || '' }, options);
-
-    this.sightsService.setSightForMore(
-      undefined,
-      sightForMore ? Number(sightForMore) : undefined,
-      false,
-    );
   }
 
   private getChangedFormControls(): string[] {
@@ -267,13 +250,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.updateForm(filterParams); // change form -> upd route -> upd form (?)
 
     const changed = this.getChangedFormControls();
-    if (changed.filter((item) => item !== 'egrkn').length) {
-      this.emitGetSights();
-    }
-    if (changed.includes('egrkn')) {
-      console.log('[||] egrkn value:', this.form.value.egrkn);
-      // TODO fetch or hide OKN...
-    }
+    if (changed.length) this.emitGetSights();
   }
 
   animationDone(filterBlock: FilterBlock): void {
@@ -308,19 +285,35 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .getSights(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        (data) => {
-          this.loggerService.devLog('sightsService data:', data);
-          this.sights = data.items; // .map((item) => ({ ...item, active: false }));
+        ({ items, errors }) => {
+          this.loggerService.devLog('sightsService data:', items, errors);
+          this.sights = [...items]; // .map((item) => ({ ...item, active: false }));
           this.updateSightsActive();
+
           this.sightsFetched = true;
           this.showServerError = false;
+          if (errors?.length) {
+            if (
+              !items.length &&
+              errors.includes('FETCH_SIGHTS_ERROR') &&
+              !this.form.value.egrkn.go
+            ) {
+              this.sightsFetched = false;
+              this.showServerError = true; // TODO auto-reload?
+            }
+            if (errors.includes('FETCH_EGRKN_ERROR')) {
+              this.form.patchValue({ egrkn: { go: false } });
+              this.showEgrknError = true;
+            }
+          }
+
           this.setSightsFetching(false);
         },
-        (error) => {
-          this.loggerService.error(error);
-          if (!error.ok) this.showServerError = true; // TODO auto-reload?
-          this.setSightsFetching(false);
-        },
+        // (error) => {
+        //   console.error('! getSights error !', error);
+        //   // if (!error.ok) this.showServerError = true;
+        //   this.setSightsFetching(false);
+        // },
       );
   }
 
@@ -353,18 +346,18 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   private updateSightsActive(): void {
     this.sights.forEach((sight) => {
-      sight.active = this.activeSights.includes(sight.post_id);
+      sight.active = this.activeSights.includes(sight.id);
     });
     markDirty(this);
   }
 
-  trackById(_index: number, item: SightData): number {
-    return item.post_id;
+  trackById(_index: number, item: SightData): string {
+    return item.id;
   }
 
   onCardHover(sight: SightDataLocal, hover = true): void {
-    if (hover) this.activeSightsService.add(sight.post_id);
-    else this.activeSightsService.delete(sight.post_id);
+    if (hover) this.activeSightsService.add(sight.id);
+    else this.activeSightsService.delete(sight.id);
   }
 
   onSearchInputFocus(): void {

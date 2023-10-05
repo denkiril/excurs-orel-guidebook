@@ -22,8 +22,9 @@
 .scrolled-content {
   flex-grow: 1;
   padding: 72px 8px 16px;
-  overflow-y: auto;
-  overflow-y: overlay;
+  // overflow-y: auto;
+  // overflow-y: overlay;
+  overflow-y: scroll;
 }
 
 @media (max-width: $mobile-width) {
@@ -97,7 +98,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      margin-right: 16px;
+      margin-right: 8px;
       margin-bottom: 4px;
       cursor: default;
     }
@@ -154,15 +155,8 @@
     }
   }
 
-  .card-container {
+  exogb-sight-card {
     margin-bottom: 8px;
-    border: solid 1px var(--label-secondary);
-
-    // &:hover,
-    &.active {
-      border-color: var(--label-primary);
-      background-color: var(--light-01);
-    }
   }
 }
 
@@ -171,4 +165,18 @@
   margin-bottom: 8px;
   color: var(--label-secondary);
   cursor: default;
+
+  &.primary {
+    color: var(--label-primary);
+  }
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.warning-icon {
+  margin-left: 8px;
+  color: var(--accent-pink);
 }

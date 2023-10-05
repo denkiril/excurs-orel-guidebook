@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
@@ -17,7 +17,6 @@ import { RadiobuttonComponent } from './components/controls/radiobutton/radiobut
 import { ToggleComponent } from './components/controls/toggle/toggle.component';
 import { FilterBlockComponent } from './components/controls/filter-block/filter-block.component';
 import { SpinnerComponent } from './components/controls/spinner/spinner.component';
-import { APIInterceptor } from './core/api.interceptor';
 import { SightCardComponent } from './components/sight-card/sight-card.component';
 import { SightCardMoreComponent } from './components/sight-card-more/sight-card-more.component';
 import { LoaderComponent } from './components/controls/loader/loader.component';
@@ -27,6 +26,7 @@ import { SightImagesComponent } from './components/sight-images/sight-images.com
 import { SightLinksDirective } from './directives/sight-links.directive';
 import { ParamsGuard } from './core/params.guard';
 import { StringTickerPipe } from './pipes/string-ticker.pipe';
+import { GeolocationPipe } from './pipes/geolocation.pipe';
 
 export const routes: Routes = [
   {
@@ -60,6 +60,7 @@ export const routes: Routes = [
     SightImagesComponent,
     SightLinksDirective,
     StringTickerPipe,
+    GeolocationPipe,
   ],
   imports: [
     BrowserModule,
@@ -71,13 +72,13 @@ export const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: APIInterceptor,
-      multi: true,
-    },
-  ],
+  // providers: [
+  //   {
+  //     provide: HTTP_INTERCEPTORS,
+  //     useClass: APIInterceptor,
+  //     multi: true,
+  //   },
+  // ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -18,7 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { DocumentService } from 'src/app/services/document.service';
 import { MapService } from 'src/app/services/map.service';
-import { SightsService } from 'src/app/services/sights.service';
+import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 
 interface MenuItem {
   title: string;
@@ -100,8 +100,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly elRef: ElementRef<HTMLElement>,
     private readonly documentService: DocumentService,
-    private readonly sightsService: SightsService,
     private readonly mapService: MapService,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
   ngOnInit(): void {
@@ -117,11 +117,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     //     markDirty(this);
     //   });
 
-    this.sightsService.sightForMore$
+    this.filterParamsStore.state$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        // const isSightForMore = !!data;
-        this.transparent = !!data;
+      .subscribe(({ sightForMore }) => {
+        this.transparent = !!sightForMore;
         this.minimize = true;
         this.opened = false;
         markDirty(this);

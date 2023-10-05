@@ -8,10 +8,12 @@ import expand_more from '!!raw-loader!./svg/expand_more.svg';
 import chevron_right from '!!raw-loader!./svg/chevron_right.svg';
 import arrow_back from '!!raw-loader!./svg/arrow_back.svg';
 import open_in_new from '!!raw-loader!./svg/open_in_new.svg';
+import quick_reference_all from '!!raw-loader!./svg/quick_reference_all.svg';
 import search from '!!raw-loader!./svg/search.svg';
 import close from '!!raw-loader!./svg/close.svg';
 import refresh from '!!raw-loader!./svg/refresh.svg';
 import museum from '!!raw-loader!./svg/museum.svg';
+import warning from '!!raw-loader!./svg/warning.svg';
 /* eslint-enable import/no-webpack-loader-syntax */
 
 @NgModule({
@@ -46,9 +48,14 @@ export class IconsModule {
         'open_in_new',
         sanitizer.bypassSecurityTrustHtml(open_in_new),
       )
+      .addSvgIconLiteral(
+        'quick_reference_all',
+        sanitizer.bypassSecurityTrustHtml(quick_reference_all),
+      )
       .addSvgIconLiteral('search', sanitizer.bypassSecurityTrustHtml(search))
       .addSvgIconLiteral('close', sanitizer.bypassSecurityTrustHtml(close))
       .addSvgIconLiteral('refresh', sanitizer.bypassSecurityTrustHtml(refresh))
-      .addSvgIconLiteral('museum', sanitizer.bypassSecurityTrustHtml(museum));
+      .addSvgIconLiteral('museum', sanitizer.bypassSecurityTrustHtml(museum))
+      .addSvgIconLiteral('warning', sanitizer.bypassSecurityTrustHtml(warning));
   }
 }

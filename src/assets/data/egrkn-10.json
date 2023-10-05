@@ -1,0 +1,1751 @@
+{
+  "status": 200,
+  "nextPage": "https://opendata.mkrf.ru/v2/egrkn/$?f=%7B%22data.general.address.fullAddress%22%3A%7B%22%24search%22%3A%22%D0%BE%D1%80%D0%B5%D0%BB%22%7D%2C%22data.general.region.value%22%3A%7B%22%24eq%22%3A%22%D0%9E%D1%80%D0%BB%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%22%7D%7D&l=10&cursor=AoE%2FADYyM2Q4Zjc2ZjFkZjNkNjcxZjZkMTU2NCExNzU3MzM%3D",
+  "cursor": "AoE/ADYyM2Q4Zjc2ZjFkZjNkNjcxZjZkMTU2NCExNzU3MzM=",
+  "total": 296,
+  "filter": {
+    "$and": [{
+      "data.general.address.fullAddress": {
+        "$search": "орел"
+      }
+    }, {
+      "data.general.region.value": {
+        "$eq": "Орловская область"
+      }
+    }, {
+      "odSetVersions": {
+        "$in": ["623d8f76f1df3d671f6d1564"]
+      }
+    }]
+  },
+  "o": false,
+  "s": 0,
+  "l": 10,
+  "data": [{
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df01d907e0a5bfd7864de",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "75d792072576378cb4891c8f491580c808dd042399f8599926b56b5837134f85",
+    "nativeId": "147746",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/147746",
+        "category": "heritage",
+        "createDate": "2015-05-20T12:00:47Z"
+      },
+      "general": {
+        "id": 147746,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "591210002190005",
+        "conNumber": "57-275",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "securityInfo": "I.Объемно-пространственная структура: Объемно- пространственное композиционное построение основного объема здания с фасадами .Основной объем ограничен главным, дворовым и боковыми фасадами Основной объем здания .Здание жилого дома расположено на улице Гостиная (старое название улица Московская). Трехэтажное, Г- образное здание в плане сооружено из кирпича с элементами декора в русском стиле. Основными декоративными элементами являются полуколонны. Со стороны главного фасада устроены две арки ведущие во двор.Декоративное оформление боковых фасадов представлено в виде пилястр и арочных окон второго этажа.Дворовый фасад лаконичен и прост, окна прямоугольные, над вторым этажом и под свесом кровли проходят простые карнизы. II. Композиция и архитектурно-художественное оформление главного и боковых фасадов здания: 1. Оконные проемы первого этажа;  Элемент декоративного убранства фасада.Главный фасад.Окна первого этажа арочные, декоративное оформление отсутствует. 2. Оконные проемы второго этажа; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tАрочные оконные проемы второго этажа оформлены сверху выделенной клинчатой перемычкой с замковым камнем, а снизу сандриками под которыми находится декоративное оформление в виде полубалясин.  Рамы окон деревянные двустворчатые.3. Оконные проемы третьего этажа; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tОкна третьего этажа прямоугольные декоративное оформление отсутствует. Оконные рамы деревянные двустворчатые. 4. Венчающий карниз; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tПлоскости стен главного и дворового фасадов завершены профилированным венчающим карнизом небольшого выноса.5. Междуэтажный карниз; Элемент декоративного убранства фасада.Главный и боковые фасады.На главном и дворовом фасадах элементом горизонтального членения является междуэтажный карниз простого профиля. 6. Арочные проемы. Элемент декоративного убранства фасада.Главный фасад.Арочные проемы со стороны главного фасада оформлены сверху выделенной клинчатой перемычкой с замковым камнем, боковые части арок оформлены пилястрами.\n\n",
+        "borderInfo": "Юго-восточная граница от точки А до точки Б со стороны дворового фасада проходит на расстоянии 5 метров. Юго-западная граница территории от точки Б до точки Г проходит на расстоянии 15 метров от дворового фасада. Юго-западная граница от точки Г до точки Д проходит на расстоянии 5 метров от бокового фасада. Северо-западная граница территории проходит на расстоянии 5 метров от главного фасада от точки Д до точки Е. Северо-восточная граница проходит от точки А до точки Е на расстоянии 5 метров от бокового фасада.",
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "сер. XX в.",
+        "documents": [{
+          "name": "Постановление",
+          "number": "32/598-ОС",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 162322,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/162322"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/162326",
+          "title": "162326"
+        },
+        "isActual": true,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Гостиная, д. 3",
+          "mapPosition": {
+            "coordinates": [36.069649, 52.964367],
+            "type": "Point"
+          }
+        },
+        "additionalCoordinates": [{
+          "coordinates": [
+            [52.96488928, 36.0702757],
+            [52.96392454, 36.06861],
+            [52.96440542, 36.07052762],
+            [52.96456143, 36.07079413],
+            [52.96373943, 36.06892491],
+            [52.96451624, 36.07034058]
+          ],
+          "type": "MultiPoint"
+        }]
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/147746",
+            "category": "heritage",
+            "createDate": "2015-05-20T12:00:47Z"
+          },
+          "general": {
+            "id": 147746,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "591210002190005",
+            "conNumber": "57-275",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "securityInfo": "I.Объемно-пространственная структура: Объемно- пространственное композиционное построение основного объема здания с фасадами .Основной объем ограничен главным, дворовым и боковыми фасадами Основной объем здания .Здание жилого дома расположено на улице Гостиная (старое название улица Московская). Трехэтажное, Г- образное здание в плане сооружено из кирпича с элементами декора в русском стиле. Основными декоративными элементами являются полуколонны. Со стороны главного фасада устроены две арки ведущие во двор.Декоративное оформление боковых фасадов представлено в виде пилястр и арочных окон второго этажа.Дворовый фасад лаконичен и прост, окна прямоугольные, над вторым этажом и под свесом кровли проходят простые карнизы. II. Композиция и архитектурно-художественное оформление главного и боковых фасадов здания: 1. Оконные проемы первого этажа;  Элемент декоративного убранства фасада.Главный фасад.Окна первого этажа арочные, декоративное оформление отсутствует. 2. Оконные проемы второго этажа; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tАрочные оконные проемы второго этажа оформлены сверху выделенной клинчатой перемычкой с замковым камнем, а снизу сандриками под которыми находится декоративное оформление в виде полубалясин.  Рамы окон деревянные двустворчатые.3. Оконные проемы третьего этажа; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tОкна третьего этажа прямоугольные декоративное оформление отсутствует. Оконные рамы деревянные двустворчатые. 4. Венчающий карниз; Элемент декоративного убранства фасада\tГлавный и боковые фасады\tПлоскости стен главного и дворового фасадов завершены профилированным венчающим карнизом небольшого выноса.5. Междуэтажный карниз; Элемент декоративного убранства фасада.Главный и боковые фасады.На главном и дворовом фасадах элементом горизонтального членения является междуэтажный карниз простого профиля. 6. Арочные проемы. Элемент декоративного убранства фасада.Главный фасад.Арочные проемы со стороны главного фасада оформлены сверху выделенной клинчатой перемычкой с замковым камнем, боковые части арок оформлены пилястрами.\n\n",
+            "borderInfo": "Юго-восточная граница от точки А до точки Б со стороны дворового фасада проходит на расстоянии 5 метров. Юго-западная граница территории от точки Б до точки Г проходит на расстоянии 15 метров от дворового фасада. Юго-западная граница от точки Г до точки Д проходит на расстоянии 5 метров от бокового фасада. Северо-западная граница территории проходит на расстоянии 5 метров от главного фасада от точки Д до точки Е. Северо-восточная граница проходит от точки А до точки Е на расстоянии 5 метров от бокового фасада.",
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "сер. XX в.",
+            "documents": [{
+              "name": "Постановление",
+              "number": "32/598-ОС",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 162322,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/162322"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/162326",
+              "title": "162326"
+            },
+            "isActual": true,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Гостиная, д. 3",
+              "mapPosition": {
+                "coordinates": [36.069649, 52.964367],
+                "type": "Point"
+              }
+            },
+            "additionalCoordinates": [{
+              "coordinates": [
+                [52.96488928, 36.0702757],
+                [52.96392454, 36.06861],
+                [52.96440542, 36.07052762],
+                [52.96456143, 36.07079413],
+                [52.96373943, 36.06892491],
+                [52.96451624, 36.07034058]
+              ],
+              "type": "MultiPoint"
+            }]
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }, {
+      "dataPath": ".general.additionalCoordinates[]",
+      "keyword": 1000,
+      "message": "Bad value '[object Object]' for field of type GeoJSON",
+      "schemaPath": "#/properties/general/properties/additionalCoordinates[]"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df114907e0a5bfd7a753f",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "af178b61e06ca753ef91c44e5c86ff431e6df230193067bcd64b7ff2e9b6bc2b",
+    "nativeId": "175683",
+    "nativeName": "Ансамбль бывшего Введенского женского монастыря",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/2/175683",
+        "category": "heritage",
+        "createDate": "2017-12-11T14:07:30Z"
+      },
+      "general": {
+        "id": 175683,
+        "name": "Ансамбль бывшего Введенского женского монастыря",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571421265050005",
+        "conNumber": "57-24361",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "2",
+          "value": "Ансамбль"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "1895 г.",
+        "documents": [{
+          "name": "Решение малого Совета Орловского областного Совета народных депутатов",
+          "number": "81-7",
+          "date": "1993-07-06",
+          "archive": {
+            "id": 2113631,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/2113631"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/3381126",
+          "title": "3381126"
+        },
+        "isActual": true,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. 1-я Курская, 92",
+          "mapPosition": {
+            "coordinates": [36.0954770674588, 52.957517957809515],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/2/175683",
+            "category": "heritage",
+            "createDate": "2017-12-11T14:07:30Z"
+          },
+          "general": {
+            "id": 175683,
+            "name": "Ансамбль бывшего Введенского женского монастыря",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571421265050005",
+            "conNumber": "57-24361",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "2",
+              "value": "Ансамбль"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "1895 г.",
+            "documents": [{
+              "name": "Решение малого Совета Орловского областного Совета народных депутатов",
+              "number": "81-7",
+              "date": "1993-07-06",
+              "archive": {
+                "id": 2113631,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/2113631"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/3381126",
+              "title": "3381126"
+            },
+            "isActual": true,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. 1-я Курская, 92",
+              "mapPosition": {
+                "coordinates": [36.0954770674588, 52.957517957809515],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2023-03-21T23:18:36.850Z",
+    "1": "641a3b4c6dd6cb6e32d5b87b",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "641a3b6be9a4b17043bce2e5",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "641a3b4c6dd6cb6e32d5b87b",
+    "created": "2023-03-21T23:19:04.650Z",
+    "modified": "2023-03-21T23:19:04.650Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "9e4ae9c9fdd4c01b373773af98e9c5caba6652f6be7e606e8bb739680741efae",
+    "nativeId": "175714",
+    "nativeName": "Братское кладбище жертв фашизма",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175714",
+        "category": "heritage",
+        "createDate": "2023-03-21T08:20:05Z"
+      },
+      "general": {
+        "id": 175714,
+        "name": "Братское кладбище жертв фашизма",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571411372220005",
+        "conNumber": "57-25046",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "2",
+          "value": "Памятник истории"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "1941 - 1945 гг.",
+        "documents": [{
+          "name": "Постановление Орловской Областной думы \"О постановке на государственную охрану местной категории памятников истории области\"",
+          "number": "15/112-ОД",
+          "date": "1996-07-26",
+          "archive": {
+            "id": 1890642,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1890642"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/4345062",
+          "title": "4345062"
+        },
+        "isActual": true,
+        "restorationInf": "",
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Октябрьская, 53",
+          "mapPosition": {
+            "coordinates": [36.067582644180085, 52.97956493933009],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2023-03-21T23:19:04.650Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175714",
+            "category": "heritage",
+            "createDate": "2023-03-21T08:20:05Z"
+          },
+          "general": {
+            "id": 175714,
+            "name": "Братское кладбище жертв фашизма",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571411372220005",
+            "conNumber": "57-25046",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "2",
+              "value": "Памятник истории"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "1941 - 1945 гг.",
+            "documents": [{
+              "name": "Постановление Орловской Областной думы \"О постановке на государственную охрану местной категории памятников истории области\"",
+              "number": "15/112-ОД",
+              "date": "1996-07-26",
+              "archive": {
+                "id": 1890642,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1890642"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/4345062",
+              "title": "4345062"
+            },
+            "isActual": true,
+            "restorationInf": "",
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Октябрьская, 53",
+              "mapPosition": {
+                "coordinates": [36.067582644180085, 52.97956493933009],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "641a3b4c6dd6cb6e32d5b87b"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df07a907e0a5bfd7922f7",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "2a56372bc01903cb586b2f056c5a796107d3a2d418d1ebc8988d185761d4366b",
+    "nativeId": "175727",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175727",
+        "category": "heritage",
+        "updateDate": "2021-12-27T08:25:42Z"
+      },
+      "general": {
+        "id": 175727,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571410493460005",
+        "conNumber": "57-25192",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Облсовета \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/1758596",
+          "title": "1758596"
+        },
+        "isActual": true,
+        "restorationInf": "",
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, Советский район, ул. Ленина, 21",
+          "mapPosition": {
+            "coordinates": [36.0641120687863, 52.9676063418434],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175727",
+            "category": "heritage",
+            "createDate": "2016-10-14T16:06:36Z"
+          },
+          "general": {
+            "id": 175727,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571410493460005",
+            "conNumber": "57-25192",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 1758571,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1758571"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/1758596",
+              "title": "1758596"
+            },
+            "isActual": false,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, Советский район, ул. Ленина, 21",
+              "mapPosition": {
+                "coordinates": [36.06411206878626, 52.96760634184337],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }, {
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/general/address/mapPosition/coordinates/0",
+        "value": 36.0641120687863
+      }, {
+        "op": "add",
+        "path": "/general/address/mapPosition/coordinates/1",
+        "value": 52.9676063418434
+      }, {
+        "op": "remove",
+        "path": "/general/address/mapPosition/coordinates/2"
+      }, {
+        "op": "remove",
+        "path": "/general/address/mapPosition/coordinates/2"
+      }, {
+        "op": "add",
+        "path": "/general/restorationInf",
+        "value": ""
+      }, {
+        "op": "replace",
+        "path": "/general/isActual",
+        "value": true
+      }, {
+        "op": "add",
+        "path": "/general/documents/0",
+        "value": {
+          "name": "Постановление Облсовета \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }
+      }, {
+        "op": "remove",
+        "path": "/general/documents/1"
+      }, {
+        "op": "add",
+        "path": "/info/updateDate",
+        "value": "2021-12-27T08:25:42Z"
+      }, {
+        "op": "remove",
+        "path": "/info/createDate"
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df077907e0a5bfd791d50",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "ca991068ed9d0622cd8259328fbedaf8109019dd8975ec97f8e7ee88b49837ce",
+    "nativeId": "175728",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175728",
+        "category": "heritage",
+        "createDate": "2016-10-14T15:28:06Z"
+      },
+      "general": {
+        "id": 175728,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571410494660005",
+        "conNumber": "57-25202",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Облсовета",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1753957,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1753957"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/1753962",
+          "title": "1753962"
+        },
+        "isActual": true,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Салтыкова-Щедрина, 7",
+          "mapPosition": {
+            "coordinates": [36.056264, 52.967301],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175728",
+            "category": "heritage",
+            "createDate": "2016-10-14T15:28:06Z"
+          },
+          "general": {
+            "id": 175728,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571410494660005",
+            "conNumber": "57-25202",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 1753957,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1753957"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/1753962",
+              "title": "1753962"
+            },
+            "isActual": true,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Салтыкова-Щедрина, 7",
+              "mapPosition": {
+                "coordinates": [36.056264, 52.967301],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df113907e0a5bfd7a71a3",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "5af3e13e004a7f4fe637c450e385cd3e399d88a59f72b7857aeb9262e8f4d362",
+    "nativeId": "175729",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175729",
+        "category": "heritage",
+        "updateDate": "2021-12-27T08:53:08Z"
+      },
+      "general": {
+        "id": 175729,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571411265030005",
+        "conNumber": "57-25236",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Орловского областного Совета народных депутатов \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/3387859",
+          "title": "3387859"
+        },
+        "isActual": true,
+        "restorationInf": "",
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Васильевская, 12",
+          "mapPosition": {
+            "coordinates": [36.059504915344, 52.9599314232029],
+            "type": "Point"
+          }
+        },
+        "additionalCoordinates": [{
+          "coordinates": [
+            [52.960066337499995, 36.05948278166667],
+            [52.960053185, 36.05933563916667],
+            [52.95996512833334, 36.05948090138889],
+            [52.959966011944445, 36.05949515472222],
+            [52.95995790361111, 36.05950872277778],
+            [52.95995584361111, 36.05948320388889],
+            [52.95994133611111, 36.059526732222224],
+            [52.95994068277778, 36.05951136611111],
+            [52.95983591444444, 36.05950036083333],
+            [52.95987068583334, 36.0595754225],
+            [52.95998566305556, 36.059348835],
+            [52.95982748166667, 36.05938241916667]
+          ],
+          "type": "MultiPoint"
+        }]
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175729",
+            "category": "heritage",
+            "createDate": "2017-12-11T13:35:06Z"
+          },
+          "general": {
+            "id": 175729,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571411265030005",
+            "conNumber": "57-25236",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598 ",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 2466834,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/2466834"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/3387859",
+              "title": "3387859"
+            },
+            "isActual": false,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Васильевская, 12",
+              "mapPosition": {
+                "coordinates": [36.05950491534404, 52.95993142320294],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }, {
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/general/additionalCoordinates",
+        "value": [{
+          "coordinates": [
+            [52.960066337499995, 36.05948278166667],
+            [52.960053185, 36.05933563916667],
+            [52.95996512833334, 36.05948090138889],
+            [52.959966011944445, 36.05949515472222],
+            [52.95995790361111, 36.05950872277778],
+            [52.95995584361111, 36.05948320388889],
+            [52.95994133611111, 36.059526732222224],
+            [52.95994068277778, 36.05951136611111],
+            [52.95983591444444, 36.05950036083333],
+            [52.95987068583334, 36.0595754225],
+            [52.95998566305556, 36.059348835],
+            [52.95982748166667, 36.05938241916667]
+          ],
+          "type": "MultiPoint"
+        }]
+      }, {
+        "op": "add",
+        "path": "/general/address/mapPosition/coordinates/0",
+        "value": 36.059504915344
+      }, {
+        "op": "add",
+        "path": "/general/address/mapPosition/coordinates/1",
+        "value": 52.9599314232029
+      }, {
+        "op": "remove",
+        "path": "/general/address/mapPosition/coordinates/2"
+      }, {
+        "op": "remove",
+        "path": "/general/address/mapPosition/coordinates/2"
+      }, {
+        "op": "add",
+        "path": "/general/restorationInf",
+        "value": ""
+      }, {
+        "op": "replace",
+        "path": "/general/isActual",
+        "value": true
+      }, {
+        "op": "add",
+        "path": "/general/documents/0",
+        "value": {
+          "name": "Постановление Орловского областного Совета народных депутатов \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }
+      }, {
+        "op": "remove",
+        "path": "/general/documents/1"
+      }, {
+        "op": "add",
+        "path": "/info/updateDate",
+        "value": "2021-12-27T08:53:08Z"
+      }, {
+        "op": "remove",
+        "path": "/info/createDate"
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df073907e0a5bfd791578",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "2f9069e3264224c87c72e2eec7cfc1da679838e6838b14053ab1443133f05cab",
+    "nativeId": "175730",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175730",
+        "category": "heritage",
+        "createDate": "2016-09-22T08:43:57Z"
+      },
+      "general": {
+        "id": 175730,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571410494670005",
+        "conNumber": "57-25245",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Облсовета",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1745852,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1745852"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/1745859",
+          "title": "1745859"
+        },
+        "isActual": true,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Карачевская, 29",
+          "mapPosition": {
+            "coordinates": [36.06213, 52.958899],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175730",
+            "category": "heritage",
+            "createDate": "2016-09-22T08:43:57Z"
+          },
+          "general": {
+            "id": 175730,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571410494670005",
+            "conNumber": "57-25245",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 1745852,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1745852"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/1745859",
+              "title": "1745859"
+            },
+            "isActual": true,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Карачевская, 29",
+              "mapPosition": {
+                "coordinates": [36.06213, 52.958899],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df074907e0a5bfd791729",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "fa09608614a91a8214181dd75aa1caa3cd1669fa901f7803c809a1679692db0a",
+    "nativeId": "175731",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175731",
+        "category": "heritage",
+        "createDate": "2016-09-22T13:54:41Z"
+      },
+      "general": {
+        "id": 175731,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571410494680005",
+        "conNumber": "57-25247",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "вт. пол. XIX в.",
+        "documents": [{
+          "name": "Постановление правительства Орловской области от 5 декабря 2014 года № 368 ",
+          "number": "368",
+          "date": "2014-12-05",
+          "archive": {
+            "id": 1743493,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1743493"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/1743502",
+          "title": "1743502"
+        },
+        "isActual": false,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Карачевская, 36",
+          "mapPosition": {
+            "coordinates": [36.062454, 52.959865],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175731",
+            "category": "heritage",
+            "createDate": "2016-09-22T13:54:41Z"
+          },
+          "general": {
+            "id": 175731,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571410494680005",
+            "conNumber": "57-25247",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "вт. пол. XIX в.",
+            "documents": [{
+              "name": "Постановление правительства Орловской области от 5 декабря 2014 года № 368 ",
+              "number": "368",
+              "date": "2014-12-05",
+              "archive": {
+                "id": 1743493,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1743493"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/1743502",
+              "title": "1743502"
+            },
+            "isActual": false,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Карачевская, 36",
+              "mapPosition": {
+                "coordinates": [36.062454, 52.959865],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df072907e0a5bfd7913a4",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "99274a9990b6f66fafe6a206c639fff274bd7a128576b6d23d8a53d5910cdffe",
+    "nativeId": "175732",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175732",
+        "category": "heritage",
+        "createDate": "2016-09-22T08:34:50Z"
+      },
+      "general": {
+        "id": 175732,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571410494690005",
+        "conNumber": "57-25252",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Облсовета",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1743675,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1743675"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/1743674",
+          "title": "1743674"
+        },
+        "isActual": true,
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. Комсомольская, 40",
+          "mapPosition": {
+            "coordinates": [36.06507300859821, 52.958549295411046],
+            "type": "Point"
+          }
+        }
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175732",
+            "category": "heritage",
+            "createDate": "2016-09-22T08:34:50Z"
+          },
+          "general": {
+            "id": 175732,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571410494690005",
+            "conNumber": "57-25252",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 1743675,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/1743675"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/1743674",
+              "title": "1743674"
+            },
+            "isActual": true,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. Комсомольская, 40",
+              "mapPosition": {
+                "coordinates": [36.06507300859821, 52.958549295411046],
+                "type": "Point"
+              }
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 2,
+    "errorFields": [{
+      "keyword": "type",
+      "dataPath": ".general.address.mapPosition.coordinates[0]",
+      "schemaPath": "#/properties/general/properties/address/properties/mapPosition/properties/coordinates/items/type",
+      "params": {
+        "type": "array"
+      },
+      "message": "should be array"
+    }]
+  }, {
+    "0": "2022-03-25T09:46:30.246Z",
+    "1": "623d8f76f1df3d671f6d1565",
+    "2": ["623d8f76f1df3d671f6d1564"],
+    "_id": "623df11f907e0a5bfd7a8c46",
+    "odSchema": "5fc680bb7a5e125af673f12b",
+    "dataset": "57758409f0aecacd7fd18947",
+    "updateSession": "623d8f76f1df3d671f6d1565",
+    "created": "2022-03-25T16:38:47.993Z",
+    "modified": "2022-03-25T16:38:47.993Z",
+    "odSetVersion": "623d8f76f1df3d671f6d1564",
+    "odSetVersions": ["623d8f76f1df3d671f6d1564"],
+    "hash": "046d433a9fe6b7d4e1613a4aa092bd75c6f4869a8a1fe8b1511a0653d52c378d",
+    "nativeId": "175733",
+    "nativeName": "Дом жилой",
+    "data": {
+      "info": {
+        "path": "/cdm/v2/heritages/1/175733",
+        "category": "heritage",
+        "updateDate": "2021-12-27T09:08:06Z"
+      },
+      "general": {
+        "id": 175733,
+        "name": "Дом жилой",
+        "region": {
+          "id": "57",
+          "value": "Орловская область"
+        },
+        "regNumber": "571411306230005",
+        "conNumber": "57-25263",
+        "categoryType": {
+          "id": "2",
+          "value": "Регионального значения"
+        },
+        "objectType": {
+          "id": "1",
+          "value": "Памятник"
+        },
+        "typologies": [{
+          "id": "3",
+          "value": "Памятник градостроительства и архитектуры"
+        }],
+        "unesco": {
+          "id": "2",
+          "value": "нет"
+        },
+        "status": {
+          "id": "2",
+          "value": "нет"
+        },
+        "createDate": "XIX в.",
+        "documents": [{
+          "name": "Постановление Орловского областного Совета народных депутатов \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }],
+        "photo": {
+          "url": "https://okn-mk.mkrf.ru/maps/show/id/3549645",
+          "title": "3549645"
+        },
+        "isActual": true,
+        "restorationInf": "",
+        "address": {
+          "fullAddress": "Орловская область, г. Орел, ул. 1-я Посадская, 4/6"
+        },
+        "additionalCoordinates": [{
+          "coordinates": [
+            [52.96149010555556, 36.060602680555554],
+            [52.96151196666666, 36.06060476111111],
+            [52.96147628055556, 36.06127522777778],
+            [52.96149001944445, 36.060614038888886],
+            [52.96111591388888, 36.060714161111115],
+            [52.961310958333335, 36.06141456666666],
+            [52.96126458333333, 36.06061537222222],
+            [52.96117379166667, 36.06067070555555]
+          ],
+          "type": "MultiPoint"
+        }]
+      }
+    },
+    "changes": [{
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/",
+        "value": {
+          "info": {
+            "path": "/cdm/v2/heritages/1/175733",
+            "category": "heritage",
+            "createDate": "2017-12-27T12:35:52Z"
+          },
+          "general": {
+            "id": 175733,
+            "name": "Дом жилой",
+            "region": {
+              "id": "57",
+              "value": "Орловская область"
+            },
+            "regNumber": "571411306230005",
+            "conNumber": "57-25263",
+            "categoryType": {
+              "id": "2",
+              "value": "Регионального значения"
+            },
+            "objectType": {
+              "id": "1",
+              "value": "Памятник"
+            },
+            "typologies": [{
+              "id": "3",
+              "value": "Памятник градостроительства и архитектуры"
+            }],
+            "unesco": {
+              "id": "2",
+              "value": "нет"
+            },
+            "status": {
+              "id": "2",
+              "value": "нет"
+            },
+            "createDate": "XIX в.",
+            "documents": [{
+              "name": "Постановление Облсовета",
+              "number": "32/598 ",
+              "date": "2001-02-27",
+              "archive": {
+                "id": 2466834,
+                "url": "https://okn-mk.mkrf.ru/maps/show/id/2466834"
+              }
+            }],
+            "photo": {
+              "url": "https://okn-mk.mkrf.ru/maps/show/id/3549645",
+              "title": "3549645"
+            },
+            "isActual": false,
+            "address": {
+              "fullAddress": "Орловская область, г. Орел, ул. 1-я Посадская, 4/6"
+            }
+          }
+        }
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }, {
+      "modified": "2022-03-25T16:38:47.993Z",
+      "diff": [{
+        "op": "add",
+        "path": "/general/additionalCoordinates",
+        "value": [{
+          "coordinates": [
+            [52.96149010555556, 36.060602680555554],
+            [52.96151196666666, 36.06060476111111],
+            [52.96147628055556, 36.06127522777778],
+            [52.96149001944445, 36.060614038888886],
+            [52.96111591388888, 36.060714161111115],
+            [52.961310958333335, 36.06141456666666],
+            [52.96126458333333, 36.06061537222222],
+            [52.96117379166667, 36.06067070555555]
+          ],
+          "type": "MultiPoint"
+        }]
+      }, {
+        "op": "add",
+        "path": "/general/restorationInf",
+        "value": ""
+      }, {
+        "op": "replace",
+        "path": "/general/isActual",
+        "value": true
+      }, {
+        "op": "add",
+        "path": "/general/documents/0",
+        "value": {
+          "name": "Постановление Орловского областного Совета народных депутатов \"О постановке на государственную охрану местной категории памятников истории и культуры области\"",
+          "number": "32/598",
+          "date": "2001-02-27",
+          "archive": {
+            "id": 1755961,
+            "url": "https://okn-mk.mkrf.ru/maps/show/id/1755961"
+          }
+        }
+      }, {
+        "op": "remove",
+        "path": "/general/documents/1"
+      }, {
+        "op": "add",
+        "path": "/info/updateDate",
+        "value": "2021-12-27T09:08:06Z"
+      }, {
+        "op": "remove",
+        "path": "/info/createDate"
+      }],
+      "updateSession": "623d8f76f1df3d671f6d1565"
+    }],
+    "status": 0
+  }],
+  "count": 10
+}

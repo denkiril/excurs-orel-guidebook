@@ -1,3 +1,5 @@
+import { EgrknData } from '../features/egrkn/egrkn.model';
+
 export type OknCategory = 'f' | 'r' | 'm' | 'v';
 
 export type OknType = 'a' | 'g' | 'h' | 'i';
@@ -5,6 +7,10 @@ export type OknType = 'a' | 'g' | 'h' | 'i';
 export type SightSet = 'main' | 'mus';
 
 export type District = '1' | '2' | '3';
+
+export type SightsDataError = string; // 'FETCH_SIGHTS_ERROR' | 'FETCH_EGRKN_ERROR';
+
+export type SightId = string;
 
 export interface ImageSizeItem {
   file: string;
@@ -18,7 +24,7 @@ export interface ImageItem {
   caption: string;
   title: string;
   full: string;
-  meta: {
+  meta?: {
     file: string;
     height: number;
     width: number;
@@ -31,20 +37,54 @@ export interface ImageItem {
   };
 }
 
-export interface SightData {
+export interface SightGeolocation {
+  lat: string;
+  lng: string;
+}
+
+export interface SightResponseItem {
   post_id: number;
   title: string;
   thumb_url?: string;
-  permalink: string;
+  permalink?: string;
   location?: string;
   okn_category?: OknCategory[];
   okn_type?: OknType[];
   sets?: SightSet[];
   okn_id?: string;
-  geolocation?: { lat: string; lng: string };
-  nested?: SightData[];
+  geolocation?: SightGeolocation;
 }
 
+export interface SightResponseItemExt extends SightResponseItem {
+  okn_title: string;
+  okn_date: string;
+  registry_date: string;
+  district: District;
+  founding_date: string;
+  site: string;
+  images: ImageItem[];
+  gba_intro: string;
+  gba_content: string;
+}
+
+export interface SightData {
+  id: SightId;
+  type: SightType;
+  title: string;
+  thumb_url?: string;
+  permalink?: string;
+  location?: string;
+  okn_category?: OknCategory[];
+  okn_type?: OknType[];
+  sets?: SightSet[];
+  okn_id?: string;
+  geolocation?: SightGeolocation;
+  nested?: SightData[];
+  // EGRKN
+  egrknData?: EgrknData;
+}
+
+// TODO Add true API interfaces, no "id" in exo response!
 export type SightDataExt = SightData &
   Partial<{
     okn_title: string;
@@ -61,6 +101,7 @@ export type SightDataExt = SightData &
 
 export interface SightsData {
   items: SightData[];
+  errors?: SightsDataError[];
 }
 
 export interface SightsFilterParams {
@@ -79,12 +120,7 @@ export interface GetSightsParams {
 export interface FilterParams {
   sightsFilterParams?: SightsFilterParams;
   search?: string;
-  sightForMore?: string;
-}
-
-export interface SightForMoreData {
-  sight?: SightData;
-  sightId?: number;
+  sightForMore?: SightId;
 }
 
 interface FilterControl {
@@ -133,13 +169,18 @@ export const OKN_CATEGORIES: { [key in OknCategory]: OknText } = {
 
 export interface SightLink {
   link: string;
-  sightId: number;
+  sightId: SightId;
   title?: string;
 }
 
-export interface UpdateActiveSightsData {
-  addId?: number;
-  deleteId?: number;
+export interface SightWithNested {
+  sightId: SightId;
+  nested: SightId[];
+}
+
+export enum SightType {
+  DEFAULT = 'exo_',
+  EGRKN = 'egrkn_',
 }
 
 export const FILTER_BLOCKS: FilterBlock[] = [
@@ -235,19 +276,19 @@ export const FILTER_BLOCKS: FilterBlock[] = [
           },
         ],
       },
-      // {
-      //   name: 'egrkn',
-      //   title: 'Загрузить данные из госреестра',
-      //   controls: [
-      //     {
-      //       name: 'go',
-      //       title: 'Загрузить данные госреестра по Орлу',
-      //       shortTitle: 'по Орлу',
-      //       value: false,
-      //       type: 'toggle',
-      //     },
-      //   ],
-      // },
+      {
+        name: 'egrkn',
+        title: 'Загрузить данные из госреестра',
+        controls: [
+          {
+            name: 'go',
+            title: 'Загрузить данные госреестра по Орлу',
+            shortTitle: 'по Орлу',
+            value: false,
+            type: 'toggle',
+          },
+        ],
+      },
     ],
   },
 ];

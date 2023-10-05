@@ -2,11 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { IconsModule } from 'src/app/icons/icons.module';
-import { SightData } from 'src/app/models/sights.models';
+import { SightData, SightType } from 'src/app/models/sights.models';
+import { GeolocationPipe } from 'src/app/pipes/geolocation.pipe';
 import { SightCardComponent } from './sight-card.component';
 
 const mockSight: SightData = {
-  post_id: 0,
+  id: 'id',
+  type: SightType.DEFAULT,
   title: '',
   thumb_url: '',
   permalink: '',
@@ -19,7 +21,7 @@ describe('SightCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([]), IconsModule],
-      declarations: [SightCardComponent],
+      declarations: [SightCardComponent, GeolocationPipe],
     }).compileComponents();
   });
 

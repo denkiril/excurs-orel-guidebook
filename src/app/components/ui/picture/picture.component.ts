@@ -40,29 +40,36 @@ export class PictureComponent implements OnChanges, OnInit {
 
   private setImage(): void {
     const { meta } = this.image;
-    const baseUrl = this.image.full.replace(meta.file, '');
 
-    const sizes = Object.values(meta.sizes);
-    sizes.push({
-      file: meta.file,
-      width: meta.width,
-      height: meta.height,
-    });
+    if (meta) {
+      const baseUrl = this.image.full.replace(meta.file, '');
 
-    sizes.sort((a, b) => a.width - b.width);
-    this.srcset = sizes
-      .map((item) => `${baseUrl}${item.file} ${item.width}w`)
-      .join(', ');
-    this.srcsetWebp = sizes
-      .filter((item) => item.width !== 150) // webp 150x100 иногда нет на проде
-      .map((item) => `${baseUrl}${item.file}.webp ${item.width}w`)
-      .join(', ');
+      const sizes = Object.values(meta.sizes);
+      sizes.push({
+        file: meta.file,
+        width: meta.width,
+        height: meta.height,
+      });
+
+      sizes.sort((a, b) => a.width - b.width);
+      this.srcset = sizes
+        .map((item) => `${baseUrl}${item.file} ${item.width}w`)
+        .join(', ');
+      this.srcsetWebp = sizes
+        .filter((item) => item.width !== 150) // webp 150x100 иногда нет на проде
+        .map((item) => `${baseUrl}${item.file}.webp ${item.width}w`)
+        .join(', ');
+
+      this.findTargetImage(sizes, baseUrl);
+    } else {
+      this.srcset = '';
+      this.srcsetWebp = '';
+      this.src = this.image.full;
+    }
     // console.log('sizes:', sizes);
     // console.log('srcset:', this.srcset);
     // const sizesItemWithType = sizes.find((item) => item['mime-type']);
     // if (sizesItemWithType) this.mimeType = sizesItemWithType['mime-type'];
-
-    this.findTargetImage(sizes, baseUrl);
 
     this.isLoading = true;
     markDirty(this);

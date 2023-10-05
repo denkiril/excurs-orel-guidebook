@@ -1,15 +1,31 @@
+$image-width: 135px;
+$image-height: 90px;
+
 :host {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 60px;
-  padding-left: 6px;
+  display: block;
+  position: relative;
+  min-height: $image-height;
+  border: solid 1px var(--label-secondary);
   cursor: default;
+
+  &.active {
+    border-color: var(--label-primary);
+    background-color: var(--light-01);
+
+    .sight-title {
+      background-color: var(--light-01);
+    }
+  }
 }
 
 .sight-title {
+  width: fit-content;
   font-size: 16px;
   line-height: 24px;
+  padding: 0 6px 2px;
+  position: relative;
+  z-index: 1;
+  background-color: var(--light-02-op);
 
   .mat-icon {
     height: 1em;
@@ -19,6 +35,13 @@
     margin-right: 2px;
     color: var(--label-secondary);
   }
+}
+
+.sight-info {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - #{$image-width});
+  padding-left: 6px;
 }
 
 .sight-nested {
@@ -39,7 +62,7 @@
 }
 
 .links-block {
-  margin-bottom: 4px;
+  margin: auto 0 4px;
 
   a {
     margin-right: 12px;
@@ -51,8 +74,36 @@
   }
 }
 
-.sight-image {
-  display: block;
-  height: 88px;
-  cursor: pointer;
+.sight-anchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: $image-width;
+  background-color: var(--control-layout-01);
+
+  &:hover {
+    z-index: 1;
+
+    .mat-icon {
+      color: var(--control-layout-03);
+    }
+  }
+
+  .sight-image {
+    display: block;
+    width: $image-width;
+    height: $image-height;
+    object-fit: cover;
+    margin-top: auto;
+  }
+
+  .mat-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--control-layout-02);
+  }
 }

@@ -37,12 +37,11 @@
 
 <div
   class="second-panel-container"
-  [@secondPanelAnim]="showSightForMore ? 'opened' : 'closed'"
+  [@secondPanelAnim]="sightForMoreShowing ? 'opened' : 'closed'"
   (@secondPanelAnim.done)="animationDone($event)"
 >
   <exogb-second-panel
-    *ngIf="sightForMore"
-    [sightForMore]="sightForMore"
+    *ngIf="sightForMoreExist"
     (closePanel)="onClosePanel()"
   ></exogb-second-panel>
 </div>

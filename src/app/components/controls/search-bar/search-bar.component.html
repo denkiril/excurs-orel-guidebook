@@ -6,6 +6,7 @@
     [value]="value"
     [placeholder]="placeholder"
     [disabled]="!enabled"
+    [class.filled]="!!value"
     (keyup)="enabled && checkValue(searchInput.value, $event)"
     (focus)="onInputFocus()"
   />

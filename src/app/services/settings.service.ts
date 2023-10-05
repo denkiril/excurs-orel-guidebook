@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { GBQueryParams } from '../core/params.guard';
@@ -11,40 +11,37 @@ import {
   FilterBlock,
 } from '../models/sights.models';
 import { StorageService } from './storage.service';
+import { FilterParamsStoreService } from '../store/filter-params-store.service';
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
+
+const GROUP_NAMES: Record<string, string[]> = Object.fromEntries(
+  FILTER_BLOCKS.map((block) => [
+    block.name,
+    block.groups.map((group) => group.name),
+  ]),
+);
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  // private skipParse = false;
-  filterParamsInRoute$ = new Subject<FilterParams>();
-
-  groupNames: Record<string, string[]> = Object.fromEntries(
-    FILTER_BLOCKS.map((block) => [
-      block.name,
-      block.groups.map((group) => group.name),
-    ]),
-  );
-
   constructor(
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly storageService: StorageService,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
-  startParseQueryParams(): void {
-    // console.log('startParseQueryParams');
-    this.activatedRoute.queryParams
-      .pipe(debounceTime(100))
-      .subscribe((params) => {
-        // console.log('upd queryParams... skipParse:', this.skipParse);
-        // if (!this.skipParse)
-        this.parseQueryParams(params);
-        // this.skipParse = false;
-        // console.log('skipParse = false');
-      });
+  startParseQueryParams$(): Observable<FilterParams> {
+    // console.log('startParseQueryParams$...');
+    return new Observable((subscriber) => {
+      this.activatedRoute.queryParams
+        .pipe(debounceTime(100))
+        .subscribe((params) => {
+          subscriber.next(this.parseQueryParams(params));
+        });
+    });
   }
 
   getFilterParams(filterParamsInRoute: FilterParams): FilterParams | undefined {
@@ -102,13 +99,10 @@ export class SettingsService {
     }
 
     if (setQP) {
-      const curQueryParams = this.activatedRoute.snapshot.queryParams;
-      const queryParams: Params = {};
       const blockNames = Object.keys(sightsFilterParams);
-      // console.log('/// curQueryParams:', curQueryParams);
+      const blocks: string[] = [];
 
       if (blockNames.length) {
-        const blocks: string[] = [];
         blockNames.forEach((blockName) => {
           if (sightsFilterParams[blockName].switchedOn) {
             const blockBody = Object.values(
@@ -119,37 +113,44 @@ export class SettingsService {
             blocks.push(`${blockName}:${blockBody}`);
           }
         });
-        // queryParams.filter = 'fb2:fed,reg;arc,aig,his,art.';
-        if (blocks.length) queryParams.filter = blocks.join('.');
+        // filter = 'tur:main,mus.okn:f,r,m,v;a,g,h,i;go';
       }
 
-      if (filterParams.search) {
-        queryParams.search = filterParams.search;
-      }
-
-      queryParams.sight = curQueryParams.sight || null;
-
-      this.router.navigate([], {
-        relativeTo: this.activatedRoute,
-        queryParams,
+      this.setGBQueryParams({
+        filter: blocks.length ? blocks.join('.') : undefined,
+        search: filterParams.search,
+        sight: this.filterParamsStore.get().sightForMore,
       });
     }
   }
 
-  private parseQueryParams(queryParams: GBQueryParams): void {
+  setGBQueryParams(
+    queryParams: GBQueryParams,
+    queryParamsHandling?: QueryParamsHandling,
+  ): void {
+    // console.log('/// setGBQueryParams', queryParams);
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams,
+      queryParamsHandling,
+    });
+  }
+
+  private parseQueryParams(queryParams: GBQueryParams): FilterParams {
     // console.log('parseQueryParams:', queryParams);
+    const { filter, search, sight } = queryParams;
     const filterParams: FilterParams = {};
     const sightsFilterParams: SightsFilterParams = {};
 
-    if (queryParams.filter) {
-      const blocks = queryParams.filter.split('.');
+    if (filter) {
+      const blocks = filter.split('.');
       blocks.forEach((block) => {
         const [blockName, blockBody] = block.split(':');
         sightsFilterParams[blockName] = { groups: {} };
 
         blockBody.split(';').forEach((group, index) => {
           if (group) {
-            const groupName = this.groupNames[blockName][index];
+            const groupName = GROUP_NAMES[blockName][index];
             sightsFilterParams[blockName].groups[groupName] =
               this.parseTruthyObj(group);
           }
@@ -161,16 +162,17 @@ export class SettingsService {
       filterParams.sightsFilterParams = sightsFilterParams;
     }
 
-    if (queryParams.search) {
-      filterParams.search = queryParams.search;
+    if (search) {
+      filterParams.search = search;
     }
 
-    if (queryParams.sight) {
-      filterParams.sightForMore = queryParams.sight;
+    if (sight) {
+      filterParams.sightForMore = sight;
     }
 
-    // console.log('filterParamsInRoute$.next', filterParams);
-    this.filterParamsInRoute$.next(filterParams);
+    // console.log('parseQueryParams result:', filterParams);
+    this.filterParamsStore.update(filterParams);
+    return filterParams;
   }
 
   private stringifyTruthyObj(obj?: Record<string, boolean>): string {
@@ -209,20 +211,5 @@ export class SettingsService {
     }
 
     return filterParams;
-  }
-
-  setQueryParam(key: string, value: any): void {
-    // console.log('setQueryParam', key, value);
-
-    // this.skipParse = true;
-    // console.log('skipParse = true');
-
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: { [key]: value || null },
-      queryParamsHandling: 'merge',
-      // skipLocationChange: true,
-      // state: { skip: true },
-    });
   }
 }
