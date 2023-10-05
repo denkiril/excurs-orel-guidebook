@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
 import {
   SightData,
   OknText,
@@ -12,8 +12,13 @@ import {
   styleUrls: ['./sight-card.component.scss'],
 })
 export class SightCardComponent implements OnInit {
+  @HostBinding('class.active') get isActive(): boolean {
+    return this.active;
+  }
+
   @Input() sight!: SightData;
   @Input() index = 0;
+  @Input() active = false;
   // @Output() clickMore = new EventEmitter<SightData>();
 
   descriptionShort = '';

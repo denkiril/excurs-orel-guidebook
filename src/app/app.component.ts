@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  // HostListener,
   OnDestroy,
   OnInit,
   Renderer2,
@@ -19,11 +18,11 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { SightForMoreData } from './models/sights.models';
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
-import { SightsService } from './services/sights.service';
 import { AnalyticsService } from './services/analytics.service';
+import { SightsService } from './services/sights.service';
+import { FilterParamsStoreService } from './store/filter-params-store.service';
 
 const TOP_MARGIN = 50; // height: calc(100vh - {TOP_MARGIN}px); [app.component.scss]
 const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px);
@@ -65,8 +64,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private translateYBreakpoint = -400;
   private translateYTop = -680;
   expandButtonPressed = false;
-  sightForMore?: SightForMoreData;
-  showSightForMore = false;
+  sightForMoreShowing = false;
+  sightForMoreExist = false;
   fixMainPanel = false;
 
   // eslint-disable-next-line max-params
@@ -74,10 +73,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly renderer: Renderer2,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
-    // private utilitiesService: UtilitiesService,
-    // private settingsService: SettingsService,
     private readonly sightsService: SightsService,
     private readonly analyticsService: AnalyticsService,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
   // @HostListener('window:resize')
@@ -102,41 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.analyticsService.sendEvent('app start');
     this.calcVars();
-
-    this.documentService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.calcVars();
-      });
-
-    this.documentService.getMediaSize$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((mediaSize) => {
-        this.checkExpandPanelAbility(mediaSize);
-      });
-
-    // this.documentService.onClick$
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((event) => {
-    //     console.log('AppComponent document click');
-    //     this.utilitiesService.documentClickedTarget.next(
-    //       event.target as HTMLElement,
-    //     );
-    //   });
-
-    this.documentService.onTouchmove$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        if (this.expandButtonPressed) this.movePanel(event);
-      });
-
-    this.sightsService.sightForMore$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        if (data) this.sightForMore = data;
-        this.showSightForMore = !!data;
-        markDirty(this);
-      });
+    this.initObservables();
   }
 
   ngOnDestroy(): void {
@@ -158,6 +122,36 @@ export class AppComponent implements OnInit, OnDestroy {
     // console.log('[][] translateYTop', this.translateYTop);
     // console.log('[][] paddingSummand', this.paddingSummand);
     this.correctMainPanel(true);
+  }
+
+  private initObservables(): void {
+    this.documentService.onResize$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.calcVars();
+      });
+
+    this.documentService.getMediaSize$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((mediaSize) => {
+        this.checkExpandPanelAbility(mediaSize);
+      });
+
+    this.documentService.onTouchmove$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event) => {
+        if (this.expandButtonPressed) this.movePanel(event);
+      });
+
+    this.filterParamsStore.state$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ sightForMore }) => {
+        this.sightForMoreShowing = !!sightForMore;
+        if (sightForMore) {
+          this.sightForMoreExist = true;
+        }
+        markDirty(this);
+      });
   }
 
   private checkExpandPanelAbility(mediaSize: MediaSize | undefined): void {
@@ -255,18 +249,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onClosePanel(): void {
-    this.showSightForMore = false;
+    this.sightForMoreShowing = false;
     markDirty(this);
   }
 
   animationDone(event: AnimationEvent): void {
     // the toState, fromState and totalTime data is accessible from the event variable
     // console.log('animationDone', event);
-    // if (this.sightForMore && !this.showSightForMore) {
-    if (this.sightForMore && event.toState === 'closed') {
-      this.sightForMore = undefined;
-      this.sightsService.setSightForMore(undefined);
-      // markDirty(this);
+    if (this.sightForMoreExist && event.toState === 'closed') {
+      this.sightForMoreExist = false;
+      this.sightsService.redirectToSightForMore(undefined);
     }
   }
 

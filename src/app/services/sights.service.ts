@@ -1,18 +1,24 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 import {
   SightsData,
   SightLink,
-  SightForMoreData,
-  UpdateActiveSightsData,
   SightData,
   SightDataExt,
   GetSightsParams,
+  SightsDataError,
+  SightResponseItem,
+  SightId,
+  SightType,
+  SightResponseItemExt,
 } from '../models/sights.models';
+import { RequestService } from './request.service';
+import { EgrknService } from '../features/egrkn/services/egrkn.service';
+import { FilterParamsStoreService } from '../store/filter-params-store.service';
 import { SettingsService } from './settings.service';
+import { SIGHTS_WITH_NESTED } from '../models/sights.constants';
 
 interface SightByLink {
   slug: string;
@@ -20,20 +26,13 @@ interface SightByLink {
   title: string;
 }
 
-const SIGHTS_WITH_NESTED = [
-  {
-    postId: 905,
-    nested: [1044],
-  },
-  {
-    postId: 924,
-    nested: [1043],
-  },
-  {
-    postId: 938,
-    nested: [1022],
-  },
-];
+interface ExtSightsData {
+  items: SightData[];
+  errors?: SightsDataError[];
+}
+
+// TODO
+// refac setSightForMore/redirectToSightForMore etc. - route-driven state
 
 @Injectable({
   providedIn: 'root',
@@ -44,36 +43,48 @@ export class SightsService {
   };
 
   private sightLinks: SightLink[] = [];
-  private sightForMoreId?: number;
-  private nestedSights: { [key: number]: number[] } = {};
-  private readonly sightsDataFetched$ = new ReplaySubject<void>();
+  private nestedSights: { [key: string]: string[] } = {};
 
-  sightsData$ = new Subject<SightsData>(); // ReplaySubject (?)
-  sightForMore$ = new Subject<SightForMoreData | undefined>();
-  needUpdateActiveSights$ = new Subject<UpdateActiveSightsData>();
+  private readonly sightsDataSubject = new Subject<SightsData>(); // ReplaySubject (?)
+  readonly sightsData$ = this.sightsDataSubject.asObservable();
+
+  private requestSightsStarted = false;
+  private readonly requestSightsSubject = new ReplaySubject<
+    SightResponseItem[]
+  >();
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly egrknService: EgrknService,
+    private readonly filterParamsStore: FilterParamsStoreService,
+    private readonly requestService: RequestService,
     private readonly settingsService: SettingsService,
   ) {}
 
   /* API methods */
 
-  private fetchSights(): Observable<SightsData> {
+  private fetchSights$(): Observable<SightsData> {
+    // console.log('fetchSights...');
     return new Observable<SightsData>((observer) => {
       if (this.sightsData.items.length) {
+        // TODO ?
+        this.sightsData.items = this.sightsData.items.map((item) => ({
+          ...item,
+          nested: undefined,
+        }));
         observer.next(this.sightsData);
         observer.complete();
       } else {
-        this.http.get<SightData[]>('sights').subscribe(
-          (resp) => {
-            console.log('=== GET resp:', resp);
-            this.sightsData.items = resp;
+        this.requestSights$().subscribe(
+          (items) => {
+            // console.log('=== GET resp:', items);
+            this.sightsData.items = items.map((item) =>
+              this.prepareExoSight(item),
+            );
             observer.next(this.sightsData);
             observer.complete();
           },
-          (error) => {
-            observer.error(error);
+          () => {
+            observer.next({ items: [], errors: ['FETCH_SIGHTS_ERROR'] });
             observer.complete();
           },
         );
@@ -81,51 +92,161 @@ export class SightsService {
     });
   }
 
-  private fetchingSights(): Observable<SightsData> {
-    return new Observable<SightsData>((observer) => {
+  private requestSights$(): Observable<SightResponseItem[]> {
+    if (this.requestSightsStarted) {
+      return this.requestSightsSubject.asObservable();
+    }
+
+    this.requestSightsStarted = true;
+    return this.requestService
+      .getApi<SightResponseItem[]>('sights')
+      .pipe(tap((resp) => this.requestSightsSubject.next(resp)));
+  }
+
+  private prepareExoSight(item: SightResponseItem): SightData {
+    return {
+      ...item,
+      id: this.prepareSightId(item.post_id, SightType.DEFAULT),
+      type: SightType.DEFAULT,
+    };
+  }
+
+  private fetchingSights$(withDelay?: boolean): Observable<ExtSightsData> {
+    return new Observable<ExtSightsData>((observer) => {
       forkJoin({
-        sightsData: this.fetchSights(),
-        delay: timer(400),
-      }).subscribe(
-        (resp) => {
-          observer.next(resp.sightsData);
+        sightsData: this.fetchSights$(),
+        egrknData: this.needEgrkn()
+          ? this.egrknService.getEgrknSights$()
+          : of({ items: [] } as SightsData),
+        delay: timer(withDelay ? 300 : 0),
+      }).subscribe({
+        next: ({ sightsData, egrknData }) => {
+          observer.next({
+            items: [...sightsData.items, ...egrknData.items],
+            errors: [...(sightsData.errors ?? []), ...(egrknData.errors ?? [])],
+          });
           observer.complete();
         },
-        (error) => {
-          observer.error(error);
-          observer.complete();
-        },
-      );
+      });
     });
   }
 
-  getSightById(id: number): Observable<SightDataExt> {
-    // console.log('getSightById...', id);
-    // return this.fetchSights().pipe(
-    //   delay(2000),
-    //   map((sightsData) => sightsData.items[0]),
-    // );
-    return this.http.get<SightDataExt>(`sights/${id}`);
+  private getSightById$(sightId: SightId): Observable<SightDataExt> {
+    return this.requestService
+      .getApi<SightResponseItemExt>(`sights/${this.sightIdToNative(sightId)}`)
+      .pipe(map((item) => this.prepareExoSight(item)));
   }
 
   /* Other methods */
 
-  getSights(params: GetSightsParams): Observable<SightsData> {
-    // console.log('--- getSights params:', params);
-    return this.fetchingSights().pipe(
-      map((sightsData) => this.filterSights(sightsData, params)),
-      tap((filtSightsData) => {
-        this.sightsData$.next(filtSightsData);
-        this.sightsDataFetched$.next();
+  getSightDataExt$(sightId: SightId): Observable<SightDataExt | undefined> {
+    switch (this.getSightType(sightId)) {
+      case SightType.EGRKN:
+        return this.egrknService.getSightById$(sightId);
+      case SightType.DEFAULT:
+        // TODO refac (частично дублируется логика при фильтрации списка)
+        return this.getSightById$(sightId).pipe(
+          switchMap((sight) => this.addNested$(sight)),
+          switchMap((sight) => this.addEgrknData$(sight)),
+        );
+      default:
+        return of(undefined);
+    }
+  }
+
+  private addNested$(sight: SightDataExt): Observable<SightDataExt> {
+    return this.fetchingSights$().pipe(
+      map(({ items }) => {
+        // console.log('addNested items:', items.length);
+        const swnItem = SIGHTS_WITH_NESTED.find(
+          (swn) => swn.sightId === sight.id,
+        );
+        // console.log('addNested swnItem:', swnItem);
+        const nested = swnItem
+          ? items.filter(({ id }) => swnItem.nested.includes(id))
+          : undefined;
+        return { ...sight, nested };
       }),
     );
   }
 
+  private addEgrknData$(sight: SightDataExt): Observable<SightDataExt> {
+    if (!this.needEgrkn() || !sight.okn_id) return of(sight);
+
+    const getNestedByType = (sightType: SightType): SightData[] =>
+      sight.nested?.filter(({ type }) => type === sightType) ?? [];
+
+    return this.egrknService.getSightByOknId$(sight.okn_id).pipe(
+      map((egrknItem) => {
+        if (egrknItem) {
+          const { egrknData, okn_title } = egrknItem;
+          const images = [...(sight.images || [])];
+          if (egrknData?.photoUrl) {
+            images.push(this.egrknService.prepareImage(egrknData.photoUrl));
+          }
+
+          return {
+            ...sight,
+            images,
+            okn_title,
+            nested: [
+              ...getNestedByType(SightType.DEFAULT),
+              egrknItem,
+              ...getNestedByType(SightType.EGRKN),
+            ],
+          };
+        }
+        return sight;
+      }),
+    );
+  }
+
+  getSights(params: GetSightsParams): Observable<SightsData> {
+    // console.log('--- getSights params:', params);
+    return this.fetchingSights$(true).pipe(
+      map((sightsData) => this.filterSights(sightsData, params)),
+      tap((filtSightsData) => {
+        this.sightsDataSubject.next(filtSightsData);
+      }),
+    );
+  }
+
+  private needEgrkn(): boolean {
+    // eslint-disable-next-line prettier/prettier
+    return !!this.filterParamsStore.get().sightsFilterParams?.okn.groups.egrkn?.go;
+  }
+
+  private prepareSightId(id: number | string, type: SightType): SightId {
+    return `${type}${id}`;
+  }
+
+  private getSightType(sightId: SightId): SightType | undefined {
+    if (sightId.indexOf(SightType.EGRKN) === 0) {
+      return SightType.EGRKN;
+    }
+
+    if (sightId.indexOf(SightType.DEFAULT) === 0) {
+      return SightType.DEFAULT;
+    }
+
+    return undefined;
+  }
+
+  private sightIdToNative(sightId: SightId): string | number {
+    if (sightId.indexOf(SightType.EGRKN) === 0) {
+      return sightId.substring(SightType.EGRKN.length);
+    }
+
+    return Number(sightId.substring(SightType.DEFAULT.length));
+  }
+
   private filterSights(
-    sightsData: SightsData,
+    sightsData: ExtSightsData,
     params: GetSightsParams,
   ): SightsData {
-    const sightsFilterParams = params.filterParams.sightsFilterParams || {};
+    const { filterParams, limit } = params;
+    const sightsFilterParams = filterParams.sightsFilterParams || {};
+    // console.log('filterSights sightsData:', sightsData);
     // console.log('filterSights sightsFilterParams:', sightsFilterParams);
     let items: SightData[] = [];
 
@@ -133,29 +254,19 @@ export class SightsService {
       if (sightsFilterParams[blockName].switchedOn) {
         // console.log('switchedOn:', blockName);
         const { groups } = sightsFilterParams[blockName];
-        // const groupNames = Object.keys(groups);
         // console.log('groups:', groups);
 
         items = items.concat(
-          sightsData.items
-            .filter((item) => {
-              if (blockName === 'okn') {
-                return (
-                  item.okn_category?.some(
-                    (value) => groups.okn_category[value],
-                  ) && item.okn_type?.some((value) => groups.okn_type[value])
-                );
-              }
-              return item.sets?.some((value) => groups.sets[value]);
-              // return groupNames.every(
-              //   (name) =>
-              //     (name === 'okn_category' ||
-              //       name === 'okn_type' ||
-              //       name === 'sets') &&
-              //     item[name]?.some((value: string) => groups[name][value]),
-              // );
-            })
-            .slice(0, params.limit),
+          sightsData.items.filter((item) => {
+            if (blockName === 'okn') {
+              return (
+                item.okn_category?.some(
+                  (value) => groups.okn_category[value],
+                ) && item.okn_type?.some((value) => groups.okn_type[value])
+              );
+            }
+            return item.sets?.some((value) => groups.sets[value]);
+          }),
         );
       }
     });
@@ -163,54 +274,101 @@ export class SightsService {
     items = [...new Set(items)];
 
     // Filter by search
-    if (params.filterParams.search) {
-      const searchStr = params.filterParams.search.toLowerCase();
-      items = items.filter((item) =>
-        item.title.toLowerCase().includes(searchStr),
+    if (filterParams.search) {
+      const searchStr = filterParams.search.toLowerCase();
+      items = items.filter(
+        (item) =>
+          item.okn_id === searchStr ||
+          item.title.toLowerCase().includes(searchStr) ||
+          item.location?.toLowerCase().includes(searchStr),
       );
+      // TODO search in text, sort by search?
     }
 
-    // Filter nested
+    items = this.filterNested(items);
+    items = this.filterEgrkn(items); // TODO include to filterNested() ?
+
+    if (sightsFilterParams.tur?.switchedOn) {
+      items = this.sortBySets(items); // TODO .sort(compareBySets)
+    }
+
+    items = items.slice(0, limit);
+    // console.log('filterSights items:', items);
+    return { items, errors: sightsData.errors };
+  }
+
+  private filterNested(items: SightData[]): SightData[] {
+    // console.log('*** filterNested:', items);
     this.nestedSights = {};
     const allNested: SightData[] = [];
+
     SIGHTS_WITH_NESTED.forEach((swn) => {
-      const holder = items.find((item) => item.post_id === swn.postId);
+      const holder = items.find((item) => item.id === swn.sightId);
       if (holder) {
-        const nestedItems = items.filter((item) =>
-          swn.nested.includes(item.post_id),
-        );
+        // console.log('*** holder:', holder?.id, swn.nested);
+        const nestedItems = items.filter(({ id }) => swn.nested.includes(id));
+        // console.log('*** nestedItems:', nestedItems);
         if (nestedItems.length) {
-          holder.nested = nestedItems;
+          holder.nested = nestedItems.filter(
+            ({ type }) => type === SightType.DEFAULT,
+          );
           allNested.push(...nestedItems);
-          nestedItems.forEach((nestedItem) => {
-            const id = nestedItem.post_id;
+          nestedItems.forEach(({ id }) => {
             const holdersIds = this.nestedSights[id] || [];
-            holdersIds.push(holder.post_id);
+            holdersIds.push(holder.id);
             this.nestedSights[id] = holdersIds;
           });
+        } else {
+          holder.nested = undefined;
         }
       }
     });
 
+    // console.log('*** allNested:', allNested);
     if (allNested.length) {
-      const nestedIds = new Set<number>(allNested.map((item) => item.post_id));
-      items = items.filter((item) => !nestedIds.has(item.post_id));
+      const nestedIds = new Set(allNested.map(({ id }) => id));
+      return items.filter(({ id }) => !nestedIds.has(id));
     }
-
-    // Sort
-    const mainItems = items.filter(
-      (item) => item.sets?.length && item.sets[0] === 'main',
-    );
-    const musItems = items.filter(
-      (item) => item.sets?.length && item.sets[0] === 'mus',
-    );
-    items = [...mainItems, ...musItems];
-
-    // console.log('filterSights items:', items);
-    return { items };
+    return items;
   }
 
-  getSightsIds(sightId: number): number[] {
+  private filterEgrkn(items: SightData[]): SightData[] {
+    const egrknItems = items.filter((item) => item.type === SightType.EGRKN);
+    const nestedIds: SightId[] = [];
+
+    if (egrknItems.length && egrknItems.length !== items.length) {
+      items.forEach((item) => {
+        if (item.type === SightType.DEFAULT) {
+          const egrknItem = egrknItems.find((ei) => ei.okn_id === item.okn_id);
+          if (egrknItem) {
+            // item.okn_title = egrknItem.okn_title;
+            // item.egrknData = egrknItem.egrknData; // TODO icon, url?
+            // item.nested = [...(item.nested ?? []), egrknItem];
+            nestedIds.push(egrknItem.id);
+          }
+        }
+      });
+    }
+
+    return nestedIds.length
+      ? items.filter((item) => !nestedIds.includes(item.id))
+      : items;
+  }
+
+  private sortBySets(items: SightData[]): SightData[] {
+    const mainItems = items.filter((item) => item.sets?.[0] === 'main');
+    const musItems = items.filter((item) => item.sets?.[0] === 'mus');
+    const otherItems = items.filter(
+      (item) =>
+        !mainItems.some((it) => it.id === item.id) &&
+        !musItems.some((it) => it.id === item.id),
+    );
+
+    return [...mainItems, ...musItems, ...otherItems];
+  }
+
+  // TODO test
+  getSightsIds(sightId: SightId): SightId[] {
     return this.nestedSights[sightId] || [sightId];
   }
 
@@ -229,15 +387,13 @@ export class SightsService {
     });
 
     return slugs.length
-      ? this.http
-          .get<SightByLink[]>('sight-links', {
-            params: { slugs: slugs.join(',') },
-          })
+      ? this.requestService
+          .getApi<SightByLink[]>('sight-links', { slugs: slugs.join(',') })
           .pipe(
             tap((sights) => {
               const sightLinks: SightLink[] = sights.map((item) => ({
                 link: `/${gbPrefix}${item.slug}/`,
-                sightId: item.post_id,
+                sightId: this.prepareSightId(item.post_id, SightType.DEFAULT),
                 title: item.title,
               }));
 
@@ -248,33 +404,7 @@ export class SightsService {
       : of(this.sightLinks);
   }
 
-  setSightForMore(sightData?: SightData, sightId?: number, setQP = true): void {
-    // console.log('setSightForMore', sightData, sightId, setQP);
-    const sight =
-      !sightData && sightId
-        ? this.sightsData.items.find((item) => item.post_id === sightId)
-        : undefined;
-    const sightForMore = sight || sightId ? { sight, sightId } : undefined;
-    const sightForMoreId = sightForMore
-      ? sightForMore.sight?.post_id || sightForMore.sightId
-      : undefined;
-
-    this.processActiveSights(sightForMoreId, this.sightForMoreId);
-    this.sightForMoreId = sightForMoreId;
-
-    if (setQP) {
-      this.settingsService.setQueryParam('sight', this.sightForMoreId);
-    } else {
-      this.sightForMore$.next(sightForMore);
-    }
-  }
-
-  private processActiveSights(
-    addId: number | undefined,
-    deleteId: number | undefined,
-  ): void {
-    this.sightsDataFetched$.pipe(first()).subscribe(() => {
-      this.needUpdateActiveSights$.next({ addId, deleteId });
-    });
+  redirectToSightForMore(sightId?: SightId): void {
+    this.settingsService.setGBQueryParams({ sight: sightId }, 'merge');
   }
 }

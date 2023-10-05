@@ -10,28 +10,32 @@ import {
 } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
-import { SightsData, SightData } from '../models/sights.models';
+import { SightsData, SightData, SightId } from '../models/sights.models';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
 import { SightsService } from './sights.service';
 import { ActiveSightsService } from './active-sights.service';
+import { FilterParamsStoreService } from '../store/filter-params-store.service';
 
 const { YMAPS_APIKEY } = environment;
 const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
 const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
 const YMAPS_SCRIPT_ID = 'YMapsScriptID';
 
-const baseColor = '#005281'; // 015a8d
-const activeColor = '#bc3134'; // ffd649
+const DEFAULT_COLOR = '#005281'; // 015a8d
+const ACTIVE_COLOR = '#bc3134'; // ffd649
+const DEFAULT_PRESET = 'islands#Icon';
+const ACTIVE_PRESET = 'islands#blueDotIcon';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MapService {
   private readonly destroy$ = new Subject();
-  private activeSights: number[] = [];
-  private mapActiveSights: number[] = [];
+  private activeSights: SightId[] = [];
+  private mapActiveSights: SightId[] = [];
   private sightsData?: SightsData;
+  private sightForMore?: SightId;
 
   private ymaps?: any;
   private map: any;
@@ -45,6 +49,7 @@ export class MapService {
     private readonly documentService: DocumentService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
+    private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
   private checkApi$(): Observable<void> {
@@ -131,7 +136,7 @@ export class MapService {
     });
 
     // this.clusterer = new this.ymaps.Clusterer({
-    //   clusterIconColor: baseColor,
+    //   clusterIconColor: DEFAULT_COLOR,
     // });
 
     this.setMarkers();
@@ -213,29 +218,33 @@ export class MapService {
     items.forEach((item) => {
       if (item.geolocation) {
         const { lat, lng } = item.geolocation;
-        const { title } = item;
+        const { title, location } = item;
         // const url = item.permalink;
-        const postId = item.post_id;
+        const sightId = item.id;
         const thumbUrl = item.thumb_url;
         const nested = item.nested?.length
           ? `<p>+ ${item.nested.map((s) => s.title).join('</p><p>')}</p>`
           : '';
-        const content = `<header><h3>{{ properties.title }}</h3>${nested}</header>
+        const content = `<header>
+          <h3>{{ properties.title }}</h3>
+          ${nested}
+          <p>{{ properties.location }}</p>
+          </header>
           ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}`;
 
         const marker = new this.ymaps.Placemark(
           [lat, lng],
           {
-            postId,
+            sightId,
             title,
+            location,
             thumbUrl,
             clusterCaption: title,
             // balloonContent: `${clusterImg}<p><a href="${url}">Перейти на страницу объекта >></a></p>`,
           },
           {
-            // preset: 'islands#darkBlueIcon',
-            preset: 'islands#Icon',
-            iconColor: baseColor,
+            preset: DEFAULT_PRESET,
+            iconColor: DEFAULT_COLOR,
             balloonContentLayout: this.ymaps.templateLayoutFactory.createClass(
               `<div class="ymc-template">${content}</div>`,
             ),
@@ -246,30 +255,29 @@ export class MapService {
         );
 
         marker.events.add(['mouseenter', 'balloonopen'], () => {
-          // e.get('target').options.set('iconColor', activeColor);
-          const index = this.mapActiveSights.indexOf(postId);
+          // e.get('target').options.set('iconColor', ACTIVE_COLOR);
+          const index = this.mapActiveSights.indexOf(sightId);
           if (index === -1) {
-            this.mapActiveSights.push(postId);
-            this.activeSightsService.add(postId);
+            this.mapActiveSights.push(sightId);
+            this.activeSightsService.add(sightId);
           }
         });
 
         marker.events.add(['mouseleave', 'balloonclose'], () => {
-          // e.get('target').options.set('iconColor', baseColor);
-          const index = this.mapActiveSights.indexOf(postId);
+          // e.get('target').options.set('iconColor', DEFAULT_COLOR);
+          const index = this.mapActiveSights.indexOf(sightId);
           if (index > -1) {
             this.mapActiveSights.splice(index, 1);
-            this.activeSightsService.delete(postId);
+            this.activeSightsService.delete(sightId);
           }
         });
 
         marker.balloon.events.add('click', () => {
-          // const { postId } = e.get('target').properties._data;
-          this.sightsService.setSightForMore(undefined, postId);
+          this.sightsService.redirectToSightForMore(sightId);
         });
 
         marker.hint.events.add('click', () => {
-          this.sightsService.setSightForMore(undefined, postId);
+          this.sightsService.redirectToSightForMore(sightId);
         });
 
         markers.push(marker);
@@ -286,28 +294,30 @@ export class MapService {
         // console.log('$$$ cached activeSights:', this.activeSights);
         // console.log('$$$ new activeSights:', activeSights);
         if (this.arraysNotEquals(this.activeSights, activeSights) === true) {
-          this.colorActiveSights(false);
           this.activeSights = activeSights;
-          this.colorActiveSights(true);
+          this.updateMarkers();
+        }
+      });
+
+    this.filterParamsStore.state$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ sightForMore }) => {
+        if (this.sightForMore !== sightForMore) {
+          this.sightForMore = sightForMore;
+          this.updateMarkers();
         }
       });
   }
 
-  private colorActiveSights(active: boolean): void {
-    const color = active ? activeColor : baseColor;
+  private updateMarkers(): void {
+    this.storage.each((mark: any) => {
+      const sightId = mark.properties.get('sightId');
+      const isActive = this.activeSights.includes(sightId);
+      const isMore = sightId === this.sightForMore;
 
-    this.activeSights.forEach((postId) => {
-      this.storage.search(`properties.postId = ${postId}`).each((mark: any) => {
-        // const geoObjectState = this.clusterer.getObjectState(mark);
-        // if (geoObjectState.isShown) {
-        //   if (geoObjectState.isClustered) {
-        //     geoObjectState.cluster.options.set('clusterIconColor', color);
-        //   } else {
-        //     mark.options.set('iconColor', color);
-        //   }
-        // }
-        mark.options.set('iconColor', color);
-      });
+      mark.options.set('iconColor', isActive ? ACTIVE_COLOR : DEFAULT_COLOR);
+      mark.options.set('preset', isMore ? ACTIVE_PRESET : DEFAULT_PRESET);
+      mark.options.set('zIndex', Number(isActive || isMore));
     });
   }
 
@@ -326,20 +336,20 @@ export class MapService {
     if (this.sightsData?.items.length !== sightsData.items.length) return true;
 
     // const compareFn = (a: number, b: number): number => a - b;
-    const ids1 = this.sightsData.items.map((item) => item.post_id); // .sort(compareFn);
-    const ids2 = sightsData.items.map((item) => item.post_id); // .sort(compareFn);
+    const ids1 = this.sightsData.items.map((item) => item.id); // .sort(compareFn);
+    const ids2 = sightsData.items.map((item) => item.id); // .sort(compareFn);
     // console.log('ids1:', ids1);
     // console.log('ids2:', ids2);
 
     return ids1.some((v, i) => v !== ids2[i]);
   }
 
-  private arraysNotEquals(arr1: number[], arr2: number[]): boolean {
+  private arraysNotEquals(arr1: SightId[], arr2: SightId[]): boolean {
     if (arr1.length !== arr2.length) return true;
 
-    const compareFn = (a: number, b: number): number => a - b;
-    const sorted1 = arr1.sort(compareFn);
-    const sorted2 = arr2.sort(compareFn);
+    // const compareFn = (a: SightId, b: SightId): number => a - b;
+    const sorted1 = arr1.sort();
+    const sorted2 = arr2.sort();
 
     return sorted1.some((v, i) => v !== sorted2[i]);
   }

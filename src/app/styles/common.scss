@@ -52,6 +52,7 @@ input[type='date'] {
       border-color: var(--label-primary);
     }
 
+    &.filled,
     &:focus {
       color: var(--label-primary);
       border-color: var(--label-primary);
@@ -264,4 +265,8 @@ a,
     margin-left: 2em;
     margin-bottom: 12px;
   }
+}
+
+.alert {
+  color: var(--accent-alert);
 }

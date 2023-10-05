@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SightForMoreData } from 'src/app/models/sights.models';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'exogb-second-panel',
@@ -7,7 +6,6 @@ import { SightForMoreData } from 'src/app/models/sights.models';
   styleUrls: ['./second-panel.component.scss'],
 })
 export class SecondPanelComponent {
-  @Input() sightForMore?: SightForMoreData;
   @Output() closePanel = new EventEmitter<void>();
 
   private touchstartEvent?: TouchEvent;

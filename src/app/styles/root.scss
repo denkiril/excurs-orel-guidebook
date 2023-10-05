@@ -22,6 +22,7 @@
   --accent-pink: #E4321B;
   --light-01: #FFFFFF;
   --light-02: #FFFEEF; // #FFFCD2;
+  --light-02-op: #fffeef80;
   --light-03: #FFFBBC;
   // --light-24: rgba(255, 255, 255, 0.24);
   --dark-100: #2C2C2E;
@@ -38,6 +39,9 @@
   --control-primary: #2a95d2;
   --control-secondary: #185476;
   --control-contrast: #008cdc;
+  --control-layout-01: rgba(197, 216, 226, 0.5);
+  --control-layout-02: rgba(136, 168, 185, 0.5);
+  --control-layout-03: rgba(104, 145, 167, 0.75);
 }
 
 * {

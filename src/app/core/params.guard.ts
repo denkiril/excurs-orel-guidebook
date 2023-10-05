@@ -48,6 +48,7 @@ export class ParamsGuard implements CanActivate {
     // ) {
     //   newQueryParams = { filter: 'tur:main,mus.okn:f;a,g,h,i' };
     // }
+    if (newQueryParams) console.log('newQueryParams', newQueryParams);
 
     return newQueryParams
       ? this.router.createUrlTree([], {

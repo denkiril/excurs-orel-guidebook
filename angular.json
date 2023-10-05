@@ -150,6 +150,7 @@
   },
   "defaultProject": "orel-guidebook",
   "cli": {
+    "analytics": false,
     "defaultCollection": "@angular-eslint/schematics"
   }
 }
