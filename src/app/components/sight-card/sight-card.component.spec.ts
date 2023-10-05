@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { IconsModule } from 'src/app/icons/icons.module';
 import { SightData, SightType } from 'src/app/models/sights.models';
+import { GeolocationPipe } from 'src/app/pipes/geolocation.pipe';
 import { SightCardComponent } from './sight-card.component';
 
 const mockSight: SightData = {
@@ -20,7 +21,7 @@ describe('SightCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([]), IconsModule],
-      declarations: [SightCardComponent],
+      declarations: [SightCardComponent, GeolocationPipe],
     }).compileComponents();
   });
 
