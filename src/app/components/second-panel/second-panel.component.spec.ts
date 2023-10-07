@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { MatIconModule } from '@angular/material/icon'; // TODO Error: Error retrieving icon...
 
 import { SecondPanelComponent } from './second-panel.component';
 import { SightCardMoreComponent } from '../sight-card-more/sight-card-more.component';

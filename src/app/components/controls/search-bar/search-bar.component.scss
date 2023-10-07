@@ -13,12 +13,21 @@
     padding: 0 24px 0 4px;
   }
 
-  .close-icon {
+  .close-btn {
+    width: 24px;
     height: 100%;
     position: absolute;
     top: 0;
     right: 2px;
+    background-color: transparent;
+    border: none;
+    outline: none;
     cursor: pointer;
+  }
+
+  .close-icon {
+    width: 24px;
+    height: 24px;
     color: var(--label-secondary);
     transition: color 0.1s linear;
   }
@@ -37,4 +46,9 @@
 .search-button {
   width: 64px;
   flex-shrink: 0;
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
 }

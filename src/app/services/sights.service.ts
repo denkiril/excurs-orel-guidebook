@@ -189,7 +189,7 @@ export class SightsService {
 
   private needEgrkn(): boolean {
     // eslint-disable-next-line prettier/prettier
-    return !!this.filterParamsStore.get().sightsFilterParams?.okn.groups.egrkn?.go;
+    return !!this.filterParamsStore.get().sightsFilterParams?.okn?.groups.egrkn?.go;
   }
 
   private prepareSightId(id: number | string, type: SightType): SightId {

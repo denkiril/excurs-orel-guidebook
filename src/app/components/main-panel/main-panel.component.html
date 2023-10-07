@@ -103,13 +103,9 @@
             [controlTitle]="control.title"
             [enabled]="block.switchedOn"
           ></exogb-toggle>
-          <mat-icon
-            *ngIf="showEgrknError"
-            svgIcon="warning"
-            class="warning-icon"
-            aria-hidden="false"
-            aria-label="warning icon"
-          ></mat-icon>
+          <svg *ngIf="showEgrknError" class="warning-icon">
+            <use href="assets/images/icons/warning.svg#icon" />
+          </svg>
         </div>
         <exogb-checkbox
           *ngSwitchDefault

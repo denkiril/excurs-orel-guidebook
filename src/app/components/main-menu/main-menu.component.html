@@ -14,11 +14,9 @@
       <h1>Путеводитель</h1>
     </span>
     <span class="indicator">
-      <mat-icon
-        [svgIcon]="opened ? 'expand_less' : 'expand_more'"
-        aria-hidden="false"
-        aria-label="expand icon"
-      ></mat-icon>
+      <svg class="icon">
+        <use [attr.href]="opened ? 'assets/images/icons/expand_less.svg#icon' : 'assets/images/icons/expand_more.svg#icon'" />
+      </svg>
     </span>
   </button>
 </div>
@@ -51,7 +49,7 @@
   <ul>
     <li *ngFor="let item of items">
       <a [href]="item.link" target="_blank" [tabindex]="opened ? '0' : '-1'">
-        <mat-icon svgIcon="open_in_new"></mat-icon>
+        <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
         {{ item.title }}
       </a>
     </li>

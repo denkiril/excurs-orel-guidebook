@@ -4,13 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { IconsModule } from 'src/app/icons/icons.module';
 import { FilterBlockComponent } from '../controls/filter-block/filter-block.component';
 import { LoaderComponent } from '../controls/loader/loader.component';
 import { SearchBarComponent } from '../controls/search-bar/search-bar.component';
 import { SpinnerComponent } from '../controls/spinner/spinner.component';
 import { ToggleComponent } from '../controls/toggle/toggle.component';
-
 import { MainPanelComponent } from './main-panel.component';
 
 describe('MainPanelComponent', () => {
@@ -25,7 +23,6 @@ describe('MainPanelComponent', () => {
         RouterTestingModule.withRoutes([]),
         FormsModule,
         ReactiveFormsModule,
-        IconsModule,
       ],
       declarations: [
         MainPanelComponent,

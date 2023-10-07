@@ -204,10 +204,6 @@ button {
       border-color: transparent;
     }
   }
-
-  .button-icon {
-    margin-right: 4px;
-  }
 }
 
 // Custom scrollbar (CSS Scrollbars & -webkit-scrollbar)
@@ -242,10 +238,10 @@ a,
   text-decoration: none;
   color: var(--control-secondary);
 
-  .mat-icon {
+  .icon {
     width: 1em;
     height: 1em;
-    vertical-align: text-top;
+    vertical-align: text-bottom;
   }
 }
 

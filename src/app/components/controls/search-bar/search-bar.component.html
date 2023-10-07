@@ -11,14 +11,9 @@
     (focus)="onInputFocus()"
   />
 
-  <mat-icon
-    *ngIf="searchInput.value"
-    class="icon close-icon"
-    svgIcon="close"
-    aria-hidden="false"
-    aria-label="close icon"
-    (click)="clearValue(); searchInput.value = ''"
-  ></mat-icon>
+  <button *ngIf="!!value" type="button" class="close-btn" (click)="clearValue()">
+    <svg class="close-icon"><use href="assets/images/icons/close.svg#icon" /></svg>
+  </button>
 </div>
 
 <button
@@ -26,10 +21,5 @@
   [disabled]="!enabled"
   (click)="enabled && searchValue(searchInput.value)"
 >
-  <mat-icon
-    class="search-icon"
-    svgIcon="search"
-    aria-hidden="false"
-    aria-label="search icon"
-  ></mat-icon>
+  <svg class="search-icon"><use href="assets/images/icons/search.svg#icon" /></svg>
 </button>

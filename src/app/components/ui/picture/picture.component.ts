@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
   OnInit,
   SimpleChanges,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ImageItem, ImageSizeItem } from 'src/app/models/sights.models';
 
@@ -12,6 +13,7 @@ import { ImageItem, ImageSizeItem } from 'src/app/models/sights.models';
   selector: 'exogb-picture',
   templateUrl: './picture.component.html',
   styleUrls: ['./picture.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PictureComponent implements OnChanges, OnInit {
   @Input() image!: ImageItem;
@@ -26,6 +28,8 @@ export class PictureComponent implements OnChanges, OnInit {
   src = '';
   // mimeType = 'image/jpeg';
   isLoading = false;
+
+  constructor(private readonly cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const { firstChange, currentValue, previousValue } = changes.image;
@@ -72,7 +76,7 @@ export class PictureComponent implements OnChanges, OnInit {
     // if (sizesItemWithType) this.mimeType = sizesItemWithType['mime-type'];
 
     this.isLoading = true;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   private findTargetImage(sizes: ImageSizeItem[], baseUrl: string): void {
@@ -95,6 +99,6 @@ export class PictureComponent implements OnChanges, OnInit {
 
   onImgLoad(): void {
     this.isLoading = false;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 }

@@ -24,7 +24,7 @@
     border: none;
     color: var(--label-secondary);
     overflow: hidden;
-  
+
     &:enabled:hover,
     &:active,
     &:enabled:focus-visible {
@@ -42,8 +42,8 @@
         color: var(--label-primary);
       }
     }
-    
-    .mat-icon {
+
+    .icon {
       height: 32px;
       width: 40px;
     }

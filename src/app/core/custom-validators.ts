@@ -1,6 +1,6 @@
 import {
   AbstractControl,
-  FormGroup,
+  UntypedFormGroup,
   // ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
@@ -28,7 +28,7 @@ export class CustomValidators {
   // };
 
   static checkedFormGroup: ValidatorFn = (ac: AbstractControl) => {
-    const controls = (ac as FormGroup).controls || [];
+    const controls = (ac as UntypedFormGroup).controls || [];
 
     return Object.keys(controls).some((key) => controls[key].value)
       ? null

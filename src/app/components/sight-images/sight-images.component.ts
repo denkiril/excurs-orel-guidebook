@@ -1,8 +1,9 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ImageItem, SightId } from 'src/app/models/sights.models';
 
@@ -23,12 +24,15 @@ interface ImageItemLocal extends ImageItem {
   selector: 'exogb-sight-images',
   templateUrl: './sight-images.component.html',
   styleUrls: ['./sight-images.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SightImagesComponent implements OnChanges {
   @Input() images: ImageItem[] = [];
   @Input() sightId?: SightId;
 
   topImage?: ImageItemLocal;
+
+  constructor(private readonly cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
     this.setTopImage(this.images.length ? this.images[0] : undefined);
@@ -48,7 +52,7 @@ export class SightImagesComponent implements OnChanges {
       }
     }
 
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   private convertToParts(value: string): ContentPart[] {

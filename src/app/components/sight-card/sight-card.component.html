@@ -1,10 +1,7 @@
 <div class="sight-title" [class.active]="active">
-  <mat-icon
-    *ngIf="isMuseum"
-    svgIcon="museum"
-    aria-hidden="false"
-    aria-label="Museum icon"
-  ></mat-icon>
+  <svg *ngIf="isMuseum" class="icon">
+    <use href="assets/images/icons/museum.svg#icon" />
+  </svg>
   {{ sight.title }}
 </div>
 
@@ -49,7 +46,7 @@
       rel="noopener noreferrer"
     >
       Перейти
-      <mat-icon svgIcon="open_in_new"></mat-icon>
+      <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
     </a>
   </div>
 </div>
@@ -67,5 +64,7 @@
     title="Подробнее..."
     class="sight-image"
   />
-  <mat-icon *ngIf="!sight.thumb_url" svgIcon="quick_reference_all"></mat-icon>
+  <svg *ngIf="!sight.thumb_url" class="icon">
+    <use href="assets/images/icons/quick_reference_all.svg#icon" />
+  </svg>
 </a>

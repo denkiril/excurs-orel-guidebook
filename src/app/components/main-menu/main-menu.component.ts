@@ -1,10 +1,11 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnDestroy,
   OnInit,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
   animate,
@@ -39,6 +40,7 @@ enum MENU_BLOCK_NAME {
   selector: 'exogb-main-menu',
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('openClose', [
       state(
@@ -99,6 +101,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private readonly elRef: ElementRef<HTMLElement>,
+    private readonly cdr: ChangeDetectorRef,
     private readonly documentService: DocumentService,
     private readonly mapService: MapService,
     private readonly filterParamsStore: FilterParamsStoreService,
@@ -123,7 +126,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transparent = !!sightForMore;
         this.minimize = true;
         this.opened = false;
-        markDirty(this);
+        this.cdr.detectChanges();
       });
 
     this.mapService.initialized$
@@ -149,7 +152,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private toggleOpened(): void {
     this.opened = !this.opened;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   private onDocumentClick(event: Event): void {
@@ -167,6 +170,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private setMinimize(minimize: boolean): void {
     this.minimize = minimize;
     this.opened = false;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 }

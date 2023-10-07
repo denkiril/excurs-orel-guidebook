@@ -6,7 +6,8 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
-  ɵmarkDirty as markDirty,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -14,6 +15,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'exogb-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -36,6 +38,8 @@ export class CheckboxComponent implements ControlValueAccessor {
   @ViewChild('checkbox') checkbox!: ElementRef;
   @ViewChild('label') label!: ElementRef;
 
+  constructor(private readonly cdr: ChangeDetectorRef) {}
+
   onChange: any = () => {
     // do nothing
   };
@@ -54,7 +58,7 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.checked = !!value;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   registerOnChange(fn: any): void {

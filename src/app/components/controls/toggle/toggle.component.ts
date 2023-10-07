@@ -8,9 +8,8 @@ import {
   ElementRef,
   EventEmitter,
   Output,
-  AfterContentInit,
-  // ChangeDetectionStrategy,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -18,7 +17,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'exogb-toggle',
   templateUrl: './toggle.component.html',
   styleUrls: ['./toggle.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -27,9 +26,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     },
   ],
 })
-export class ToggleComponent
-  implements AfterContentInit, AfterViewInit, ControlValueAccessor
-{
+export class ToggleComponent implements AfterViewInit, ControlValueAccessor {
   @Input() checked = false;
   @Input() enabled = true;
   @Input() controlTitle: string | undefined;
@@ -45,13 +42,9 @@ export class ToggleComponent
   };
 
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     private readonly renderer: Renderer2,
-    private readonly changeDetector: ChangeDetectorRef,
   ) {}
-
-  ngAfterContentInit(): void {
-    this.onChange(this.checked);
-  }
 
   ngAfterViewInit(): void {
     if (this.knob?.nativeElement)
@@ -60,7 +53,7 @@ export class ToggleComponent
 
   writeValue(value: any): void {
     this.checked = Boolean(value);
-    this.changeDetector.markForCheck();
+    this.cdr.detectChanges();
   }
 
   registerOnChange(fn: any): void {

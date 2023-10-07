@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
   Input,
   Output,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -12,6 +13,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'exogb-filter-block',
   templateUrl: './filter-block.component.html',
   styleUrls: ['./filter-block.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -29,6 +31,8 @@ export class FilterBlockComponent implements ControlValueAccessor {
 
   switchedOn = true;
 
+  constructor(private readonly cdr: ChangeDetectorRef) {}
+
   onChange: any = () => {
     // do nothing
   };
@@ -39,7 +43,7 @@ export class FilterBlockComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.switchedOn = !!value;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   registerOnChange(fn: any): void {
@@ -56,14 +60,14 @@ export class FilterBlockComponent implements ControlValueAccessor {
 
   toggleOpened(): void {
     this.opened = !this.opened;
+    this.cdr.detectChanges();
     this.openedChange.emit(this.opened);
-    markDirty(this);
   }
 
   switch(): void {
     this.switchedOn = !this.switchedOn;
     this.onChange(this.switchedOn);
     this.onTouched();
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 }
