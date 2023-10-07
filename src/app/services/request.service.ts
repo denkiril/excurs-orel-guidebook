@@ -13,7 +13,7 @@ type RequestParams =
         | ReadonlyArray<string | number | boolean>;
     };
 
-const { API_URL, MKRF_OPENDATA_APIKEY } = environment;
+const { API_URL } = environment;
 
 @Injectable({
   providedIn: 'root',
@@ -27,11 +27,5 @@ export class RequestService {
 
   getUrl<T>(url: string): Observable<T> {
     return this.http.get<T>(url);
-  }
-
-  getMkrfOpendata<T>(url: string): Observable<T> {
-    return this.http.get<T>(url, {
-      headers: { 'X-API-KEY': MKRF_OPENDATA_APIKEY },
-    });
   }
 }

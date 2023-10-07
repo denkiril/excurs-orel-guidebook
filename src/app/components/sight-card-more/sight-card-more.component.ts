@@ -154,13 +154,13 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     this.fetching = true;
     markDirty(this);
 
-    console.log('getSightDataExt...');
+    // console.log('getSightDataExt...');
     this.sightsService
       .getSightDataExt$(this.sightId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          console.log('getSightDataExt data:', data);
+          // console.log('getSightDataExt data:', data);
           if (data) {
             this.initSight(data);
           } else {

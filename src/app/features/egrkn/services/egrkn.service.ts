@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { RequestService } from 'src/app/services/request.service';
 import {
@@ -22,7 +22,6 @@ import {
   EGRKN_OKN_CATEGORIES,
   DEFAULT_ADDRESS_PART,
   EGRKN_OBJECT_URL,
-  GET_EGRKN_URL,
 } from '../egrkn.constants';
 
 @Injectable({
@@ -70,14 +69,13 @@ export class EgrknService {
   }
 
   private requestEgrknData$(): Observable<EgrknResponse> {
-    return this.requestService
-      .getMkrfOpendata<EgrknResponse>(GET_EGRKN_URL)
-      .pipe(
-        catchError(() =>
-          // FETCH_EGRKN_ERROR TODO ?
-          this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL),
-        ),
-      );
+    // return this.requestService.getUrl<EgrknResponse>(GET_EGRKN_URL).pipe(
+    //   catchError(() =>
+    //     // FETCH_EGRKN_ERROR TODO ?
+    //     this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL),
+    //   ),
+    // );
+    return this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL);
   }
 
   private prepareSightData(egrknItems: EgrknItem[]): SightDataExt[] {

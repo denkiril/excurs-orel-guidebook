@@ -45,3 +45,4 @@ platformBrowserDynamic()
 // switch off "tur" when all checkboxes off (UI and route)? 3rd state of toggle?
 // egrkn additionalCoordinates - show polygon on map on more mode
 // fly to object on map (button near geolocation)
+// requestEgrknData actual - hack or upd server
