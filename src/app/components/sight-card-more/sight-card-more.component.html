@@ -2,7 +2,9 @@
   <div class="scrolled-content">
     <div class="close-btn-wrapper">
       <button type="button" title="Закрыть панель" (click)="close()">
-        <svg class="icon"><use href="assets/images/icons/close.svg#icon" /></svg>
+        <svg class="icon">
+          <use href="assets/images/icons/close.svg#icon" />
+        </svg>
       </button>
     </div>
 
@@ -94,7 +96,9 @@
               rel="noopener noreferrer"
             >
               {{ nested.title }} (на сайте госреестра)
-              <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
+              <svg class="icon">
+                <use href="assets/images/icons/open_in_new.svg#icon" />
+              </svg>
             </a>
           </li>
         </ul>
@@ -105,7 +109,9 @@
       <p *ngIf="sight.permalink">
         <a [href]="sight.permalink" target="_blank" rel="noopener noreferrer">
           Открыть страницу объекта
-          <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
+          <svg class="icon">
+            <use href="assets/images/icons/open_in_new.svg#icon" />
+          </svg>
         </a>
       </p>
       <p *ngIf="sight.egrknData && sight.egrknData.egrknUrl">
@@ -115,7 +121,9 @@
           rel="noopener noreferrer"
         >
           Открыть страницу объекта на сайте госреестра
-          <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
+          <svg class="icon">
+            <use href="assets/images/icons/open_in_new.svg#icon" />
+          </svg>
         </a>
       </p>
     </div>

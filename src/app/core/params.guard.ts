@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 import { Observable } from 'rxjs';
 
 export const GB_QUERY_PARAMS_KEYS = <const>['filter', 'search', 'sight'];
 
-type GBQueryParamsKey = typeof GB_QUERY_PARAMS_KEYS[number];
+type GBQueryParamsKey = (typeof GB_QUERY_PARAMS_KEYS)[number];
 
 export type GBQueryParams = Partial<Record<GBQueryParamsKey, string>>;
 
 @Injectable({
   providedIn: 'root',
 })
-export class ParamsGuard  {
+export class ParamsGuard {
   constructor(private readonly router: Router) {}
 
   canActivate(

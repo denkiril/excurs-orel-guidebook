@@ -14,7 +14,11 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
@@ -124,7 +128,10 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     });
 
     this.filterBlocks.forEach((block) => {
-      this.form.addControl(block.name, new UntypedFormControl(block.switchedOn));
+      this.form.addControl(
+        block.name,
+        new UntypedFormControl(block.switchedOn),
+      );
 
       block.groups.forEach((group) => {
         this.form.addControl(

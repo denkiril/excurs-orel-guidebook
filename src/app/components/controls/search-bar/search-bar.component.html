@@ -11,8 +11,15 @@
     (focus)="onInputFocus()"
   />
 
-  <button *ngIf="!!value" type="button" class="close-btn" (click)="clearValue()">
-    <svg class="close-icon"><use href="assets/images/icons/close.svg#icon" /></svg>
+  <button
+    *ngIf="!!value"
+    type="button"
+    class="close-btn"
+    (click)="clearValue()"
+  >
+    <svg class="close-icon">
+      <use href="assets/images/icons/close.svg#icon" />
+    </svg>
   </button>
 </div>
 
@@ -21,5 +28,7 @@
   [disabled]="!enabled"
   (click)="enabled && searchValue(searchInput.value)"
 >
-  <svg class="search-icon"><use href="assets/images/icons/search.svg#icon" /></svg>
+  <svg class="search-icon">
+    <use href="assets/images/icons/search.svg#icon" />
+  </svg>
 </button>

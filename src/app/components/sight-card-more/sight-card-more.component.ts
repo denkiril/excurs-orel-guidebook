@@ -35,7 +35,6 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject();
   private sightId?: SightId;
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly SightType = SightType;
   sight?: SightDataExt;
   typeText = '';
