@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
-import { IconsModule } from './icons/icons.module';
 import { AppComponent } from './app.component';
 import { MainMapComponent } from './components/main-map/main-map.component';
 import { MainPanelComponent } from './components/main-panel/main-panel.component';
@@ -68,7 +67,6 @@ export const routes: Routes = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IconsModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
   ],

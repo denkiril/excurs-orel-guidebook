@@ -1,11 +1,12 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnDestroy,
   OnInit,
   Renderer2,
   ViewChild,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
   animate,
@@ -31,6 +32,7 @@ const BOTTOM_MARGIN = 148; // top: calc(100vh - {BOTTOM_MARGIN}px);
   selector: 'exogb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('secondPanelAnim', [
       state(
@@ -70,6 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // eslint-disable-next-line max-params
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     private readonly renderer: Renderer2,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
@@ -150,7 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (sightForMore) {
           this.sightForMoreExist = true;
         }
-        markDirty(this);
+        this.cdr.detectChanges();
       });
   }
 
@@ -158,7 +161,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isMobile = mediaSize === MediaSize.Mobile;
 
     if (!this.isMobile) this.setTranslateY(0);
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   onExpandBtnClick(): void {
@@ -250,7 +253,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   onClosePanel(): void {
     this.sightForMoreShowing = false;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   animationDone(event: AnimationEvent): void {
@@ -273,6 +276,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.fixMainPanel = fixed;
     this.setTranslateY(translateY);
     this.setTransition(false);
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 }

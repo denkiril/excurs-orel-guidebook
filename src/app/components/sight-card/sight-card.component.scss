@@ -27,7 +27,7 @@ $image-height: 90px;
   z-index: 1;
   background-color: var(--light-02-op);
 
-  .mat-icon {
+  .icon {
     height: 1em;
     width: 1em;
     line-height: normal;
@@ -88,7 +88,7 @@ $image-height: 90px;
   &:hover {
     z-index: 1;
 
-    .mat-icon {
+    .icon {
       color: var(--control-layout-03);
     }
   }
@@ -101,7 +101,7 @@ $image-height: 90px;
     margin-top: auto;
   }
 
-  .mat-icon {
+  .icon {
     width: 40px;
     height: 40px;
     color: var(--control-layout-02);

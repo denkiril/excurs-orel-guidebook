@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   OnDestroy,
   OnInit,
   Output,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import {
   trigger,
@@ -13,7 +14,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
@@ -41,6 +42,7 @@ interface SightDataLocal extends SightData {
   selector: 'exogb-main-panel',
   templateUrl: './main-panel.component.html',
   styleUrls: ['./main-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('openClose', [
       state(
@@ -71,7 +73,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   sights: SightDataLocal[] = [];
   showServerError = false;
   private readonly limit?: number;
@@ -83,6 +85,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private activeSights: SightId[] = [];
 
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
@@ -116,17 +119,17 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private initForm(): void {
-    this.form = new FormGroup({
-      search: new FormControl(''),
+    this.form = new UntypedFormGroup({
+      search: new UntypedFormControl(''),
     });
 
     this.filterBlocks.forEach((block) => {
-      this.form.addControl(block.name, new FormControl(block.switchedOn));
+      this.form.addControl(block.name, new UntypedFormControl(block.switchedOn));
 
       block.groups.forEach((group) => {
         this.form.addControl(
           group.name,
-          new FormGroup(
+          new UntypedFormGroup(
             {},
             group.name === 'okn_category' || group.name === 'okn_type'
               ? CustomValidators.checkedFormGroup
@@ -135,9 +138,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
         );
 
         group.controls.forEach((control) => {
-          (this.form.get(group.name) as FormGroup).addControl(
+          (this.form.get(group.name) as UntypedFormGroup).addControl(
             control.name,
-            new FormControl(control.value),
+            new UntypedFormControl(control.value),
           );
         });
       });
@@ -256,12 +259,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   animationDone(filterBlock: FilterBlock): void {
     // the toState, fromState and totalTime data is accessible from the event variable
     filterBlock.showed = filterBlock.opened;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   onOpenedChange(opened: boolean, filterBlock: FilterBlock): void {
-    // console.log('onOpenedChange');
     filterBlock.opened = opened;
+    this.cdr.detectChanges();
     this.updateFilterParams(); // TODO setLS only?
   }
 
@@ -319,7 +322,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   private setSightsFetching(isFetching: boolean): void {
     this.sightsFetching = isFetching;
-    markDirty(this);
+    this.cdr.detectChanges();
 
     if (this.sightsFetched && this.sightsFetching) {
       this.tickerDestroy$.next();
@@ -327,7 +330,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.tickerDestroy$))
         .subscribe((value) => {
           this.ticker = value;
-          markDirty(this);
+          this.cdr.detectChanges();
         });
     }
   }
@@ -348,7 +351,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     this.sights.forEach((sight) => {
       sight.active = this.activeSights.includes(sight.id);
     });
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   trackById(_index: number, item: SightData): string {

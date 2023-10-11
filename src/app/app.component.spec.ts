@@ -3,7 +3,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { IconsModule } from './icons/icons.module';
 import { MainMapComponent } from './components/main-map/main-map.component';
 import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MainPanelComponent } from './components/main-panel/main-panel.component';
@@ -18,7 +17,6 @@ describe('AppComponent', () => {
         RouterTestingModule.withRoutes([]),
         NoopAnimationsModule,
         HttpClientTestingModule,
-        IconsModule,
       ],
       declarations: [
         AppComponent,

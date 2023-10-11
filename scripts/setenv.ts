@@ -21,7 +21,6 @@ export const environment = {
   VERSION: '${isProduction ? version : 'develop'}',
   API_URL: '${process.env.API_URL || ''}',
   YMAPS_APIKEY: '${process.env.YMAPS_APIKEY || ''}',
-  MKRF_OPENDATA_APIKEY: '${process.env.MKRF_OPENDATA_APIKEY || ''}',
 };
 `;
 

@@ -10,12 +10,7 @@
     [disabled]="disabled"
     (click)="!disabled && emitClickRefresh()"
   >
-    <mat-icon
-      svgIcon="refresh"
-      class="button-icon"
-      aria-hidden="false"
-      aria-label="refresh icon"
-    ></mat-icon>
+    <svg class="icon"><use href="assets/images/icons/refresh.svg#icon" /></svg>
     Повторить
   </button>
 </div>

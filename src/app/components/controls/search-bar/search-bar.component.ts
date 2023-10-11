@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
   Input,
   Output,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -12,6 +13,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'exogb-search-bar',
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -28,6 +30,8 @@ export class SearchBarComponent implements ControlValueAccessor {
   @Output() valueSubmited = new EventEmitter<string>();
   @Output() valueChanged = new EventEmitter<string>();
   @Output() inputFocused = new EventEmitter<void>();
+
+  constructor(private readonly cdr: ChangeDetectorRef) {}
 
   onChange: any = () => {
     // do nothing
@@ -54,21 +58,21 @@ export class SearchBarComponent implements ControlValueAccessor {
     if (event.key === 'Enter') {
       this.searchValue(value);
     } else {
-      markDirty(this);
+      this.value = value.trim();
+      this.cdr.detectChanges();
       this.valueChanged.emit(value.trim());
     }
   }
 
   clearValue(): void {
     // console.log('clearValue', this.value);
-    markDirty(this);
-    if (this.value !== '') this.searchValue('');
+    this.searchValue('');
   }
 
   searchValue(value: string): void {
     // console.log('searchValue', value);
     this.value = value.trim();
-    markDirty(this);
+    this.cdr.detectChanges();
     this.valueSubmited.emit(this.value);
     this.onChange(this.value);
     this.onTouched();

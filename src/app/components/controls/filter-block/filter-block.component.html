@@ -10,11 +10,9 @@
   <button class="fb-button" [class.opened]="opened" (click)="toggleOpened()">
     <div class="fb-title">{{ blockTitle }}</div>
 
-    <mat-icon
-      [svgIcon]="opened ? 'expand_less' : 'expand_more'"
-      aria-hidden="false"
-      aria-label="expand icon"
-    ></mat-icon>
+    <svg class="icon">
+      <use [attr.href]="opened ? 'assets/images/icons/expand_less.svg#icon' : 'assets/images/icons/expand_more.svg#icon'" />
+    </svg>
   </button>
 </div>
 

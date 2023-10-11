@@ -4,7 +4,8 @@ import {
   OnInit,
   OnDestroy,
   Output,
-  ɵmarkDirty as markDirty,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -26,6 +27,7 @@ import { FilterParamsStoreService } from 'src/app/store/filter-params-store.serv
   selector: 'exogb-sight-card-more',
   templateUrl: './sight-card-more.component.html',
   styleUrls: ['./sight-card-more.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SightCardMoreComponent implements OnInit, OnDestroy {
   @Output() closeCard = new EventEmitter<void>();
@@ -46,6 +48,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   articleHTML?: SafeHtml;
 
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     private readonly sightsService: SightsService,
     private readonly sanitizer: DomSanitizer,
     private readonly filterParamsStore: FilterParamsStoreService,
@@ -102,7 +105,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
         )
       : undefined;
 
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   private defineDistrictText(district: District): string {
@@ -152,15 +155,15 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     if (!this.sightId) return;
 
     this.fetching = true;
-    markDirty(this);
+    this.cdr.detectChanges();
 
-    console.log('getSightDataExt...');
+    // console.log('getSightDataExt...');
     this.sightsService
       .getSightDataExt$(this.sightId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
-          console.log('getSightDataExt data:', data);
+          // console.log('getSightDataExt data:', data);
           if (data) {
             this.initSight(data);
           } else {
@@ -168,7 +171,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
           }
           this.fetching = false;
           this.showServerError = false;
-          markDirty(this);
+          this.cdr.detectChanges();
         },
         (error) => {
           console.error('getSightDataExt error:', error);
@@ -178,7 +181,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
             this.showServerError = true;
           }
           this.fetching = false;
-          markDirty(this);
+          this.cdr.detectChanges();
         },
       );
   }

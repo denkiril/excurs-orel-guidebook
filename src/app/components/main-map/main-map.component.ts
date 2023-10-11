@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
-  ɵmarkDirty as markDirty,
 } from '@angular/core';
 import { of, race, Subject } from 'rxjs';
 import { delay, finalize, first, takeUntil } from 'rxjs/operators';
@@ -18,6 +19,7 @@ import { SightsService } from 'src/app/services/sights.service';
   selector: 'exogb-main-map',
   templateUrl: './main-map.component.html',
   styleUrls: ['./main-map.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainMapComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLElement>;
@@ -34,6 +36,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
   // vh = 0;
 
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     private readonly mapService: MapService,
     private readonly sightsService: SightsService,
     private readonly analyticsService: AnalyticsService,
@@ -75,14 +78,14 @@ export class MainMapComponent implements OnInit, OnDestroy {
         () => {
           this.analyticsService.sendEvent('initMap fail');
           this.showMapInitError = true;
-          markDirty(this);
+          this.cdr.detectChanges();
         },
       );
   }
 
   private setMapInitializing(value: boolean): void {
     this.mapInitializing = value;
-    markDirty(this);
+    this.cdr.detectChanges();
   }
 
   // private updateMap(sightsData: SightsData): void {
