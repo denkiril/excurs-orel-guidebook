@@ -20,8 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/guidebook",
-            "baseHref": "/guidebook/",
+            "outputPath": "dist/exogb/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -144,6 +143,82 @@
               "devServerTarget": "orel-guidebook:serve:production"
             }
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/exogb/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "buildOptimizer": false,
+            "optimization": false,
+            "sourceMap": true,
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/app/styles"
+              ]
+            },
+            "extractLicenses": false,
+            "vendorChunk": true
+          },
+          "configurations": {
+            "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment._dev.ts"
+                }
+              ]
+            },
+            "production": {
+              "buildOptimizer": true,
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment._prod.ts"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "orel-guidebook:build:development",
+              "serverTarget": "orel-guidebook:server:development"
+            },
+            "production": {
+              "browserTarget": "orel-guidebook:build:production",
+              "serverTarget": "orel-guidebook:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "orel-guidebook:build:production",
+              "serverTarget": "orel-guidebook:server:production"
+            },
+            "development": {
+              "browserTarget": "orel-guidebook:build:development",
+              "serverTarget": "orel-guidebook:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

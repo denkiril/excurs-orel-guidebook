@@ -3,4 +3,5 @@ export const environment = {
   VERSION: 'develop',
   API_URL: 'http://excurs-orel/wp-json/api/',
   YMAPS_APIKEY: '',
+  ASSETS_URL: '',
 };

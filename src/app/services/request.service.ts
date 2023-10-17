@@ -26,6 +26,7 @@ export class RequestService {
   }
 
   getUrl<T>(url: string): Observable<T> {
+    console.log('getUrl...' + url);
     return this.http.get<T>(url);
   }
 }

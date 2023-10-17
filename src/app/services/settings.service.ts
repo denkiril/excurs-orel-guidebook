@@ -33,6 +33,10 @@ export class SettingsService {
     private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
 
+  getFilterBlocks(): FilterBlock[] {
+    return [...FILTER_BLOCKS];
+  }
+
   startParseQueryParams$(): Observable<FilterParams> {
     // console.log('startParseQueryParams$...');
     return new Observable((subscriber) => {

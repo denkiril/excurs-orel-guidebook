@@ -183,12 +183,13 @@ export enum SightType {
   EGRKN = 'egrkn_',
 }
 
+// opened=true by default - for SSR
 export const FILTER_BLOCKS: FilterBlock[] = [
   {
     name: 'tur',
     title: 'Туристам',
     switchedOn: true,
-    opened: false,
+    opened: true,
     showed: false,
     groups: [
       {
@@ -212,7 +213,7 @@ export const FILTER_BLOCKS: FilterBlock[] = [
     name: 'okn',
     title: 'Объекты культурного наследия',
     switchedOn: true,
-    opened: false,
+    opened: true,
     showed: false,
     groups: [
       {
