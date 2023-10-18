@@ -9,6 +9,7 @@ import { LoaderComponent } from '../controls/loader/loader.component';
 import { SearchBarComponent } from '../controls/search-bar/search-bar.component';
 import { SpinnerComponent } from '../controls/spinner/spinner.component';
 import { ToggleComponent } from '../controls/toggle/toggle.component';
+import { CheckboxComponent } from '../controls/checkbox/checkbox.component';
 import { MainPanelComponent } from './main-panel.component';
 
 describe('MainPanelComponent', () => {
@@ -31,6 +32,7 @@ describe('MainPanelComponent', () => {
         SearchBarComponent,
         ToggleComponent,
         SpinnerComponent,
+        CheckboxComponent,
       ],
     }).compileComponents();
   });

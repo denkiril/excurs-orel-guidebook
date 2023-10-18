@@ -26,4 +26,4 @@ export const EGRKN_OBJECT_URL =
 export const GET_EGRKN_URL =
   'https://opendata.mkrf.ru/v2/egrkn/$?f={"data.general.address.fullAddress":{"$search":"орел"},"data.general.region.value":{"$eq":"Орловская область"}}&l=500';
 
-export const LOCAL_EGRKN_URL = 'assets/data/egrkn.json'; // egrkn-10
+export const LOCAL_EGRKN_URL = 'data/egrkn.json'; // egrkn-10

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { RequestService } from 'src/app/services/request.service';
 import {
   ImageItem,
   SightDataExt,
@@ -23,6 +22,8 @@ import {
   DEFAULT_ADDRESS_PART,
   EGRKN_OBJECT_URL,
 } from '../egrkn.constants';
+import { AppService } from 'src/app/services/app.service';
+import { RequestService } from 'src/app/services/request.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,10 @@ import {
 export class EgrknService {
   private sightDataItems: SightDataExt[] = [];
 
-  constructor(private readonly requestService: RequestService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly requestService: RequestService,
+  ) {}
 
   getEgrknSights$(): Observable<EgrknSights> {
     return this.sightDataItems.length
@@ -75,7 +79,9 @@ export class EgrknService {
     //     this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL),
     //   ),
     // );
-    return this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL);
+    return this.requestService.getUrl<EgrknResponse>(
+      this.appService.getAssetsUrl() + LOCAL_EGRKN_URL,
+    );
   }
 
   private prepareSightData(egrknItems: EgrknItem[]): SightDataExt[] {
@@ -142,7 +148,7 @@ export class EgrknService {
       )
         return { lat: `${lat}`, lng: `${lng}` };
 
-      console.warn('checkBounds(lat, lng) fail:', lat, lng);
+      // console.warn('checkBounds(lat, lng) fail:', lat, lng);
       return undefined;
     };
 
@@ -159,7 +165,7 @@ export class EgrknService {
           if (coords) return coords;
         } else if (Array.isArray(coordsItem1)) {
           // eslint-disable-next-line prettier/prettier
-          console.log(`additionalCoordinates for ${address.fullAddress}:`, general);
+          // console.log(`additionalCoordinates for ${address.fullAddress}:`, general);
           // TODO calc center?
           const [coord1, coord2] = coordsItem1;
           const coords = checkBounds(coord1, coord2);
@@ -175,7 +181,7 @@ export class EgrknService {
       checkCoordinates(additionalCoordinates?.[0].coordinates);
 
     if (!geolocation) {
-      console.warn('SightGeolocation is undefined', general);
+      // console.warn('SightGeolocation is undefined', general);
     }
 
     return geolocation;

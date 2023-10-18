@@ -14,14 +14,17 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 
 import {
   SightData,
   FilterBlock,
-  FILTER_BLOCKS,
   FilterParams,
   SightsFilterParams,
   GetSightsParams,
@@ -71,7 +74,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject();
   private readonly tickerDestroy$ = new Subject();
 
-  readonly filterBlocks: FilterBlock[] = [...FILTER_BLOCKS];
+  readonly filterBlocks: FilterBlock[] = this.settingsService.getFilterBlocks();
 
   form!: UntypedFormGroup;
   sights: SightDataLocal[] = [];
@@ -124,7 +127,10 @@ export class MainPanelComponent implements OnInit, OnDestroy {
     });
 
     this.filterBlocks.forEach((block) => {
-      this.form.addControl(block.name, new UntypedFormControl(block.switchedOn));
+      this.form.addControl(
+        block.name,
+        new UntypedFormControl(block.switchedOn),
+      );
 
       block.groups.forEach((group) => {
         this.form.addControl(
@@ -150,7 +156,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private initWithFilterParams(filterParamsInRoute: FilterParams): void {
-    // console.log('initWithFilterParams:', filterParamsInRoute);
+    console.log('initWithFilterParams:', filterParamsInRoute);
     const filterParams =
       this.settingsService.getFilterParams(filterParamsInRoute);
 

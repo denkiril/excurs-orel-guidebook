@@ -11,7 +11,13 @@
     <div class="fb-title">{{ blockTitle }}</div>
 
     <svg class="icon">
-      <use [attr.href]="opened ? 'assets/images/icons/expand_less.svg#icon' : 'assets/images/icons/expand_more.svg#icon'" />
+      <use
+        [attr.href]="
+          opened
+            ? 'assets/images/icons/expand_less.svg#icon'
+            : 'assets/images/icons/expand_more.svg#icon'
+        "
+      />
     </svg>
   </button>
 </div>

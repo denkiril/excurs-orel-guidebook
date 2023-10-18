@@ -8,6 +8,7 @@ on:
 env:
   API_URL: ${{ secrets.API_URL }}
   YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
+  ASSETS_URL: https://excurs-orel.ru/guidebook/dist/exogb/browser/assets/
 
 jobs:
   tests:
@@ -41,4 +42,7 @@ jobs:
       - run: npm ci
       - run: npm run build:prod
       # Deploy
-      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/guidebook/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/prod/guidebook/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/exogb/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/dist/exogb/
+      - run: touch denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/tmp/restart.txt

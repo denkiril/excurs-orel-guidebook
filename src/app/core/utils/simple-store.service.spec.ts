@@ -11,7 +11,6 @@ const initialTestState: TestState = {
 };
 
 class TestStore extends SimpleStore<TestState> {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(initialState: TestState) {
     super(initialState);
   }

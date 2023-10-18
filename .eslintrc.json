@@ -15,8 +15,8 @@
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
-        "@tinkoff/eslint-config/app",
-        "@tinkoff/eslint-config-angular",
+        // "@tinkoff/eslint-config/app",
+        // "@tinkoff/eslint-config-angular",
         "plugin:@angular-eslint/template/process-inline-templates",
         // "prettier/@typescript-eslint",
         "plugin:prettier/recommended"
@@ -38,24 +38,25 @@
             "type": "attribute"
           }
         ],
-        "@typescript-eslint/explicit-function-return-type": "error",
         "comma-dangle": ["error", "only-multiline"],
         "array-element-newline": "off",
-        "@typescript-eslint/naming-convention": [
-          "error",
-          {
-            "selector": "classProperty",
-            "format": ["camelCase", "UPPER_CASE"],
-            "leadingUnderscore": "allow",
-            "trailingUnderscore": "allow"
-          },
-          {
-            "selector": "typeLike",
-            "format": ["PascalCase", "UPPER_CASE"]
-          }
-        ],
-        "@typescript-eslint/consistent-type-imports": "off",
-        "@typescript-eslint/no-unused-vars": ["warn"],
+        // TODO @typescript-eslint rules
+        // "@typescript-eslint/explicit-function-return-type": "error",
+        // "@typescript-eslint/naming-convention": [
+        //   "error",
+        //   {
+        //     "selector": "classProperty",
+        //     "format": ["camelCase", "UPPER_CASE"],
+        //     "leadingUnderscore": "allow",
+        //     "trailingUnderscore": "allow"
+        //   },
+        //   {
+        //     "selector": "typeLike",
+        //     "format": ["PascalCase", "UPPER_CASE"]
+        //   }
+        // ],
+        // "@typescript-eslint/consistent-type-imports": "off",
+        // "@typescript-eslint/no-unused-vars": ["warn"],
         "no-console": "warn",
         "sort-class-members/sort-class-members": "off"
         // "no-trailing-spaces": "error",
