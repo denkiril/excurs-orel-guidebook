@@ -6,6 +6,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  TransferState,
+  makeStateKey,
 } from '@angular/core';
 import {
   trigger,
@@ -36,10 +38,13 @@ import { CustomValidators } from 'src/app/core/custom-validators';
 import { LoggerService } from 'src/app/services/logger.service';
 import { ActiveSightsService } from 'src/app/services/active-sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
+import { AppService } from 'src/app/services/app.service';
 
 interface SightDataLocal extends SightData {
   active?: boolean;
 }
+
+const SIGHTS_STATE_KEY = makeStateKey<SightDataLocal[]>('sights-local');
 
 @Component({
   selector: 'exogb-main-panel',
@@ -77,11 +82,11 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   readonly filterBlocks: FilterBlock[] = this.settingsService.getFilterBlocks();
 
   form!: UntypedFormGroup;
-  sights: SightDataLocal[] = [];
+  sights: SightDataLocal[] = this.transferState.get(SIGHTS_STATE_KEY, []);
   showServerError = false;
   private readonly limit?: number;
   sightsFetching = false;
-  sightsFetched = false;
+  sightsFetched: boolean = this.sights.length > 0;
   ticker = 0;
   showEgrknError = false;
   private cachedFormValue: any = {};
@@ -89,6 +94,8 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly cdr: ChangeDetectorRef,
+    private readonly transferState: TransferState,
+    private readonly appService: AppService,
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
@@ -97,6 +104,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // this.transferState.set(SIGHTS_STATE_KEY, []);
     this.initForm();
 
     this.settingsService
@@ -161,7 +169,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       this.settingsService.getFilterParams(filterParamsInRoute);
 
     if (filterParams) {
-      if (filterParams.sightsFilterParams) {
+      if (filterParams.sightsFilterParams && !this.appService.isServer) {
         this.updateFilterBlocks(filterParams.sightsFilterParams);
       }
       this.updateForm(filterParams);
@@ -187,9 +195,14 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private updateFilterBlocks(sightsFilterParams: SightsFilterParams): void {
-    // console.log('updateFilterBlocks');
+    // TODO Check LS, not route?
+    // console.log('updateFilterBlocks', JSON.stringify(sightsFilterParams));
     this.filterBlocks.forEach((block) => {
-      block.opened = sightsFilterParams[block.name]?.opened ?? block.opened;
+      // block.opened = sightsFilterParams[block.name]?.opened ?? block.opened;
+      block.opened =
+        sightsFilterParams[block.name] === undefined
+          ? false
+          : sightsFilterParams[block.name].opened ?? block.opened;
     });
   }
 
@@ -295,8 +308,9 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         ({ items, errors }) => {
-          this.loggerService.devLog('sightsService data:', items, errors);
+          this.loggerService.browserLog('sightsService data:', items, errors);
           this.sights = [...items]; // .map((item) => ({ ...item, active: false }));
+          this.transferState.set(SIGHTS_STATE_KEY, items);
           this.updateSightsActive();
 
           this.sightsFetched = true;

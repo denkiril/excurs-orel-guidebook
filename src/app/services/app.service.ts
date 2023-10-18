@@ -6,11 +6,13 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class AppService {
-  private readonly isServer = isPlatformServer(this.platformId);
+  readonly isServer = isPlatformServer(this.platformId);
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: Object) {}
 
   getAssetsUrl(): string {
-    return this.isServer ? environment.ASSETS_URL : '/assets/';
+    return this.isServer || environment.production
+      ? environment.ASSETS_URL
+      : '/assets/';
   }
 }

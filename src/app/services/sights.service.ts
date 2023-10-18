@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TransferState, makeStateKey } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
 
 import {
   SightsData,
@@ -19,6 +19,9 @@ import { EgrknService } from '../features/egrkn/services/egrkn.service';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
 import { SettingsService } from './settings.service';
 import { SIGHTS_WITH_NESTED } from '../models/sights.constants';
+import { LoggerService } from './logger.service';
+
+const SIGHTS_STATE_KEY = makeStateKey<SightResponseItem[]>('sights');
 
 interface SightByLink {
   slug: string;
@@ -50,6 +53,8 @@ export class SightsService {
   readonly sightsData$ = this.sightsDataSubject.asObservable();
 
   constructor(
+    private readonly transferState: TransferState,
+    private readonly loggerService: LoggerService,
     private readonly egrknService: EgrknService,
     private readonly filterParamsStore: FilterParamsStoreService,
     private readonly requestService: RequestService,
@@ -59,7 +64,8 @@ export class SightsService {
   /* API methods */
 
   private fetchSights$(): Observable<SightsData> {
-    // console.log('fetchSights...');
+    this.loggerService.log('// fetchSights...', this.sightsData.items.length);
+
     if (this.sightsData.items.length) {
       this.sightsData.items = this.sightsData.items.map((item) => ({
         ...item,
@@ -68,13 +74,27 @@ export class SightsService {
       return of(this.sightsData);
     }
 
-    return this.requestService.getApi<SightResponseItem[]>('sights').pipe(
+    return this.requestSights$().pipe(
       tap((items) => {
         this.sightsData.items = items.map((item) => this.prepareExoSight(item));
+        // console.log('// fetchSights TAP', this.sightsData.items.length);
       }),
       map(() => this.sightsData),
       catchError(() => of({ items: [], errors: ['FETCH_SIGHTS_ERROR'] })),
     );
+  }
+
+  private requestSights$(): Observable<SightResponseItem[]> {
+    const transfered = this.transferState.get(SIGHTS_STATE_KEY, []);
+
+    return transfered.length
+      ? of(transfered)
+      : this.requestService.getApi<SightResponseItem[]>('sights').pipe(
+          tap((sights) => {
+            this.transferState.set(SIGHTS_STATE_KEY, sights);
+          }),
+        );
+    // return this.requestService.getApi<SightResponseItem[]>('sights');
   }
 
   private prepareExoSight(item: SightResponseItem): SightData {
@@ -90,9 +110,7 @@ export class SightsService {
     return new Observable<ExtSightsData>((observer) => {
       forkJoin({
         sightsData: this.fetchSights$(),
-        egrknData: this.needEgrkn()
-          ? this.egrknService.getEgrknSights$()
-          : of({ items: [] } as SightsData),
+        egrknData: this.egrknService.getEgrknSights$(this.needEgrkn()),
         delay: timer(withDelay ? 300 : 0),
       }).subscribe({
         next: ({ sightsData, egrknData }) => {
@@ -117,6 +135,8 @@ export class SightsService {
   /* Other methods */
 
   getSightDataExt$(sightId: SightId): Observable<SightDataExt | undefined> {
+    this.loggerService.log('getSightDataExt', sightId);
+
     switch (this.getSightType(sightId)) {
       case SightType.EGRKN:
         return this.egrknService.getSightById$(sightId);
@@ -133,6 +153,7 @@ export class SightsService {
 
   private handleSightDataExt$(sight: SightDataExt): Observable<SightDataExt> {
     return this.fetchingSightsSubject.pipe(
+      take(1),
       map(({ items }) => {
         const swnItem = SIGHTS_WITH_NESTED.find(
           (swn) => swn.sightId === sight.id,

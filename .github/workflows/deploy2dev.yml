@@ -8,7 +8,10 @@ on:
 env:
   API_URL: ${{ secrets.API_URL }}
   YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
+  MKRF_OPENDATA_APIKEY: ${{ secrets.MKRF_OPENDATA_APIKEY }}
   ASSETS_URL: http://dev.excurs-orel.ru/guidebook/dist/exogb/browser/assets/
+  LOGS_PATH: /home/d/denkiril/dev.excurs-orel.ru/exogb_logs
+  IS_DEV: true
 
 jobs:
   deploy:
@@ -28,9 +31,12 @@ jobs:
       - run: chmod 600 "$HOME/.ssh/key"
       # Build
       - run: npm ci
-      - run: npm run build:prod
+      - run: npm run build:ssr
       # Deploy
-      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/
+      # - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/
       - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/dev/guidebook/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/
-      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/exogb/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/dist/exogb/
-      - run: touch denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/tmp/restart.txt
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/dist/
+      # Restart Passenger server
+      - run: mkdir -p tmp
+      - run: touch tmp/restart.txt
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete tmp/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/tmp/

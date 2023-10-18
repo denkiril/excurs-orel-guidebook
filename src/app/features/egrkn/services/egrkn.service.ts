@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TransferState, makeStateKey } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import {
   ImageItem,
@@ -21,9 +21,13 @@ import {
   EGRKN_OKN_CATEGORIES,
   DEFAULT_ADDRESS_PART,
   EGRKN_OBJECT_URL,
+  GET_EGRKN_URL,
 } from '../egrkn.constants';
 import { AppService } from 'src/app/services/app.service';
+import { LoggerService } from 'src/app/services/logger.service';
 import { RequestService } from 'src/app/services/request.service';
+
+const EGRKN_STATE_KEY = makeStateKey<EgrknResponse>('egrkn');
 
 @Injectable({
   providedIn: 'root',
@@ -32,14 +36,21 @@ export class EgrknService {
   private sightDataItems: SightDataExt[] = [];
 
   constructor(
+    private readonly transferState: TransferState,
     private readonly appService: AppService,
+    private readonly loggerService: LoggerService,
     private readonly requestService: RequestService,
   ) {}
 
-  getEgrknSights$(): Observable<EgrknSights> {
-    return this.sightDataItems.length
-      ? of({ items: this.sightDataItems })
-      : this.fetchEgrknData$();
+  getEgrknSights$(needEgrkn?: boolean): Observable<EgrknSights> {
+    this.loggerService.log('// getEgrknSights...', this.sightDataItems.length);
+
+    return (
+      this.sightDataItems.length ? of(undefined) : this.fetchEgrknData$()
+    ).pipe(
+      map(() => ({ items: needEgrkn === false ? [] : this.sightDataItems })),
+    );
+    // FETCH_EGRKN_ERROR TODO ?
   }
 
   getSightById$(id: string): Observable<SightDataExt | undefined> {
@@ -63,22 +74,44 @@ export class EgrknService {
     };
   }
 
-  private fetchEgrknData$(): Observable<EgrknSights> {
+  private fetchEgrknData$(): Observable<void> {
+    // console.log('fetchEgrknData...');
     return this.requestEgrknData$().pipe(
       tap(({ data }) => {
+        // console.log('fetchEgrknData data.length:', data.length);
         this.sightDataItems = this.prepareSightData(data);
       }),
-      map(() => ({ items: this.sightDataItems })),
+      map(() => undefined),
     );
   }
 
   private requestEgrknData$(): Observable<EgrknResponse> {
-    // return this.requestService.getUrl<EgrknResponse>(GET_EGRKN_URL).pipe(
-    //   catchError(() =>
-    //     // FETCH_EGRKN_ERROR TODO ?
-    //     this.requestService.getUrl<EgrknResponse>(LOCAL_EGRKN_URL),
-    //   ),
-    // );
+    const transfered = this.transferState.get(EGRKN_STATE_KEY, undefined);
+    if (transfered) return of(transfered);
+
+    const egrknFilter = {
+      'data.general.address.fullAddress': { $search: 'орел' },
+      'data.general.region.value': { $eq: 'Орловская область' },
+    };
+    const url = new URL(GET_EGRKN_URL);
+    url.searchParams.append('f', JSON.stringify(egrknFilter));
+    url.searchParams.append('l', '500');
+
+    return this.appService.isServer
+      ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
+          tap((resp) => {
+            this.loggerService.log('getMkrfOpendata resp.total:', resp.total);
+            this.transferState.set(EGRKN_STATE_KEY, resp);
+          }),
+          catchError((err) => {
+            // this.loggerService.error('getMkrfOpendata', err);
+            return this.requestLocalEgrknData$();
+          }),
+        )
+      : this.requestLocalEgrknData$();
+  }
+
+  private requestLocalEgrknData$(): Observable<EgrknResponse> {
     return this.requestService.getUrl<EgrknResponse>(
       this.appService.getAssetsUrl() + LOCAL_EGRKN_URL,
     );
@@ -148,7 +181,7 @@ export class EgrknService {
       )
         return { lat: `${lat}`, lng: `${lng}` };
 
-      // console.warn('checkBounds(lat, lng) fail:', lat, lng);
+      this.loggerService.browserWarn('checkBounds(lat, lng) fail:', lat, lng);
       return undefined;
     };
 
@@ -165,7 +198,7 @@ export class EgrknService {
           if (coords) return coords;
         } else if (Array.isArray(coordsItem1)) {
           // eslint-disable-next-line prettier/prettier
-          // console.log(`additionalCoordinates for ${address.fullAddress}:`, general);
+          this.loggerService.browserLog(`additionalCoordinates for ${address.fullAddress}:`, general);
           // TODO calc center?
           const [coord1, coord2] = coordsItem1;
           const coords = checkBounds(coord1, coord2);
@@ -181,7 +214,7 @@ export class EgrknService {
       checkCoordinates(additionalCoordinates?.[0].coordinates);
 
     if (!geolocation) {
-      // console.warn('SightGeolocation is undefined', general);
+      this.loggerService.browserWarn('SightGeolocation is undefined', general);
     }
 
     return geolocation;
