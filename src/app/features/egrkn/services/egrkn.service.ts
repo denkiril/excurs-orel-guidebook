@@ -124,6 +124,16 @@ export class EgrknService {
     // console.log('categoryType:', egrknItems.map((item) => item.data.general.categoryType));
     // eslint-disable-next-line prettier/prettier
     // console.log('typologies:', egrknItems.map((item) => JSON.stringify(item.data.general.typologies)));
+
+    if (this.appService.isDev) {
+      const warnItems = egrknItems.filter(
+        (item) =>
+          item.data.general.typologies?.length !== 1 ||
+          item.data.general.typologies?.some((t) => t.id === '1'), // Археология
+      );
+      this.loggerService.browserLog('!! warnItems:', warnItems);
+    }
+
     const compareByCategory = (a: EgrknItem, b: EgrknItem): number =>
       Number(a.data.general.categoryType.id) -
       Number(b.data.general.categoryType.id);

@@ -13,13 +13,12 @@ import { takeUntil } from 'rxjs/operators';
 
 import {
   District,
-  OKN_CATEGORIES,
-  OKN_TYPES,
   SightData,
   SightDataExt,
   SightId,
   SightType,
 } from 'src/app/models/sights.models';
+import { OKN_TYPES, OKN_CATEGORIES } from 'src/app/models/sights.constants';
 import { SightsService } from 'src/app/services/sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 

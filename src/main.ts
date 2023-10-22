@@ -22,7 +22,7 @@ platformBrowserDynamic()
 // Sights sorting. Default (+) Manual?
 // Справка (большой тултип?)
 // ОКН от Минкульта +
-// SEO на ОКН (SSR)
+// SEO на ОКН (SSR) +
 // SEO для /guidebook/?filter=tur:main,mus.okn:f;a,g,h,i и т.п. (?)
 // тех. метрики, логирование
 // Lazy loading sights (pagination)
@@ -47,3 +47,4 @@ platformBrowserDynamic()
 // fly to object on map (button near geolocation)
 // requestEgrknData actual - hack or upd server +
 // BUG Double GET /api/sight-links?slugs=orlovskij-kraevedcheskij-muzej on exo_892
+// Multi okn_type (okn_type[0] refac)

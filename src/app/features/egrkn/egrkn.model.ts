@@ -28,7 +28,7 @@ export interface EgrknItemGeneral {
     fullAddress: string;
     mapPosition?: MapPosition;
   };
-  categoryType: IdValue;
+  categoryType: IdValue; // EGRKN_OKN_CATEGORIES
   createDate: string;
   documents: EgrknItemDocument[];
   id: number;
@@ -41,7 +41,7 @@ export interface EgrknItemGeneral {
   };
   regNumber: string;
   region: IdValue;
-  typologies: IdValue[];
+  typologies: IdValue[]; // EGRKN_OKN_TYPES
 }
 
 export interface EgrknItemInfo {

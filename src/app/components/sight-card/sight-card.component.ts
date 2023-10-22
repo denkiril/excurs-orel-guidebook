@@ -1,10 +1,7 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
-import {
-  SightData,
-  OknText,
-  OKN_TYPES,
-  OKN_CATEGORIES,
-} from 'src/app/models/sights.models';
+
+import { SightData, OknText } from 'src/app/models/sights.models';
+import { OKN_TYPES, OKN_CATEGORIES } from 'src/app/models/sights.constants';
 
 @Component({
   selector: 'exogb-sight-card',
