@@ -23,7 +23,7 @@ export const environment = {
   MKRF_OPENDATA_APIKEY: '${process.env.MKRF_OPENDATA_APIKEY || ''}',
   ASSETS_URL: '${process.env.ASSETS_URL || ''}',
   LOGS_PATH: '${process.env.LOGS_PATH || ''}',
-  IS_DEV: '${Boolean(process.env.IS_DEV)}',
+  IS_DEV: ${Boolean(process.env.IS_DEV)},
 };
 `;
 

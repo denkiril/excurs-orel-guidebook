@@ -164,7 +164,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   }
 
   private initWithFilterParams(filterParamsInRoute: FilterParams): void {
-    console.log('initWithFilterParams:', filterParamsInRoute);
+    // console.log('initWithFilterParams:', filterParamsInRoute);
     const filterParams =
       this.settingsService.getFilterParams(filterParamsInRoute);
 
