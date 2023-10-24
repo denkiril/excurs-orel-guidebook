@@ -42,12 +42,12 @@ jobs:
       - run: chmod 600 "$HOME/.ssh/key"
       # Build
       - run: npm ci
-      - run: npm run build:prod
+      - run: npm run build:ssr
       # Deploy
       # - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/
       - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete deploy/prod/guidebook/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/
-      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/exogb/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/dist/exogb/
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete dist/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/dist/
       # Restart Passenger server
       - run: mkdir -p tmp
       - run: touch tmp/restart.txt
-      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete tmp/. denkiril@denkiril.beget.tech:~/dev.excurs-orel.ru/public_html/guidebook/tmp/
+      - run: rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete tmp/. denkiril@denkiril.beget.tech:~/excurs-orel.ru/public_html/guidebook/tmp/
