@@ -1,12 +1,11 @@
 // import { environment as envBaseDev } from '../src/environments/environment';
 // import { environment as envBaseProd } from '../src/environments/environment.prod';
+// import { writeFile } from 'fs';
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { writeFile } = require('fs');
 const { argv } = require('yargs');
 const { version } = require('../package.json');
 require('dotenv').config(); // read environment variables from .env file
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 const { environment } = argv;
 const isProduction = environment === 'prod';
@@ -21,6 +20,10 @@ export const environment = {
   VERSION: '${isProduction ? version : 'develop'}',
   API_URL: '${process.env.API_URL || ''}',
   YMAPS_APIKEY: '${process.env.YMAPS_APIKEY || ''}',
+  MKRF_OPENDATA_APIKEY: '${process.env.MKRF_OPENDATA_APIKEY || ''}',
+  ASSETS_URL: '${process.env.ASSETS_URL || ''}',
+  LOGS_PATH: '${process.env.LOGS_PATH || ''}',
+  IS_DEV: '${Boolean(process.env.IS_DEV)}',
 };
 `;
 

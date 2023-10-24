@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-type WindowExtended = Window &
+export type WindowExtended = Window &
   typeof globalThis & {
     navigator: Navigator & {
       systemLanguage?: string;

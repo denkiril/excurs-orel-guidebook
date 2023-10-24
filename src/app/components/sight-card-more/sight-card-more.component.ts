@@ -13,13 +13,12 @@ import { takeUntil } from 'rxjs/operators';
 
 import {
   District,
-  OKN_CATEGORIES,
-  OKN_TYPES,
   SightData,
   SightDataExt,
   SightId,
   SightType,
 } from 'src/app/models/sights.models';
+import { OKN_TYPES, OKN_CATEGORIES } from 'src/app/models/sights.constants';
 import { SightsService } from 'src/app/services/sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 
@@ -35,7 +34,6 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject();
   private sightId?: SightId;
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly SightType = SightType;
   sight?: SightDataExt;
   typeText = '';

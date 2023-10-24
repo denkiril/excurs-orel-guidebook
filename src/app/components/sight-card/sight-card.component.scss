@@ -2,7 +2,9 @@ $image-width: 135px;
 $image-height: 90px;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   position: relative;
   min-height: $image-height;
   border: solid 1px var(--label-secondary);

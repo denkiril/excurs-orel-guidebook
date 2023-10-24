@@ -15,7 +15,13 @@
     </span>
     <span class="indicator">
       <svg class="icon">
-        <use [attr.href]="opened ? 'assets/images/icons/expand_less.svg#icon' : 'assets/images/icons/expand_more.svg#icon'" />
+        <use
+          [attr.href]="
+            opened
+              ? 'assets/images/icons/expand_less.svg#icon'
+              : 'assets/images/icons/expand_more.svg#icon'
+          "
+        />
       </svg>
     </span>
   </button>
@@ -49,7 +55,9 @@
   <ul>
     <li *ngFor="let item of items">
       <a [href]="item.link" target="_blank" [tabindex]="opened ? '0' : '-1'">
-        <svg class="icon"><use href="assets/images/icons/open_in_new.svg#icon" /></svg>
+        <svg class="icon">
+          <use href="assets/images/icons/open_in_new.svg#icon" />
+        </svg>
         {{ item.title }}
       </a>
     </li>

@@ -1,0 +1,4 @@
+PassengerNodejs /home/d/denkiril/.local/bin/node
+PassengerAppRoot /home/d/denkiril/excurs-orel.ru/public_html/guidebook
+PassengerAppType node
+PassengerStartupFile dist/exogb/server/main.js

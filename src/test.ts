@@ -11,7 +11,8 @@ import {
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
+  // eslint-disable-next-line prettier/prettier
   platformBrowserDynamicTesting(), {
-    teardown: { destroyAfterEach: false }
-},
+    teardown: { destroyAfterEach: false },
+  },
 );

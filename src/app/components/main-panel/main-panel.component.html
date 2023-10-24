@@ -52,7 +52,7 @@
     <div class="summary-text">
       <p>
         Найдено объектов:
-        {{ sightsFetching ? (' .' | stringTicker: 5:ticker) : sights.length }}
+        {{ sightsFetching ? (' .' | stringTicker: 5 : ticker) : sights.length }}
       </p>
     </div>
     <div *ngIf="sights.length; else emptyResultTempl" class="cards-container">

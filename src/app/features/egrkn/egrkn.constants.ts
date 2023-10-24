@@ -20,10 +20,10 @@ export const DEFAULT_ADDRESS_PART = /Орловская область[, ]+г(.|
 
 // export const DEFAULT_OKN_TITLE = 'Дом жилой';
 
-export const EGRKN_OBJECT_URL =
-  'https://opendata.mkrf.ru/opendata/7705851331-egrkn/51/';
+const EGRKN_VERSION = '51'; // https://opendata.mkrf.ru/item/api -> egrkn, $ - last version
 
-export const GET_EGRKN_URL =
-  'https://opendata.mkrf.ru/v2/egrkn/$?f={"data.general.address.fullAddress":{"$search":"орел"},"data.general.region.value":{"$eq":"Орловская область"}}&l=500';
+export const EGRKN_OBJECT_URL = `https://opendata.mkrf.ru/opendata/7705851331-egrkn/${EGRKN_VERSION}/`;
 
-export const LOCAL_EGRKN_URL = 'assets/data/egrkn.json'; // egrkn-10
+export const GET_EGRKN_URL = `https://opendata.mkrf.ru/v2/egrkn/${EGRKN_VERSION}`;
+
+export const LOCAL_EGRKN_URL = 'data/egrkn.json'; // egrkn-10

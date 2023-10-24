@@ -6,12 +6,14 @@ import { debounceTime } from 'rxjs/operators';
 import { GBQueryParams } from '../core/params.guard';
 import {
   FilterParams,
-  FILTER_BLOCKS,
   SightsFilterParams,
   FilterBlock,
 } from '../models/sights.models';
-import { StorageService } from './storage.service';
+import { FILTER_BLOCKS } from '../models/sights.constants';
+import { FILTER_PARAMS_PRESETS } from '../models/settings.constants';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
+import { SeoService } from './seo.service';
+import { StorageService } from './storage.service';
 
 const FILTER_PARAMS_LS_ITEM = 'sightsFilterParams';
 
@@ -29,9 +31,14 @@ export class SettingsService {
   constructor(
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly storageService: StorageService,
     private readonly filterParamsStore: FilterParamsStoreService,
+    private readonly seoService: SeoService,
+    private readonly storageService: StorageService,
   ) {}
+
+  getFilterBlocks(): FilterBlock[] {
+    return [...FILTER_BLOCKS];
+  }
 
   startParseQueryParams$(): Observable<FilterParams> {
     // console.log('startParseQueryParams$...');
@@ -39,6 +46,7 @@ export class SettingsService {
       this.activatedRoute.queryParams
         .pipe(debounceTime(100))
         .subscribe((params) => {
+          // console.log('>> startParseQueryParams$ next >');
           subscriber.next(this.parseQueryParams(params));
         });
     });
@@ -109,15 +117,22 @@ export class SettingsService {
               sightsFilterParams[blockName].groups,
             )
               .map((group) => this.stringifyTruthyObj(group))
+              .filter(Boolean)
               .join(';');
+
             blocks.push(`${blockName}:${blockBody}`);
           }
         });
         // filter = 'tur:main,mus.okn:f,r,m,v;a,g,h,i;go';
       }
 
+      const paramsStr = blocks.length ? blocks.join('.') : undefined;
+      const preset = FILTER_PARAMS_PRESETS.find(
+        (item) => item.paramsStr === paramsStr,
+      );
+
       this.setGBQueryParams({
-        filter: blocks.length ? blocks.join('.') : undefined,
+        filter: preset?.value ?? paramsStr,
         search: filterParams.search,
         sight: this.filterParamsStore.get().sightForMore,
       });
@@ -139,40 +154,48 @@ export class SettingsService {
   private parseQueryParams(queryParams: GBQueryParams): FilterParams {
     // console.log('parseQueryParams:', queryParams);
     const { filter, search, sight } = queryParams;
-    const filterParams: FilterParams = {};
-    const sightsFilterParams: SightsFilterParams = {};
 
-    if (filter) {
-      const blocks = filter.split('.');
-      blocks.forEach((block) => {
-        const [blockName, blockBody] = block.split(':');
-        sightsFilterParams[blockName] = { groups: {} };
+    const preset = FILTER_PARAMS_PRESETS.find((item) => item.value === filter);
 
-        blockBody.split(';').forEach((group, index) => {
-          if (group) {
-            const groupName = GROUP_NAMES[blockName][index];
-            sightsFilterParams[blockName].groups[groupName] =
-              this.parseTruthyObj(group);
-          }
-        });
-      });
-    }
+    const sightsFilterParams: SightsFilterParams =
+      preset?.params ?? this.getParsedFilterParams(filter);
 
-    if (Object.keys(sightsFilterParams).length) {
-      filterParams.sightsFilterParams = sightsFilterParams;
-    }
-
-    if (search) {
-      filterParams.search = search;
-    }
-
-    if (sight) {
-      filterParams.sightForMore = sight;
-    }
+    const filterParams: FilterParams = {
+      sightsFilterParams: Object.keys(sightsFilterParams).length
+        ? sightsFilterParams
+        : undefined,
+      search,
+      sightForMore: sight,
+    };
 
     // console.log('parseQueryParams result:', filterParams);
     this.filterParamsStore.update(filterParams);
+    this.seoService.updateSeoParams(preset?.seoTitle, preset?.seoDescription);
+
     return filterParams;
+  }
+
+  private getParsedFilterParams(
+    filter: string | undefined,
+  ): SightsFilterParams {
+    if (!filter) return {};
+
+    const sightsFilterParams: SightsFilterParams = {};
+    const blocks = filter.split('.');
+    blocks.forEach((block) => {
+      const [blockName, blockBody] = block.split(':');
+      sightsFilterParams[blockName] = { groups: {} };
+
+      blockBody.split(';').forEach((group, index) => {
+        if (group) {
+          const groupName = GROUP_NAMES[blockName][index];
+          sightsFilterParams[blockName].groups[groupName] =
+            this.parseTruthyObj(group);
+        }
+      });
+    });
+
+    return sightsFilterParams;
   }
 
   private stringifyTruthyObj(obj?: Record<string, boolean>): string {

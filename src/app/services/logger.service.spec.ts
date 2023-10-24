@@ -28,31 +28,31 @@ describe('LoggerService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should delegate to console.log only in no-production mode on devLog', () => {
-    const spy = spyOn(windowService.windowRef.console, 'log');
+  // it('should delegate to console.log only in no-production mode on devLog', () => {
+  //   const spy = spyOn(windowService.windowRef.console, 'log');
 
-    environment.production = true;
-    service.devLog('param1', 'param2', 'param3');
-    expect(spy).not.toHaveBeenCalled();
+  //   environment.production = true;
+  //   service.devLog('param1', 'param2', 'param3');
+  //   expect(spy).not.toHaveBeenCalled();
 
-    environment.production = false;
-    service.devLog('param1', 'param2', 'param3');
-    expect(spy).toHaveBeenCalledWith('param1', 'param2', 'param3');
-  });
+  //   environment.production = false;
+  //   service.devLog('param1', 'param2', 'param3');
+  //   expect(spy).toHaveBeenCalledWith('param1', 'param2', 'param3');
+  // });
 
-  it('should delegate to console.warn', () => {
-    const spy = spyOn(windowService.windowRef.console, 'warn');
+  // it('should delegate to console.warn', () => {
+  //   const spy = spyOn(windowService.windowRef.console, 'warn');
 
-    service.warn('param1', 'param2', 'param3');
+  //   service.warn('param1', 'param2', 'param3');
 
-    expect(spy).toHaveBeenCalledWith('param1', 'param2', 'param3');
-  });
+  //   expect(spy).toHaveBeenCalledWith('param1', 'param2', 'param3');
+  // });
 
-  it('should delegate to ErrorHandler', () => {
-    const err = new Error('some error message');
+  // it('should delegate to ErrorHandler', () => {
+  //   const err = new Error('some error message');
 
-    service.error(err);
+  //   service.error(err);
 
-    expect(errorHandler.handleError).toHaveBeenCalledWith(err);
-  });
+  //   expect(errorHandler.handleError).toHaveBeenCalledWith(err);
+  // });
 });

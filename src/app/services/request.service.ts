@@ -1,7 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
 import { environment } from 'src/environments/environment';
+import { LoggerService } from './logger.service';
 
 type RequestParams =
   | HttpParams
@@ -13,19 +16,50 @@ type RequestParams =
         | ReadonlyArray<string | number | boolean>;
     };
 
-const { API_URL } = environment;
+const { API_URL, MKRF_OPENDATA_APIKEY } = environment;
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequestService {
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly loggerService: LoggerService,
+  ) {}
 
   getApi<T>(path: string, params?: RequestParams): Observable<T> {
-    return this.http.get<T>(API_URL + path, { params });
+    const url = API_URL + path;
+    this.loggerService.log(`getApi ${url}`);
+
+    return this.http.get<T>(url, { params }).pipe(
+      tap({
+        error: (err) => this.loggerService.error(`getApi ${url}`, err),
+      }),
+    );
   }
 
   getUrl<T>(url: string): Observable<T> {
-    return this.http.get<T>(url);
+    this.loggerService.log(`getUrl ${url}`);
+
+    return this.http.get<T>(url).pipe(
+      tap({
+        error: (err) => this.loggerService.error(`getUrl ${url}`, err),
+      }),
+    );
+  }
+
+  getMkrfOpendata<T>(url: string): Observable<T> {
+    this.loggerService.log(`getUrl (X-API-KEY) ${url}`);
+
+    return this.http
+      .get<T>(url, {
+        headers: { 'X-API-KEY': MKRF_OPENDATA_APIKEY },
+      })
+      .pipe(
+        tap({
+          error: (err) =>
+            this.loggerService.error(`getUrl (X-API-KEY) ${url}`, err),
+        }),
+      );
   }
 }
