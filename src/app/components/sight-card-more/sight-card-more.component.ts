@@ -13,14 +13,16 @@ import { takeUntil } from 'rxjs/operators';
 
 import {
   District,
-  SightData,
   SightDataExt,
   SightId,
   SightType,
 } from 'src/app/models/sights.models';
 import { OKN_TYPES, OKN_CATEGORIES } from 'src/app/models/sights.constants';
+import { DEFAULT_OKN_TITLE } from 'src/app/features/egrkn/egrkn.constants';
 import { SightsService } from 'src/app/services/sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
+import { LoggerService } from 'src/app/services/logger.service';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'exogb-sight-card-more',
@@ -50,6 +52,8 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     private readonly sightsService: SightsService,
     private readonly sanitizer: DomSanitizer,
     private readonly filterParamsStore: FilterParamsStoreService,
+    private readonly loggerService: LoggerService,
+    private readonly seoService: SeoService,
   ) {}
 
   ngOnInit(): void {
@@ -65,11 +69,12 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.seoService.updateSeoParams(undefined, undefined, 'high');
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  private initSight(sight: SightData): void {
+  private initSight(sight: SightDataExt): void {
     this.sight = sight;
     // console.log('initSight', this.sight);
 
@@ -102,6 +107,12 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
           this.convertIntroHTML(this.sight.gba_content),
         )
       : undefined;
+
+    const seoTitle =
+      sight.title !== DEFAULT_OKN_TITLE
+        ? sight.title
+        : `${sight.title} ${sight.location || sight.okn_date}`;
+    this.seoService.updateSeoParams(seoTitle, undefined, 'high'); // TODO description
 
     this.cdr.detectChanges();
   }
@@ -172,7 +183,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
         (error) => {
-          console.error('getSightDataExt error:', error);
+          this.loggerService.error('getSightDataExt', error);
           if (error.status === 404) {
             this.close();
           } else {

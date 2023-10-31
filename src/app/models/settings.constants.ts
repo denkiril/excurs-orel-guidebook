@@ -16,7 +16,7 @@ export const FILTER_PARAMS_PRESETS: SightsFilterParamsPreset[] = [
       },
     },
     paramsStr: 'okn:f,r,m;g,h,i;go',
-    seoTitle: 'Объекты культурного наследия Орла — Путеводитель по Орлу',
+    seoTitle: 'Объекты культурного наследия Орла',
     seoDescription:
       'Объекты культурного наследия (ОКН) города Орла, которые входят в реестр Министерства культуры РФ и охраняются государством.',
   },

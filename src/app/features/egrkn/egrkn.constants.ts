@@ -18,7 +18,7 @@ export const EGRKN_OKN_CATEGORIES: Record<string, OknCategory> = {
 
 export const DEFAULT_ADDRESS_PART = /Орловская область[, ]+г(.|ород) Орел,/;
 
-// export const DEFAULT_OKN_TITLE = 'Дом жилой';
+export const DEFAULT_OKN_TITLE = 'Дом жилой';
 
 const EGRKN_VERSION = '51'; // https://opendata.mkrf.ru/item/api -> egrkn, $ - last version
 
