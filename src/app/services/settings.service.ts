@@ -24,6 +24,9 @@ const GROUP_NAMES: Record<string, string[]> = Object.fromEntries(
   ]),
 );
 
+// TODO
+// refac: Move LS check from getFilterParams to getFilterBlocks ?
+
 @Injectable({
   providedIn: 'root',
 })
@@ -56,7 +59,11 @@ export class SettingsService {
     // console.log('getFilterParams', filterParamsInRoute);
     // queryParams or localStorage...
     let filterParams: FilterParams | undefined;
-    if (Object.keys(filterParamsInRoute).length) {
+    if (
+      (Object.keys(filterParamsInRoute) as (keyof FilterParams)[]).some(
+        (key) => filterParamsInRoute[key] !== undefined,
+      )
+    ) {
       filterParams = filterParamsInRoute;
     }
 
