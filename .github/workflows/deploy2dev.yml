@@ -6,6 +6,7 @@ on:
       - develop
 
 env:
+  BASE_URL: http://dev.excurs-orel.ru/guidebook/
   API_URL: ${{ secrets.API_URL }}
   YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
   MKRF_OPENDATA_APIKEY: ${{ secrets.MKRF_OPENDATA_APIKEY }}

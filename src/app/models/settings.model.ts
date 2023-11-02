@@ -6,4 +6,5 @@ export interface SightsFilterParamsPreset {
   paramsStr: string;
   seoTitle?: string;
   seoDescription?: string;
+  seoCanonicalParamsStr?: string;
 }

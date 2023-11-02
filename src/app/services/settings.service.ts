@@ -170,7 +170,11 @@ export class SettingsService {
 
     // console.log('parseQueryParams result:', filterParams);
     this.filterParamsStore.update(filterParams);
-    this.seoService.updateSeoParams(preset?.seoTitle, preset?.seoDescription);
+    this.seoService.updateSeoParams(
+      preset?.seoTitle,
+      preset?.seoDescription,
+      preset?.seoCanonicalParamsStr,
+    );
 
     return filterParams;
   }
