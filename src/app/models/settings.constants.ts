@@ -19,5 +19,6 @@ export const FILTER_PARAMS_PRESETS: SightsFilterParamsPreset[] = [
     seoTitle: 'Объекты культурного наследия Орла',
     seoDescription:
       'Объекты культурного наследия (ОКН) города Орла, которые входят в реестр Министерства культуры РФ и охраняются государством.',
+    seoCanonicalParamsStr: 'filter=okn',
   },
 ];

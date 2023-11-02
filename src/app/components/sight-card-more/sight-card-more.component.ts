@@ -69,7 +69,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.seoService.updateSeoParams(undefined, undefined, 'high');
+    this.updateSeoParams(null);
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -108,13 +108,8 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
         )
       : undefined;
 
-    const seoTitle =
-      sight.title !== DEFAULT_OKN_TITLE
-        ? sight.title
-        : `${sight.title} ${sight.location || sight.okn_date}`;
-    this.seoService.updateSeoParams(seoTitle, undefined, 'high'); // TODO description
-
     this.cdr.detectChanges();
+    this.updateSeoParams(sight);
   }
 
   private defineDistrictText(district: District): string {
@@ -158,6 +153,32 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     });
 
     return html;
+  }
+
+  private updateSeoParams(sight: SightDataExt | null): void {
+    if (sight === null) {
+      this.seoService.updateSeoParams(undefined, undefined, undefined, 'high');
+      return;
+    }
+
+    const seoTitle =
+      sight.title !== DEFAULT_OKN_TITLE
+        ? sight.title
+        : `${sight.title} ${sight.location || sight.okn_date}`;
+
+    const seoDescription =
+      sight.type === SightType.EGRKN
+        ? `Информация об объекте ${seoTitle} из реестра ОКН Министерства культуры РФ.`
+        : `Информация об объекте ${seoTitle} из Путеводителя по Орлу.`;
+
+    const canonicalParamsStr = `sight=${sight.id}`;
+
+    this.seoService.updateSeoParams(
+      seoTitle,
+      seoDescription,
+      canonicalParamsStr,
+      'high',
+    );
   }
 
   getSight(): void {
