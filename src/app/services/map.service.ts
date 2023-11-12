@@ -299,9 +299,9 @@ export class MapService {
         }
       });
 
-    this.filterParamsStore.state$
+    this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ sightForMore }) => {
+      .subscribe((sightForMore) => {
         if (this.sightForMore !== sightForMore) {
           this.sightForMore = sightForMore;
           this.updateMarkers();

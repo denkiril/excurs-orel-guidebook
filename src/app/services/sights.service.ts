@@ -1,4 +1,4 @@
-import { Injectable, TransferState, makeStateKey } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
 import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
 
@@ -20,8 +20,7 @@ import { FilterParamsStoreService } from '../store/filter-params-store.service';
 import { SettingsService } from './settings.service';
 import { SIGHTS_WITH_NESTED } from '../models/sights.constants';
 import { LoggerService } from './logger.service';
-
-const SIGHTS_STATE_KEY = makeStateKey<SightResponseItem[]>('sights');
+import { TransferStateService } from './transfer-state.service';
 
 interface SightByLink {
   slug: string;
@@ -53,12 +52,12 @@ export class SightsService {
   readonly sightsData$ = this.sightsDataSubject.asObservable();
 
   constructor(
-    private readonly transferState: TransferState,
     private readonly loggerService: LoggerService,
     private readonly egrknService: EgrknService,
     private readonly filterParamsStore: FilterParamsStoreService,
     private readonly requestService: RequestService,
     private readonly settingsService: SettingsService,
+    private readonly transferStateService: TransferStateService,
   ) {}
 
   /* API methods */
@@ -85,13 +84,13 @@ export class SightsService {
   }
 
   private requestSights$(): Observable<SightResponseItem[]> {
-    const transfered = this.transferState.get(SIGHTS_STATE_KEY, []);
+    const transfered = this.transferStateService.getSights();
 
     return transfered.length
       ? of(transfered)
       : this.requestService.getApi<SightResponseItem[]>('sights').pipe(
           tap((sights) => {
-            this.transferState.set(SIGHTS_STATE_KEY, sights);
+            this.transferStateService.setSights(sights);
           }),
         );
     // return this.requestService.getApi<SightResponseItem[]>('sights');
@@ -210,7 +209,7 @@ export class SightsService {
 
   private needEgrkn(): boolean {
     // eslint-disable-next-line prettier/prettier
-    return !!this.filterParamsStore.get().sightsFilterParams?.okn?.groups.egrkn?.go;
+    return !!this.filterParamsStore.get()?.sightsFilterParams?.okn?.groups.egrkn?.go;
   }
 
   private prepareSightId(id: number | string, type: SightType): SightId {
@@ -401,6 +400,7 @@ export class SightsService {
   }
 
   redirectToSightForMore(sightId?: SightId): void {
+    // console.log('redirectToSightForMore', sightId);
     this.settingsService.setGBQueryParams({ sight: sightId }, 'merge');
   }
 }

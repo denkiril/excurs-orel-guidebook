@@ -6,8 +6,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  TransferState,
-  makeStateKey,
 } from '@angular/core';
 import {
   trigger,
@@ -39,12 +37,11 @@ import { LoggerService } from 'src/app/services/logger.service';
 import { ActiveSightsService } from 'src/app/services/active-sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 import { AppService } from 'src/app/services/app.service';
+import { TransferStateService } from 'src/app/services/transfer-state.service';
 
 interface SightDataLocal extends SightData {
   active?: boolean;
 }
-
-const SIGHTS_STATE_KEY = makeStateKey<SightDataLocal[]>('sights-local');
 
 @Component({
   selector: 'exogb-main-panel',
@@ -82,7 +79,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
   readonly filterBlocks: FilterBlock[] = this.settingsService.getFilterBlocks();
 
   form!: UntypedFormGroup;
-  sights: SightDataLocal[] = this.transferState.get(SIGHTS_STATE_KEY, []);
+  sights: SightDataLocal[] = this.transferStateService.getSightsList();
   showServerError = false;
   private readonly limit?: number;
   sightsFetching = false;
@@ -94,13 +91,13 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly cdr: ChangeDetectorRef,
-    private readonly transferState: TransferState,
     private readonly appService: AppService,
     private readonly loggerService: LoggerService,
     private readonly sightsService: SightsService,
     private readonly activeSightsService: ActiveSightsService,
     private readonly settingsService: SettingsService,
     private readonly filterParamsStore: FilterParamsStoreService,
+    private readonly transferStateService: TransferStateService,
   ) {}
 
   ngOnInit(): void {
@@ -177,7 +174,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
 
     this.filterParamsStore.state$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => this.processFilterParams(params));
+      .subscribe((params) => params && this.processFilterParams(params));
 
     this.getSights$
       .pipe(takeUntil(this.destroy$), debounceTime(200))
@@ -310,7 +307,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
         ({ items, errors }) => {
           this.loggerService.browserLog('sightsService data:', items, errors);
           this.sights = [...items]; // .map((item) => ({ ...item, active: false }));
-          this.transferState.set(SIGHTS_STATE_KEY, items);
+          this.transferStateService.setSightsList(items);
           this.updateSightsActive();
 
           this.sightsFetched = true;

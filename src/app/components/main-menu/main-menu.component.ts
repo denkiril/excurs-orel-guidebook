@@ -120,9 +120,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     //     markDirty(this);
     //   });
 
-    this.filterParamsStore.state$
+    this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ sightForMore }) => {
+      .subscribe((sightForMore) => {
         this.transparent = !!sightForMore;
         this.minimize = true;
         this.opened = false;

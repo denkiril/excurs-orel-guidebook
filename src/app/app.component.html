@@ -35,13 +35,16 @@
   </div>
 </div>
 
-<div
-  class="second-panel-container"
-  [@secondPanelAnim]="sightForMoreShowing ? 'opened' : 'closed'"
-  (@secondPanelAnim.done)="animationDone($event)"
->
-  <exogb-second-panel
-    *ngIf="sightForMoreExist"
-    (closePanel)="onClosePanel()"
-  ></exogb-second-panel>
-</div>
+<ng-container *ngIf="{ isShowing: sightForMoreShowing$ | async } as sync">
+  <div
+    *ngIf="sync.isShowing !== null"
+    class="second-panel-container"
+    [@secondPanelAnim]="sync.isShowing ? 'opened' : 'closed'"
+    (@secondPanelAnim.done)="animationDone($event)"
+  >
+    <exogb-second-panel
+      *ngIf="sightForMoreExist"
+      (closePanel)="onClosePanel()"
+    ></exogb-second-panel>
+  </div>
+</ng-container>

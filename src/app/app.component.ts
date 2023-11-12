@@ -16,8 +16,8 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject, merge } from 'rxjs';
+import { map, takeUntil, tap } from 'rxjs/operators';
 
 import { WindowService } from './services/window.service';
 import { DocumentService, MediaSize } from './services/document.service';
@@ -59,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
   mainPanel!: ElementRef;
 
   private readonly destroy$ = new Subject();
+  private readonly closePanel$ = new Subject<void>();
   isMobile = false;
   translateY = 0;
   private translateYStart = 0;
@@ -66,9 +67,20 @@ export class AppComponent implements OnInit, OnDestroy {
   private translateYBreakpoint = -400;
   private translateYTop = -680;
   expandButtonPressed = false;
-  sightForMoreShowing = false;
   sightForMoreExist = false;
   fixMainPanel = false;
+
+  sightForMoreShowing$: Observable<boolean> = merge(
+    this.filterParamsStore.sightForMore$,
+    this.closePanel$,
+  ).pipe(
+    map((value) => !!value),
+    tap((showing) => {
+      if (showing) {
+        this.sightForMoreExist = true;
+      }
+    }),
+  );
 
   // eslint-disable-next-line max-params
   constructor(
@@ -144,16 +156,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
         if (this.expandButtonPressed) this.movePanel(event);
-      });
-
-    this.filterParamsStore.state$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(({ sightForMore }) => {
-        this.sightForMoreShowing = !!sightForMore;
-        if (sightForMore) {
-          this.sightForMoreExist = true;
-        }
-        this.cdr.detectChanges();
       });
   }
 
@@ -252,8 +254,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onClosePanel(): void {
-    this.sightForMoreShowing = false;
-    this.cdr.detectChanges();
+    this.closePanel$.next();
   }
 
   animationDone(event: AnimationEvent): void {
