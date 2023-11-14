@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 import { join } from 'path';
 import { appendFile, mkdirSync, constants, accessSync } from 'fs';
-
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-
-const { LOGS_PATH } = environment;
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServerLoggerService {
-  constructor() {}
+  private logsPath = '';
+
+  setEnvVars(logsPath: string): void {
+    this.logsPath = logsPath;
+  }
 
   log(label: string, ...rest: (string | number)[]): void {
     console.log('[serverLog]', label, ...rest);
@@ -41,10 +41,13 @@ export class ServerLoggerService {
   }
 
   private logToFile(...rest: (string | number)[]): void {
-    if (!LOGS_PATH) return;
+    if (!this.logsPath) return;
 
     const datetime = this.datetime();
-    const logsPath = join(LOGS_PATH, ...datetime.substring(0, 10).split('-'));
+    const logsPath = join(
+      this.logsPath,
+      ...datetime.substring(0, 10).split('-'),
+    );
     const logsFilePath = join(logsPath, 'log.txt');
     const line = `${datetime} ${rest.join(' ').substring(0, 300)}\n`;
 

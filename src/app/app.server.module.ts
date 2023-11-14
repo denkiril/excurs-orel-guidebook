@@ -1,4 +1,4 @@
-import { ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { ServerModule } from '@angular/platform-server';
 
 import { AppModule } from './app.module';
@@ -11,6 +11,7 @@ import { LoggerService } from './services/logger.service';
 import { ServerLoggerService } from './ssr/services/server-logger.service';
 import { MapService } from './services/map.service';
 import { MockMapService } from './ssr/services/mock-map.service';
+import { EnvService } from './ssr/services/env.service';
 
 @NgModule({
   imports: [AppModule, ServerModule],
@@ -34,6 +35,12 @@ import { MockMapService } from './ssr/services/mock-map.service';
     {
       provide: MapService,
       useClass: MockMapService,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (service: EnvService) => () => service.init(),
+      deps: [EnvService],
+      multi: true,
     },
   ],
   bootstrap: [AppComponent],
