@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -59,7 +58,7 @@ enum MENU_BLOCK_NAME {
     ]),
   ],
 })
-export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MainMenuComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject();
   // private isSightForMore = false;
 
@@ -120,9 +119,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     //     markDirty(this);
     //   });
 
-    this.filterParamsStore.state$
+    this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ sightForMore }) => {
+      .subscribe((sightForMore) => {
         this.transparent = !!sightForMore;
         this.minimize = true;
         this.opened = false;
@@ -132,13 +131,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mapService.initialized$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.setMinimize(true));
-  }
-
-  ngAfterViewInit(): void {
-    const h1El = this.documentService.documentRef.getElementById(
-      'gb-header-container',
-    );
-    if (h1El) h1El.innerHTML = '';
   }
 
   ngOnDestroy(): void {

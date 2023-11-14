@@ -1,4 +1,4 @@
-import { Injectable, TransferState, makeStateKey } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -26,8 +26,9 @@ import {
 import { AppService } from 'src/app/services/app.service';
 import { LoggerService } from 'src/app/services/logger.service';
 import { RequestService } from 'src/app/services/request.service';
+import { TransferStateService } from 'src/app/services/transfer-state.service';
 
-const EGRKN_STATE_KEY = makeStateKey<EgrknResponse>('egrkn');
+const showLogs = true;
 
 @Injectable({
   providedIn: 'root',
@@ -36,10 +37,10 @@ export class EgrknService {
   private sightDataItems: SightDataExt[] = [];
 
   constructor(
-    private readonly transferState: TransferState,
     private readonly appService: AppService,
     private readonly loggerService: LoggerService,
     private readonly requestService: RequestService,
+    private readonly transferStateService: TransferStateService,
   ) {}
 
   getEgrknSights$(needEgrkn?: boolean): Observable<EgrknSights> {
@@ -86,7 +87,7 @@ export class EgrknService {
   }
 
   private requestEgrknData$(): Observable<EgrknResponse> {
-    const transfered = this.transferState.get(EGRKN_STATE_KEY, undefined);
+    const transfered = this.transferStateService.getEgrkn();
     if (transfered) return of(transfered);
 
     const egrknFilter = {
@@ -101,7 +102,7 @@ export class EgrknService {
       ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
           tap((resp) => {
             this.loggerService.log('getMkrfOpendata resp.total:', resp.total);
-            this.transferState.set(EGRKN_STATE_KEY, resp);
+            this.transferStateService.setEgrkn(resp);
           }),
           catchError((err) => {
             // this.loggerService.error('getMkrfOpendata', err);
@@ -191,7 +192,9 @@ export class EgrknService {
       )
         return { lat: `${lat}`, lng: `${lng}` };
 
-      this.loggerService.browserWarn('checkBounds(lat, lng) fail:', lat, lng);
+      if (showLogs) {
+        this.loggerService.browserWarn('checkBounds(lat, lng) fail:', lat, lng);
+      }
       return undefined;
     };
 
@@ -207,8 +210,10 @@ export class EgrknService {
           const coords = checkBounds(coordsItem2, coordsItem1);
           if (coords) return coords;
         } else if (Array.isArray(coordsItem1)) {
-          // eslint-disable-next-line prettier/prettier
-          this.loggerService.browserLog(`additionalCoordinates for ${address.fullAddress}:`, general);
+          if (showLogs) {
+            // eslint-disable-next-line prettier/prettier
+            this.loggerService.browserLog(`additionalCoordinates for ${address.fullAddress}:`, general);
+          }
           // TODO calc center?
           const [coord1, coord2] = coordsItem1;
           const coords = checkBounds(coord1, coord2);
@@ -223,7 +228,7 @@ export class EgrknService {
       checkCoordinates(address?.mapPosition?.coordinates) ??
       checkCoordinates(additionalCoordinates?.[0].coordinates);
 
-    if (!geolocation) {
+    if (!geolocation && showLogs) {
       this.loggerService.browserWarn('SightGeolocation is undefined', general);
     }
 

@@ -8,6 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ImageItem, ImageSizeItem } from 'src/app/models/sights.models';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'exogb-picture',
@@ -29,7 +30,10 @@ export class PictureComponent implements OnChanges, OnInit {
   // mimeType = 'image/jpeg';
   isLoading = false;
 
-  constructor(private readonly cdr: ChangeDetectorRef) {}
+  constructor(
+    private readonly cdr: ChangeDetectorRef,
+    private readonly appService: AppService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const { firstChange, currentValue, previousValue } = changes.image;
@@ -75,7 +79,7 @@ export class PictureComponent implements OnChanges, OnInit {
     // const sizesItemWithType = sizes.find((item) => item['mime-type']);
     // if (sizesItemWithType) this.mimeType = sizesItemWithType['mime-type'];
 
-    this.isLoading = true;
+    this.isLoading = !this.appService.isServer;
     this.cdr.detectChanges();
   }
 

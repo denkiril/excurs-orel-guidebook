@@ -1,7 +1,12 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  QueryParamsHandling,
+  Router,
+} from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { GBQueryParams } from '../core/params.guard';
 import {
@@ -30,7 +35,9 @@ const GROUP_NAMES: Record<string, string[]> = Object.fromEntries(
 @Injectable({
   providedIn: 'root',
 })
-export class SettingsService {
+export class SettingsService implements OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
@@ -39,6 +46,11 @@ export class SettingsService {
     private readonly storageService: StorageService,
   ) {}
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   getFilterBlocks(): FilterBlock[] {
     return [...FILTER_BLOCKS];
   }
@@ -46,11 +58,16 @@ export class SettingsService {
   startParseQueryParams$(): Observable<FilterParams> {
     // console.log('startParseQueryParams$...');
     return new Observable((subscriber) => {
-      this.activatedRoute.queryParams
-        .pipe(debounceTime(100))
-        .subscribe((params) => {
+      this.router.events
+        .pipe(
+          filter((event) => event instanceof NavigationEnd),
+          takeUntil(this.destroy$),
+        )
+        .subscribe(() => {
           // console.log('>> startParseQueryParams$ next >');
-          subscriber.next(this.parseQueryParams(params));
+          subscriber.next(
+            this.parseQueryParams(this.activatedRoute.snapshot.queryParams),
+          );
         });
     });
   }
@@ -141,7 +158,7 @@ export class SettingsService {
       this.setGBQueryParams({
         filter: preset?.value ?? paramsStr,
         search: filterParams.search,
-        sight: this.filterParamsStore.get().sightForMore,
+        sight: this.filterParamsStore.get()?.sightForMore,
       });
     }
   }
@@ -175,7 +192,6 @@ export class SettingsService {
       sightForMore: sight,
     };
 
-    // console.log('parseQueryParams result:', filterParams);
     this.filterParamsStore.update(filterParams);
     this.seoService.updateSeoParams(
       preset?.seoTitle,

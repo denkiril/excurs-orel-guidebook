@@ -23,6 +23,7 @@ import { SightsService } from 'src/app/services/sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 import { LoggerService } from 'src/app/services/logger.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { TransferStateService } from 'src/app/services/transfer-state.service';
 
 @Component({
   selector: 'exogb-sight-card-more',
@@ -54,12 +55,19 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     private readonly filterParamsStore: FilterParamsStoreService,
     private readonly loggerService: LoggerService,
     private readonly seoService: SeoService,
+    private readonly transferStateService: TransferStateService,
   ) {}
 
   ngOnInit(): void {
-    this.filterParamsStore.state$
+    const transfered = this.transferStateService.getSightForMore();
+    if (transfered) {
+      this.sightId = transfered.id;
+      this.initSight(transfered);
+    }
+
+    this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ sightForMore }) => {
+      .subscribe((sightForMore) => {
         // console.log('SightCardMoreComponent sightForMore', sightForMore);
         if (this.sightId !== sightForMore) {
           this.sightId = sightForMore;
@@ -195,6 +203,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
         (data) => {
           // console.log('getSightDataExt data:', data);
           if (data) {
+            this.transferStateService.setSightForMore(data);
             this.initSight(data);
           } else {
             this.close();
