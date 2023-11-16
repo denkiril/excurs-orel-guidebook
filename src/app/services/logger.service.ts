@@ -14,6 +14,10 @@ export class LoggerService {
     private readonly windowService: WindowService,
   ) {}
 
+  setEnvVars(logsPath: string): void {
+    // empty
+  }
+
   log(label: string, ...rest: (string | number)[]): void {
     if (!production || IS_DEV) {
       // eslint-disable-next-line no-console

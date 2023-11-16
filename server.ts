@@ -5,7 +5,13 @@ import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import * as dotenv from 'dotenv';
 import { AppServerModule } from './src/main.server';
+
+// read environment variables from .env file
+dotenv.config({
+  path: join(process.cwd(), 'dist/exogb/server/server_assets/.env'),
+});
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -75,6 +81,7 @@ declare const __non_webpack_require__: NodeRequire;
 const mainModule = __non_webpack_require__.main;
 const moduleFilename = (mainModule && mainModule.filename) || '';
 console.log('moduleFilename: ' + moduleFilename);
+// console.log('env:', process.env);
 
 if (
   moduleFilename === __filename ||

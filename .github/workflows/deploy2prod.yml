@@ -6,12 +6,12 @@ on:
       - main
 
 env:
-  BASE_URL: https://excurs-orel.ru/guidebook/
-  API_URL: ${{ secrets.API_URL }}
-  YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
-  MKRF_OPENDATA_APIKEY: ${{ secrets.MKRF_OPENDATA_APIKEY }}
-  ASSETS_URL: https://excurs-orel.ru/guidebook/dist/exogb/browser/assets/
-  LOGS_PATH: /home/d/denkiril/excurs-orel.ru/exogb_logs
+  EXOGB_BASE_URL: https://excurs-orel.ru/guidebook/
+  EXOGB_API_URL: ${{ secrets.API_URL }}
+  EXOGB_YMAPS_APIKEY: ${{ secrets.YMAPS_APIKEY }}
+  EXOGB_MKRF_OPENDATA_APIKEY: ${{ secrets.MKRF_OPENDATA_APIKEY }}
+  EXOGB_ASSETS_URL: https://excurs-orel.ru/guidebook/dist/exogb/browser/assets/
+  EXOGB_LOGS_PATH: /home/d/denkiril/excurs-orel.ru/exogb_logs
 
 jobs:
   tests:

@@ -150,6 +150,9 @@
             "outputPath": "dist/exogb/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json",
+            "assets": [
+              "src/server_assets"
+            ],
             "buildOptimizer": false,
             "optimization": false,
             "sourceMap": true,
