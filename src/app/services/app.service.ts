@@ -1,20 +1,25 @@
 import { isPlatformServer } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { environment } from 'src/environments/environment';
 
-const { production, ASSETS_URL, IS_DEV } = environment;
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
+  private readonly isProduction = this.configService.config.production;
+  private readonly essetsUrl = this.configService.config.ASSETS_URL;
+
   readonly isServer = isPlatformServer(this.platformId);
 
-  readonly isDev = !production || IS_DEV;
+  readonly isDev = !this.isProduction || this.configService.config.IS_DEV;
 
-  constructor(@Inject(PLATFORM_ID) private readonly platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private readonly platformId: Object,
+    private readonly configService: ConfigService,
+  ) {}
 
   getAssetsUrl(): string {
-    return this.isServer || production ? ASSETS_URL : '/assets/';
+    return this.isServer || this.isProduction ? this.essetsUrl : '/assets/';
   }
 }

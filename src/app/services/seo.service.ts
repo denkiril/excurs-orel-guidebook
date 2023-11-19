@@ -2,9 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 
-import { environment } from 'src/environments/environment';
+import { ConfigService } from './config.service';
 
-const { BASE_URL } = environment;
 const DEFAULT_TITLE = 'Путеводитель по Орлу';
 const DEFAULT_DESCRIPTION =
   'Достопримечательности и музеи на карте города Орла, с описанием и фото.';
@@ -22,6 +21,7 @@ type SeoPriority = 'high' | 'low';
   providedIn: 'root',
 })
 export class SeoService {
+  private readonly baseUrl = this.configService.config.BASE_URL;
   private highSeoParams?: SeoParams;
   private lowSeoParams?: SeoParams;
 
@@ -29,6 +29,7 @@ export class SeoService {
     @Inject(DOCUMENT) private readonly document: Document,
     private readonly meta: Meta,
     private readonly title: Title,
+    private readonly configService: ConfigService,
   ) {}
 
   private setTitle(value?: string): void {
@@ -58,8 +59,8 @@ export class SeoService {
 
   private setCanonicalUrl(canonicalParamsStr?: string): void {
     const content = canonicalParamsStr
-      ? `${BASE_URL}?${canonicalParamsStr}`
-      : BASE_URL;
+      ? `${this.baseUrl}?${canonicalParamsStr}`
+      : this.baseUrl;
 
     this.updateLinkCanonical(content);
 

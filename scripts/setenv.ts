@@ -1,5 +1,3 @@
-// import { environment as envBaseDev } from '../src/environments/environment';
-// import { environment as envBaseProd } from '../src/environments/environment.prod';
 // import { writeFile } from 'fs';
 
 const { mkdir, writeFile } = require('fs');

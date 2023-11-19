@@ -9,18 +9,13 @@ import {
   catchError,
 } from 'rxjs/operators';
 
-import { environment } from 'src/environments/environment';
 import { SightsData, SightData, SightId } from '../models/sights.models';
+import { ConfigService } from './config.service';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
 import { SightsService } from './sights.service';
 import { ActiveSightsService } from './active-sights.service';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
-
-const { YMAPS_APIKEY } = environment;
-const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
-const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
-const YMAPS_SCRIPT_ID = 'YMapsScriptID';
 
 const DEFAULT_COLOR = '#005281'; // 015a8d
 const ACTIVE_COLOR = '#bc3134'; // ffd649
@@ -45,6 +40,7 @@ export class MapService {
   initialized$ = new ReplaySubject<void>();
 
   constructor(
+    private readonly configService: ConfigService,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
     private readonly sightsService: SightsService,
@@ -70,6 +66,10 @@ export class MapService {
 
   private addScript$(): Observable<void> {
     const { documentRef } = this.documentService;
+    const { YMAPS_APIKEY } = this.configService.config;
+    const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
+    const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
+    const YMAPS_SCRIPT_ID = 'YMapsScriptID';
 
     return new Observable<void>((subscriber) => {
       const script = documentRef.createElement('script');

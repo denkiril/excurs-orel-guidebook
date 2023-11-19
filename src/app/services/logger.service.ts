@@ -1,16 +1,18 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 
-import { environment } from 'src/environments/environment';
+import { ConfigService } from './config.service';
 import { WindowService } from './window.service';
-
-const { production, IS_DEV } = environment;
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoggerService {
+  private readonly isProduction = this.configService.config.production;
+  private readonly isDev = this.configService.config.IS_DEV;
+
   constructor(
     private readonly errorHandler: ErrorHandler,
+    private readonly configService: ConfigService,
     private readonly windowService: WindowService,
   ) {}
 
@@ -19,7 +21,7 @@ export class LoggerService {
   }
 
   log(label: string, ...rest: (string | number)[]): void {
-    if (!production || IS_DEV) {
+    if (!this.isProduction || this.isDev) {
       // eslint-disable-next-line no-console
       console.log(label, ...rest);
     }
@@ -35,13 +37,13 @@ export class LoggerService {
   }
 
   browserLog(value: any, ...rest: any[]): void {
-    if (!environment.production || IS_DEV) {
+    if (!this.isProduction || this.isDev) {
       this.windowService.windowRef.console.log(value, ...rest);
     }
   }
 
   browserWarn(value: any, ...rest: any[]): void {
-    if (!environment.production || IS_DEV) {
+    if (!this.isProduction || this.isDev) {
       this.windowService.windowRef.console.warn(value, ...rest);
     }
   }
