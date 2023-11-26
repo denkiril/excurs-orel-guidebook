@@ -31,7 +31,7 @@ export class TransferStateService {
   }
 
   setSightForMore(value: SightDataExt): void {
-    // if (!this.appService.isServer) return;
+    if (!this.appService.isServer) return;
 
     this.transferState.set(SIGHT_FOR_MORE_STATE_KEY, value);
   }

@@ -272,5 +272,9 @@ a,
   width: 12px;
   height: 12px;
   margin-left: 4px;
-  background-image: url('/assets/images/dot.svg');
+  background-image: url('~/assets/images/dot.svg');
+
+  @media (max-width: $mobile-width) {
+    display: none;
+  }
 }

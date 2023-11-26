@@ -62,6 +62,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const transfered = this.transferStateService.getSightForMore();
+    // console.log('transfered', transfered?.id);
     if (transfered) {
       this.sightId = transfered.id;
       this.initSight(transfered);
@@ -84,6 +85,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
   }
 
   private initSight(sight: SightDataExt): void {
+    // console.log('initSight', sight.id);
     this.sight = sight;
     this.storeService.setSightForMore(sight);
 

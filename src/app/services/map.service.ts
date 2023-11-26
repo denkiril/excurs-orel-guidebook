@@ -22,7 +22,9 @@ import {
   SightData,
   SightId,
   MultiGeolocation,
+  SightType,
 } from '../models/sights.models';
+import { AppService } from './app.service';
 import { ConfigService } from './config.service';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
@@ -56,6 +58,7 @@ export class MapService {
   private showMultiCoords$ = new ReplaySubject<boolean>();
 
   constructor(
+    private readonly appService: AppService,
     private readonly configService: ConfigService,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
@@ -245,12 +248,14 @@ export class MapService {
         // const url = item.permalink;
         const sightId = item.id;
         const thumbUrl = item.thumb_url;
-        const nested = item.nested?.length
-          ? `<p>+ ${item.nested.map((s) => s.title).join('</p><p>')}</p>`
+        const nestedItems =
+          item.nested?.filter(({ type }) => type === SightType.DEFAULT) ?? [];
+        const nestedHtml = nestedItems.length
+          ? `<p>+ ${nestedItems.map((s) => s.title).join('</p><p>+ ')}</p>`
           : '';
         const content = `<header>
           <h3>{{ properties.title }}</h3>
-          ${nested}
+          ${nestedHtml}
           <p>{{ properties.location }}</p>
           </header>
           ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}`;
@@ -338,6 +343,7 @@ export class MapService {
       .pipe(takeUntil(this.destroy$))
       .subscribe(([showMultiCoords, sightForMoreState]) => {
         const { sightForMore } = sightForMoreState;
+        // console.log('combineLatest', showMultiCoords, sightForMore);
 
         this.updateMultiCoords(showMultiCoords, sightForMore?.multiGeolocation);
 
@@ -396,6 +402,8 @@ export class MapService {
     showMultiCoords: boolean,
     multiGeolocation?: MultiGeolocation,
   ): void {
+    // eslint-disable-next-line prettier/prettier
+    // console.log('updateMultiCoords', showMultiCoords, multiGeolocation?.[0]?.length);
     if (this.multiCoordsStorage) {
       this.multiCoordsStorage.removeFromMap(this.map);
     }
@@ -414,7 +422,7 @@ export class MapService {
           {
             // preset: 'islands#blueCircleIcon',
             iconLayout: 'default#image',
-            iconImageHref: '/assets/images/dot.svg',
+            iconImageHref: this.appService.getAssetsUrl() + 'images/dot.svg',
             iconImageSize: [12, 12],
             iconImageOffset: [-6, -6],
             zIndex: -1,
@@ -433,6 +441,7 @@ export class MapService {
   }
 
   private flyToMarker(sight: SightData): void {
+    // console.log('flyToMarker', sight.id);
     const searchResult = this.storage.search(
       `properties.sightId=="${sight.id}"`,
     );
