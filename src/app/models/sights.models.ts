@@ -42,6 +42,8 @@ export interface SightGeolocation {
   lng: string;
 }
 
+export type MultiGeolocation = number[][][];
+
 export interface SightResponseItem {
   post_id: number;
   title: string;
@@ -79,6 +81,7 @@ export interface SightData {
   sets?: SightSet[];
   okn_id?: string;
   geolocation?: SightGeolocation;
+  multiGeolocation?: MultiGeolocation;
   nested?: SightData[];
   // EGRKN
   egrknData?: EgrknData;

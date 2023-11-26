@@ -23,6 +23,7 @@ import { SightsService } from 'src/app/services/sights.service';
 import { FilterParamsStoreService } from 'src/app/store/filter-params-store.service';
 import { LoggerService } from 'src/app/services/logger.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { StoreService } from 'src/app/store/store.service';
 import { TransferStateService } from 'src/app/services/transfer-state.service';
 
 @Component({
@@ -55,6 +56,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     private readonly filterParamsStore: FilterParamsStoreService,
     private readonly loggerService: LoggerService,
     private readonly seoService: SeoService,
+    private readonly storeService: StoreService,
     private readonly transferStateService: TransferStateService,
   ) {}
 
@@ -68,7 +70,6 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
     this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
       .subscribe((sightForMore) => {
-        // console.log('SightCardMoreComponent sightForMore', sightForMore);
         if (this.sightId !== sightForMore) {
           this.sightId = sightForMore;
           this.getSight();
@@ -84,7 +85,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
 
   private initSight(sight: SightDataExt): void {
     this.sight = sight;
-    // console.log('initSight', this.sight);
+    this.storeService.setSightForMore(sight);
 
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
 

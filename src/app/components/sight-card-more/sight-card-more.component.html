@@ -25,6 +25,11 @@
         <span [class.alert]="!sight.geolocation">
           {{ sight.geolocation | geolocation }}
         </span>
+        <span
+          *ngIf="sight.multiGeolocation"
+          class="multi-coords-img"
+          title="Есть доп. координаты (приблизьте карту)"
+        ></span>
       </p>
       <p *ngIf="sight.okn_id">
         <span class="label">Номер в реестре ОКН:</span> {{ sight.okn_id }}

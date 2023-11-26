@@ -169,7 +169,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       if (filterParams.sightsFilterParams && !this.appService.isServer) {
         this.updateFilterBlocks(filterParams.sightsFilterParams);
       }
-      this.updateForm(filterParams);
+      // this.updateForm(filterParams);
     }
 
     this.filterParamsStore.state$
@@ -306,9 +306,12 @@ export class MainPanelComponent implements OnInit, OnDestroy {
       .subscribe(
         ({ items, errors }) => {
           this.loggerService.browserLog('sightsService data:', items, errors);
-          this.sights = [...items]; // .map((item) => ({ ...item, active: false }));
+          this.sights = items.map((item) => ({
+            ...item,
+            active: this.activeSights.includes(item.id),
+          }));
           this.transferStateService.setSightsList(items);
-          this.updateSightsActive();
+          // this.updateSightsActive();
 
           this.sightsFetched = true;
           this.showServerError = false;

@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject, of, throwError } from 'rxjs';
+import {
+  Observable,
+  ReplaySubject,
+  Subject,
+  combineLatest,
+  of,
+  throwError,
+} from 'rxjs';
 import {
   delay,
   retryWhen,
@@ -7,15 +14,22 @@ import {
   takeUntil,
   concat,
   catchError,
+  distinctUntilChanged,
 } from 'rxjs/operators';
 
-import { SightsData, SightData, SightId } from '../models/sights.models';
+import {
+  SightsData,
+  SightData,
+  SightId,
+  MultiGeolocation,
+} from '../models/sights.models';
 import { ConfigService } from './config.service';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
 import { SightsService } from './sights.service';
 import { ActiveSightsService } from './active-sights.service';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
+import { StoreService } from '../store/store.service';
 
 const DEFAULT_COLOR = '#005281'; // 015a8d
 const ACTIVE_COLOR = '#bc3134'; // ffd649
@@ -35,15 +49,18 @@ export class MapService {
   private ymaps?: any;
   private map: any;
   private storage: any;
+  private multiCoordsStorage: any;
   // private clusterer: any;
 
   initialized$ = new ReplaySubject<void>();
+  private showMultiCoords$ = new ReplaySubject<boolean>();
 
   constructor(
     private readonly configService: ConfigService,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
     private readonly sightsService: SightsService,
+    private readonly storeService: StoreService,
     private readonly activeSightsService: ActiveSightsService,
     private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
@@ -170,6 +187,12 @@ export class MapService {
         // }
       });
 
+    // Watch zoom
+    this.map.events.add('boundschange', (ev: any) => {
+      // var state = this.map.action.getCurrentState();
+      // console.log('boundschange', ev.get('oldZoom'), ev.get('newZoom'));
+      this.showMultiCoords$.next(ev.get('newZoom') > 15);
+    });
     // console.log('map:', this.map);
   }
 
@@ -307,6 +330,21 @@ export class MapService {
           this.updateMarkers();
         }
       });
+
+    combineLatest([
+      this.showMultiCoords$.pipe(distinctUntilChanged()),
+      this.storeService.select$('sightForMore'),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([showMultiCoords, sightForMoreState]) => {
+        const { sightForMore } = sightForMoreState;
+
+        this.updateMultiCoords(showMultiCoords, sightForMore?.multiGeolocation);
+
+        if (sightForMore) {
+          this.flyToMarker(sightForMore);
+        }
+      });
   }
 
   private updateMarkers(): void {
@@ -352,5 +390,58 @@ export class MapService {
     const sorted2 = arr2.sort();
 
     return sorted1.some((v, i) => v !== sorted2[i]);
+  }
+
+  private updateMultiCoords(
+    showMultiCoords: boolean,
+    multiGeolocation?: MultiGeolocation,
+  ): void {
+    if (this.multiCoordsStorage) {
+      this.multiCoordsStorage.removeFromMap(this.map);
+    }
+
+    if (!showMultiCoords || !multiGeolocation?.length) return;
+
+    const geoObjects: any[] = [];
+
+    multiGeolocation.forEach((coords) => {
+      coords.forEach((coord, index) => {
+        const marker = new this.ymaps.Placemark(
+          coord,
+          {
+            // iconContent: index,
+          },
+          {
+            // preset: 'islands#blueCircleIcon',
+            iconLayout: 'default#image',
+            iconImageHref: '/assets/images/dot.svg',
+            iconImageSize: [12, 12],
+            iconImageOffset: [-6, -6],
+            zIndex: -1,
+          },
+        );
+
+        geoObjects.push(marker);
+      });
+
+      // const polygon = new this.ymaps.Polygon([coords.filter((v, i) => i > 0)]);
+      // geoObjects.push(polygon);
+    });
+
+    this.multiCoordsStorage = this.ymaps.geoQuery(geoObjects);
+    this.multiCoordsStorage.addToMap(this.map);
+  }
+
+  private flyToMarker(sight: SightData): void {
+    const searchResult = this.storage.search(
+      `properties.sightId=="${sight.id}"`,
+    );
+    if (searchResult.getLength() > 0) {
+      const isMarkerShown =
+        searchResult.searchIntersect(this.map).getLength() > 0;
+      if (!isMarkerShown) {
+        this.map.panTo(searchResult.getBounds());
+      }
+    }
   }
 }

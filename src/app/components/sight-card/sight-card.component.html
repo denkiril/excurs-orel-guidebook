@@ -6,8 +6,8 @@
 </div>
 
 <div class="sight-info">
-  <ul *ngIf="sight.nested?.length" class="sight-nested">
-    <li *ngFor="let nested of sight.nested">
+  <ul *ngIf="nestedItems.length" class="sight-nested">
+    <li *ngFor="let nested of nestedItems">
       <a
         [routerLink]="[]"
         [queryParams]="{ sight: nested.id }"
@@ -28,6 +28,11 @@
       <span [class.alert]="!sight.geolocation">
         {{ sight.geolocation | geolocation }}
       </span>
+      <span
+        *ngIf="sight.multiGeolocation"
+        class="multi-coords-img"
+        title="Есть доп. координаты (выберите объект, приблизьте карту)"
+      ></span>
     </p>
   </div>
 

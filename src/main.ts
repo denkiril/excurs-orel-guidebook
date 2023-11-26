@@ -43,8 +43,10 @@ platformBrowserDynamic()
 // active on init (by route) not highlighted on map +
 // route changing not trigger fetch +
 // switch off "tur" when all checkboxes off (UI and route)? 3rd state of toggle?
-// egrkn additionalCoordinates - show polygon on map on more mode
-// fly to object on map (button near geolocation)
+// egrkn additionalCoordinates - show polygon (_or_ dots) on map on more mode +
+// fly to object on map (button near geolocation _or_ onSightForMore) +
 // requestEgrknData actual - hack or upd server +
 // BUG Double GET /api/sight-links?slugs=orlovskij-kraevedcheskij-muzej on exo_892
 // Multi okn_type (okn_type[0] refac)
+// images slider
+// BUG No search text in search-bar on init +

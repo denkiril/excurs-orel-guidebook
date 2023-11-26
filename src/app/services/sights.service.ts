@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
-import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
 import {
   SightsData,
@@ -13,7 +14,9 @@ import {
   SightId,
   SightType,
   SightResponseItemExt,
+  MultiGeolocation,
 } from '../models/sights.models';
+import { AppService } from './app.service';
 import { RequestService } from './request.service';
 import { EgrknService } from '../features/egrkn/services/egrkn.service';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
@@ -29,7 +32,8 @@ interface SightByLink {
 }
 
 interface ExtSightsData {
-  items: SightData[];
+  exoItems: SightData[];
+  egrknItems: SightDataExt[];
   errors?: SightsDataError[];
 }
 
@@ -40,6 +44,8 @@ interface ExtSightsData {
   providedIn: 'root',
 })
 export class SightsService {
+  private readonly destroyRef = inject(DestroyRef);
+
   private sightsData: SightsData = {
     items: [],
   };
@@ -47,11 +53,12 @@ export class SightsService {
   private sightLinks: SightLink[] = [];
   private nestedSights: { [key: string]: string[] } = {};
 
-  private readonly fetchingSightsSubject = new ReplaySubject<SightsData>();
+  private readonly fetchingSightsSubject = new ReplaySubject<ExtSightsData>(1);
   private readonly sightsDataSubject = new Subject<SightsData>(); // ReplaySubject (?)
   readonly sightsData$ = this.sightsDataSubject.asObservable();
 
   constructor(
+    private readonly appService: AppService,
     private readonly loggerService: LoggerService,
     private readonly egrknService: EgrknService,
     private readonly filterParamsStore: FilterParamsStoreService,
@@ -104,21 +111,25 @@ export class SightsService {
     };
   }
 
-  private fetchingSights$(withDelay?: boolean): Observable<ExtSightsData> {
+  private fetchingSights$(): Observable<ExtSightsData> {
     // console.log('fetchingSights...');
+    const withDelay = !this.appService.isServer;
+
     return new Observable<ExtSightsData>((observer) => {
       forkJoin({
-        sightsData: this.fetchSights$(),
-        egrknData: this.egrknService.getEgrknSights$(this.needEgrkn()),
+        exoData: this.fetchSights$(),
+        egrknData: this.egrknService.getEgrknSights$(), // this.needEgrkn()
         delay: timer(withDelay ? 300 : 0),
       }).subscribe({
-        next: ({ sightsData, egrknData }) => {
+        next: ({ exoData, egrknData }) => {
           const data: ExtSightsData = {
-            items: [...sightsData.items, ...egrknData.items],
-            errors: [...(sightsData.errors ?? []), ...(egrknData.errors ?? [])],
+            exoItems: exoData.items,
+            egrknItems: egrknData.items,
+            errors: [...(exoData.errors ?? []), ...(egrknData.errors ?? [])],
           };
           observer.next(data);
           observer.complete();
+
           this.fetchingSightsSubject.next(data);
         },
       });
@@ -134,6 +145,14 @@ export class SightsService {
   /* Other methods */
 
   getSightDataExt$(sightId: SightId): Observable<SightDataExt | undefined> {
+    return this.getSightDataExtObservable$(sightId).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    );
+  }
+
+  private getSightDataExtObservable$(
+    sightId: SightId,
+  ): Observable<SightDataExt | undefined> {
     this.loggerService.log('getSightDataExt', sightId);
 
     switch (this.getSightType(sightId)) {
@@ -152,54 +171,36 @@ export class SightsService {
 
   private handleSightDataExt$(sight: SightDataExt): Observable<SightDataExt> {
     return this.fetchingSightsSubject.pipe(
-      take(1),
-      map(({ items }) => {
-        const swnItem = SIGHTS_WITH_NESTED.find(
-          (swn) => swn.sightId === sight.id,
+      map(({ exoItems, egrknItems }) => {
+        const nested = this.getNested(
+          sight,
+          [...exoItems, ...egrknItems],
+          egrknItems,
         );
-        const nested = swnItem
-          ? items.filter(({ id }) => swnItem.nested.includes(id))
+        const egrknItem = sight.okn_id
+          ? egrknItems.find((ei) => ei.okn_id === sight.okn_id)
           : undefined;
-        return { ...sight, nested };
-      }),
-      switchMap((item) => this.addEgrknData$(item)),
-    );
-  }
-
-  private addEgrknData$(sight: SightDataExt): Observable<SightDataExt> {
-    if (!this.needEgrkn() || !sight.okn_id) return of(sight);
-
-    const getNestedByType = (sightType: SightType): SightData[] =>
-      sight.nested?.filter(({ type }) => type === sightType) ?? [];
-
-    return this.egrknService.getSightByOknId$(sight.okn_id).pipe(
-      map((egrknItem) => {
-        if (egrknItem) {
-          const { egrknData, okn_title } = egrknItem;
-          const images = [...(sight.images || [])];
-          if (egrknData?.photoUrl) {
-            images.push(this.egrknService.prepareImage(egrknData.photoUrl));
-          }
-
-          return {
-            ...sight,
-            images,
-            okn_title,
-            nested: [
-              ...getNestedByType(SightType.DEFAULT),
-              egrknItem,
-              ...getNestedByType(SightType.EGRKN),
-            ],
-          };
+        const images = [...(sight.images || [])];
+        if (egrknItem?.egrknData?.photoUrl) {
+          images.push(
+            this.egrknService.prepareImage(egrknItem.egrknData.photoUrl),
+          );
         }
-        return sight;
+
+        return {
+          ...sight,
+          images,
+          nested,
+          multiGeolocation: this.checkMultiGeolocation(nested),
+          okn_title: egrknItem?.okn_title,
+        };
       }),
     );
   }
 
   getSights(params: GetSightsParams): Observable<SightsData> {
     // console.log('--- getSights params:', params);
-    return this.fetchingSights$(true).pipe(
+    return this.fetchingSights$().pipe(
       map((sightsData) => this.filterSights(sightsData, params)),
       tap((filtSightsData) => {
         this.sightsDataSubject.next(filtSightsData);
@@ -244,6 +245,10 @@ export class SightsService {
     const sightsFilterParams = filterParams.sightsFilterParams || {};
     // console.log('filterSights sightsData:', sightsData);
     // console.log('filterSights sightsFilterParams:', sightsFilterParams);
+    const needSights = [
+      ...sightsData.exoItems,
+      ...(this.needEgrkn() ? sightsData.egrknItems : []),
+    ];
     let items: SightData[] = [];
 
     Object.keys(sightsFilterParams).forEach((blockName) => {
@@ -253,7 +258,7 @@ export class SightsService {
         // console.log('groups:', groups);
 
         items = items.concat(
-          sightsData.items.filter((item) => {
+          needSights.filter((item) => {
             if (blockName === 'okn') {
               return (
                 item.okn_category?.some(
@@ -281,8 +286,7 @@ export class SightsService {
       // TODO search in text, sort by search?
     }
 
-    items = this.filterNested(items);
-    items = this.filterEgrkn(items); // TODO include to filterNested() ?
+    items = this.addAndFilterNested(items, sightsData.egrknItems);
 
     if (sightsFilterParams.tur?.switchedOn) {
       items = this.sortBySets(items); // TODO .sort(compareBySets)
@@ -293,62 +297,69 @@ export class SightsService {
     return { items, errors: sightsData.errors };
   }
 
-  private filterNested(items: SightData[]): SightData[] {
-    // console.log('*** filterNested:', items);
-    this.nestedSights = {};
+  private addAndFilterNested(
+    items: SightData[],
+    egrknItems: SightData[],
+  ): SightData[] {
     const allNested: SightData[] = [];
+    this.nestedSights = {};
 
-    SIGHTS_WITH_NESTED.forEach((swn) => {
-      const holder = items.find((item) => item.id === swn.sightId);
-      if (holder) {
-        // console.log('*** holder:', holder?.id, swn.nested);
-        const nestedItems = items.filter(({ id }) => swn.nested.includes(id));
-        // console.log('*** nestedItems:', nestedItems);
-        if (nestedItems.length) {
-          holder.nested = nestedItems.filter(
-            ({ type }) => type === SightType.DEFAULT,
-          );
-          allNested.push(...nestedItems);
-          nestedItems.forEach(({ id }) => {
+    items
+      .filter(({ type }) => type === SightType.DEFAULT)
+      .forEach((item) => {
+        const nested = this.getNested(item, items, egrknItems);
+
+        if (nested?.length) {
+          allNested.push(...nested);
+          nested.forEach(({ id }) => {
             const holdersIds = this.nestedSights[id] || [];
-            holdersIds.push(holder.id);
+            holdersIds.push(item.id);
             this.nestedSights[id] = holdersIds;
           });
-        } else {
-          holder.nested = undefined;
         }
-      }
-    });
 
-    // console.log('*** allNested:', allNested);
-    if (allNested.length) {
-      const nestedIds = new Set(allNested.map(({ id }) => id));
-      return items.filter(({ id }) => !nestedIds.has(id));
-    }
-    return items;
-  }
-
-  private filterEgrkn(items: SightData[]): SightData[] {
-    const egrknItems = items.filter((item) => item.type === SightType.EGRKN);
-    const nestedIds: SightId[] = [];
-
-    if (egrknItems.length && egrknItems.length !== items.length) {
-      items.forEach((item) => {
-        if (item.type === SightType.DEFAULT) {
-          const egrknItem = egrknItems.find((ei) => ei.okn_id === item.okn_id);
-          if (egrknItem) {
-            // item.okn_title = egrknItem.okn_title;
-            // item.egrknData = egrknItem.egrknData; // TODO icon, url?
-            // item.nested = [...(item.nested ?? []), egrknItem];
-            nestedIds.push(egrknItem.id);
-          }
-        }
+        item.nested = nested;
+        item.multiGeolocation = this.checkMultiGeolocation(nested);
       });
-    }
 
+    const nestedIds = allNested.map((item) => item.id);
     return nestedIds.length
       ? items.filter((item) => !nestedIds.includes(item.id))
       : items;
+  }
+
+  private getNested(
+    item: SightData,
+    items: SightData[],
+    egrknItems: SightData[],
+  ): SightData[] | undefined {
+    const swnItem = SIGHTS_WITH_NESTED.find((swn) => swn.sightId === item.id);
+    const nested = swnItem
+      ? items.filter(({ id }) => swnItem.nested.includes(id))
+      : [];
+
+    const egrknItem = item.okn_id
+      ? egrknItems.find((ei) => ei.okn_id === item.okn_id)
+      : undefined;
+    if (egrknItem) {
+      if (!nested.length) {
+        nested.push(egrknItem);
+      } else {
+        let insertIndex = nested.findIndex(
+          ({ type }) => type === SightType.EGRKN,
+        );
+        if (insertIndex === -1) insertIndex = nested.length;
+        nested.splice(insertIndex, 0, egrknItem);
+      }
+    }
+
+    return nested.length ? nested : undefined;
+  }
+
+  private checkMultiGeolocation(
+    nested?: SightData[],
+  ): MultiGeolocation | undefined {
+    return nested?.find((item) => item.multiGeolocation)?.multiGeolocation;
   }
 
   private sortBySets(items: SightData[]): SightData[] {
@@ -363,6 +374,7 @@ export class SightsService {
     return [...mainItems, ...musItems, ...otherItems];
   }
 
+  // TODO test
   getSightsIds(sightId: SightId): SightId[] {
     return this.nestedSights[sightId] || [sightId];
   }

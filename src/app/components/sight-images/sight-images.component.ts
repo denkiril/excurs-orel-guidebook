@@ -39,7 +39,7 @@ export class SightImagesComponent implements OnChanges {
   }
 
   setTopImage(image?: ImageItem): void {
-    this.topImage = image;
+    this.topImage = image ? { ...image } : undefined;
 
     if (this.topImage) {
       const text = this.topImage.caption || this.topImage.title;

@@ -4,6 +4,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import {
   ImageItem,
+  MultiGeolocation,
   SightDataExt,
   SightGeolocation,
   SightType,
@@ -102,6 +103,7 @@ export class EgrknService {
       ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
           tap((resp) => {
             this.loggerService.log('getMkrfOpendata resp.total:', resp.total);
+            // TODO optimize response for transfer
             this.transferStateService.setEgrkn(resp);
           }),
           catchError((err) => {
@@ -125,6 +127,8 @@ export class EgrknService {
     // console.log('categoryType:', egrknItems.map((item) => item.data.general.categoryType));
     // eslint-disable-next-line prettier/prettier
     // console.log('typologies:', egrknItems.map((item) => JSON.stringify(item.data.general.typologies)));
+    // eslint-disable-next-line prettier/prettier
+    // console.log('additionalCoords:', egrknItems.map((item) => item.data.general.additionalCoordinates).filter(Boolean));
 
     if (this.appService.isDev) {
       const warnItems = egrknItems.filter(
@@ -155,6 +159,7 @@ export class EgrknService {
         okn_category: [EGRKN_OKN_CATEGORIES[general.categoryType.id]],
         location: address,
         geolocation: this.prepareSightGeolocation(general),
+        multiGeolocation: this.prepareMultiGeolocation(general),
         registry_date: general.documents.find((doc) => doc.date)?.date,
         images: egrknData.photoUrl
           ? [this.prepareImage(egrknData.photoUrl)]
@@ -214,9 +219,9 @@ export class EgrknService {
             // eslint-disable-next-line prettier/prettier
             this.loggerService.browserLog(`additionalCoordinates for ${address.fullAddress}:`, general);
           }
-          // TODO calc center?
-          const [coord1, coord2] = coordsItem1;
-          const coords = checkBounds(coord1, coord2);
+
+          const center = this.calcCenter(coordinates as number[][]);
+          const coords = checkBounds(center[0], center[1]);
           if (coords) return coords;
         }
       }
@@ -234,6 +239,93 @@ export class EgrknService {
 
     return geolocation;
   }
+
+  private calcCenter(coords: number[][]): number[] {
+    const getAverage = (numbers: number[]): number => {
+      return numbers.reduce((a, b) => a + b) / numbers.length;
+    };
+
+    return [
+      getAverage(coords.map((item) => item[0])),
+      getAverage(coords.map((item) => item[1])),
+    ];
+  }
+
+  private prepareMultiGeolocation(
+    general: EgrknItemGeneral,
+  ): MultiGeolocation | undefined {
+    let multiGeolocation = general.additionalCoordinates?.map(
+      (item) => item.coordinates,
+    );
+
+    // if (multiGeolocation?.length && !this.appService.isServer) {
+    //   multiGeolocation = multiGeolocation.map((coords) =>
+    //     this.getSortedCWCoords(coords),
+    //   );
+    // }
+
+    return multiGeolocation;
+  }
+
+  // private getSortedCWCoords(coords: number[][]): number[][] {
+  //   if (!coords.length) return [];
+
+  //   const center = this.calcCenter(coords);
+  //   // sort CW ...
+  //   const sortedCoords = [...coords].sort((a, b) => b[0] - a[0]);
+  //   console.log('sorted 1', [...sortedCoords]);
+  //   const result: number[][] = [sortedCoords[0]];
+  //   sortedCoords.shift();
+  //   console.log('sorted 2', [...sortedCoords]);
+  //   while (sortedCoords.length) {
+  //     const baseCoords: number[] = result[result.length - 1];
+  //     const baseVector: number[] = [baseCoords[0] + 10, baseCoords[1]];
+  //     // calc degrees (vectors?) from result.last to all in sortedCoords (rest)
+  //     const vectors = sortedCoords.map((coords, index) => ({
+  //       index,
+  //       coords,
+  //       angle: this.calcAngle(baseVector, coords),
+  //     }));
+  //     const vector = vectors.sort((a, b) => a.angle - b.angle)[0];
+  //     result.push(...sortedCoords.splice(vector.index, 1));
+  //     // sorted.splice(index, 1);
+  //     console.log('vectors', vectors);
+  //   }
+  //   // console.log('coords 2', JSON.stringify(coords));
+  //   // .sort((a, b) => a[0] - b[0]);
+  //   // coords = [
+  //   //   // [52.96488928, 36.0702757],
+  //   //   // [52.96392454, 36.06861],
+  //   //   // [52.96440542, 36.07052762],
+  //   //   // [52.96456143, 36.07079413],
+  //   //   // [52.96373943, 36.06892491],
+  //   //   // [52.96451624, 36.07034058],
+  //   //   [52.96488928, 36.0702757],
+  //   //   [52.96456143, 36.07079413],
+  //   //   [52.96440542, 36.07052762],
+  //   //   [52.96451624, 36.07034058],
+  //   //   [52.96373943, 36.06892491],
+  //   //   [52.96392454, 36.06861],
+  //   // ];
+  //   // const center = [52.96439, 36.06967];
+
+  //   return [center, ...result];
+  // }
+
+  // private calcAngle(baseCoords: number[], targetCoords: number[]): number {
+  //   const cosAng =
+  //     this.calcScalarProduct(baseCoords, targetCoords) /
+  //     (this.calcVectorLenght(baseCoords) * this.calcVectorLenght(targetCoords));
+  //   return Math.acos(cosAng);
+  // }
+
+  // private calcScalarProduct(a: number[], b: number[]): number {
+  //   return a[0] * a[1] + b[0] * b[1];
+  // }
+
+  // private calcVectorLenght(a: number[]): number {
+  //   return Math.sqrt(a[0] ** 2 + a[1] ** 2);
+  // }
 
   private prepareEgrknData(item: EgrknItem): EgrknData {
     return {
