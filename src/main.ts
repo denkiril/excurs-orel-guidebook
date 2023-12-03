@@ -50,3 +50,7 @@ platformBrowserDynamic()
 // Multi okn_type (okn_type[0] refac)
 // images slider
 // BUG No search text in search-bar on init +
+// BUG Nested sightForMore not marked on map +
+// Add sightForMore on init (by url) to map (and list?) +
+// BUG Settings from LS ignored if init by "/?sight=" url +
+// Show sets (tur, okn, egrkn, etc?) [with anchor?] for sight/sightForMore

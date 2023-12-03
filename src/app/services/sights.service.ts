@@ -322,6 +322,7 @@ export class SightsService {
         item.multiGeolocation = this.checkMultiGeolocation(nested);
       });
 
+    // console.log('nestedSights:', this.nestedSights);
     const nestedIds = allNested.map((item) => item.id);
     return nestedIds.length
       ? items.filter((item) => !nestedIds.includes(item.id))
@@ -374,9 +375,12 @@ export class SightsService {
     return [...mainItems, ...musItems, ...otherItems];
   }
 
-  // TODO test
-  getSightsIds(sightId: SightId): SightId[] {
+  getTopSightIds(sightId: SightId): SightId[] {
     return this.nestedSights[sightId] || [sightId];
+  }
+
+  getTopSightId(sightId: SightId): SightId {
+    return this.getTopSightIds(sightId)[0];
   }
 
   getSightLinks(links: string[]): Observable<SightLink[]> {
