@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject, of, throwError } from 'rxjs';
+import {
+  Observable,
+  ReplaySubject,
+  Subject,
+  combineLatest,
+  of,
+  throwError,
+} from 'rxjs';
 import {
   delay,
   retryWhen,
@@ -7,22 +14,28 @@ import {
   takeUntil,
   concat,
   catchError,
+  distinctUntilChanged,
 } from 'rxjs/operators';
 
-import { environment } from 'src/environments/environment';
-import { SightsData, SightData, SightId } from '../models/sights.models';
+import {
+  SightsData,
+  SightData,
+  SightId,
+  MultiGeolocation,
+  SightType,
+  SightDataExt,
+} from '../models/sights.models';
+import { AppService } from './app.service';
+import { ConfigService } from './config.service';
 import { DocumentService, MediaSize } from './document.service';
 import { WindowService } from './window.service';
 import { SightsService } from './sights.service';
 import { ActiveSightsService } from './active-sights.service';
 import { FilterParamsStoreService } from '../store/filter-params-store.service';
-
-const { YMAPS_APIKEY } = environment;
-const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
-const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
-const YMAPS_SCRIPT_ID = 'YMapsScriptID';
+import { StoreService } from '../store/store.service';
 
 const DEFAULT_COLOR = '#005281'; // 015a8d
+const DEFAULT_HALF_COLOR = '#00528180';
 const ACTIVE_COLOR = '#bc3134'; // ffd649
 const DEFAULT_PRESET = 'islands#Icon';
 const ACTIVE_PRESET = 'islands#blueDotIcon';
@@ -39,15 +52,21 @@ export class MapService {
 
   private ymaps?: any;
   private map: any;
-  private storage: any;
+  private sightsStorage: any;
+  private sightForMoreStorage: any;
+  private multiCoordsStorage: any;
   // private clusterer: any;
 
   initialized$ = new ReplaySubject<void>();
+  private showMultiCoords$ = new ReplaySubject<boolean>();
 
   constructor(
+    private readonly appService: AppService,
+    private readonly configService: ConfigService,
     private readonly windowService: WindowService,
     private readonly documentService: DocumentService,
     private readonly sightsService: SightsService,
+    private readonly storeService: StoreService,
     private readonly activeSightsService: ActiveSightsService,
     private readonly filterParamsStore: FilterParamsStoreService,
   ) {}
@@ -70,6 +89,10 @@ export class MapService {
 
   private addScript$(): Observable<void> {
     const { documentRef } = this.documentService;
+    const { YMAPS_APIKEY } = this.configService.config;
+    const apikey = YMAPS_APIKEY ? `&apikey=${YMAPS_APIKEY}` : '';
+    const YMAPS_API_URL = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${apikey}`;
+    const YMAPS_SCRIPT_ID = 'YMapsScriptID';
 
     return new Observable<void>((subscriber) => {
       const script = documentRef.createElement('script');
@@ -170,6 +193,12 @@ export class MapService {
         // }
       });
 
+    // Watch zoom
+    this.map.events.add('boundschange', (ev: any) => {
+      // var state = this.map.action.getCurrentState();
+      // console.log('boundschange', ev.get('oldZoom'), ev.get('newZoom'));
+      this.showMultiCoords$.next(ev.get('newZoom') > 15);
+    });
     // console.log('map:', this.map);
   }
 
@@ -179,12 +208,12 @@ export class MapService {
 
     // this.clusterer.removeAll();
     this.map.geoObjects.removeAll();
-    this.storage = this.ymaps.geoQuery(markers);
+    this.sightsStorage = this.ymaps.geoQuery(markers);
     // this.clusterer.add(markers);
     // this.map.geoObjects.add(this.clusterer);
-    this.storage.addToMap(this.map);
+    this.sightsStorage.addToMap(this.map);
     // console.log('[map]:', this.map);
-    // console.log('[storage]:', this.storage);
+    // console.log('[sightsStorage]:', this.sightsStorage);
 
     // center map
     let needCenter = true;
@@ -195,7 +224,7 @@ export class MapService {
       //   const geoObjectState = this.clusterer.getObjectState(mark);
       //   if (geoObjectState.isShown === false) needCenter = true;
       // });
-      const shownObjects = this.storage.searchIntersect(this.map);
+      const shownObjects = this.sightsStorage.searchIntersect(this.map);
       needCenter = shownObjects.getLength() < markers.length;
     }
 
@@ -222,12 +251,14 @@ export class MapService {
         // const url = item.permalink;
         const sightId = item.id;
         const thumbUrl = item.thumb_url;
-        const nested = item.nested?.length
-          ? `<p>+ ${item.nested.map((s) => s.title).join('</p><p>')}</p>`
+        const nestedItems =
+          item.nested?.filter(({ type }) => type === SightType.DEFAULT) ?? [];
+        const nestedHtml = nestedItems.length
+          ? `<p>+ ${nestedItems.map((s) => s.title).join('</p><p>+ ')}</p>`
           : '';
         const content = `<header>
           <h3>{{ properties.title }}</h3>
-          ${nested}
+          ${nestedHtml}
           <p>{{ properties.location }}</p>
           </header>
           ${thumbUrl ? '<img src="{{ properties.thumbUrl }}" />' : ''}`;
@@ -301,16 +332,35 @@ export class MapService {
 
     this.filterParamsStore.sightForMore$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((sightForMore) => {
+      .subscribe((value) => {
+        const sightForMore = value
+          ? this.sightsService.getTopSightId(value)
+          : undefined;
         if (this.sightForMore !== sightForMore) {
           this.sightForMore = sightForMore;
           this.updateMarkers();
         }
+        if (sightForMore) {
+          this.flyToMarker(sightForMore);
+        }
+      });
+
+    combineLatest([
+      this.showMultiCoords$.pipe(distinctUntilChanged()),
+      this.storeService.select$('sightForMore'),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([showMultiCoords, sightForMoreState]) => {
+        const { sightForMore } = sightForMoreState;
+        // console.log('combineLatest', showMultiCoords, sightForMore);
+
+        this.updateSightForMoreStorage(sightForMore);
+        this.updateMultiCoords(showMultiCoords, sightForMore?.multiGeolocation);
       });
   }
 
   private updateMarkers(): void {
-    this.storage.each((mark: any) => {
+    this.sightsStorage.each((mark: any) => {
       const sightId = mark.properties.get('sightId');
       const isActive = this.activeSights.includes(sightId);
       const isMore = sightId === this.sightForMore;
@@ -352,5 +402,85 @@ export class MapService {
     const sorted2 = arr2.sort();
 
     return sorted1.some((v, i) => v !== sorted2[i]);
+  }
+
+  private searchMarkers(sightId: SightId): any {
+    return this.sightsStorage.search(`properties.sightId=="${sightId}"`);
+  }
+
+  private flyToMarker(sightId: SightId): void {
+    const searchResult = this.searchMarkers(sightId);
+    if (searchResult.getLength() > 0) {
+      const isMarkerShown =
+        searchResult.searchIntersect(this.map).getLength() > 0;
+      if (!isMarkerShown) {
+        this.map.panTo(searchResult.getBounds());
+      }
+    }
+  }
+
+  private updateSightForMoreStorage(
+    sightForMore: SightDataExt | undefined,
+  ): void {
+    if (this.sightForMoreStorage) {
+      this.sightForMoreStorage.removeFromMap(this.map);
+      this.sightForMoreStorage = undefined;
+    }
+    if (sightForMore) {
+      const searchResult = this.searchMarkers(sightForMore.id);
+      if (!searchResult.getLength()) {
+        const markers = this.makeMarkers([sightForMore]);
+        this.sightForMoreStorage = this.ymaps.geoQuery(markers);
+        this.sightForMoreStorage.each((mark: any) => {
+          mark.options.set('iconColor', DEFAULT_HALF_COLOR);
+          mark.options.set('preset', ACTIVE_PRESET);
+          mark.options.set('zIndex', 1);
+        });
+        this.sightForMoreStorage.addToMap(this.map);
+      }
+    }
+  }
+
+  private updateMultiCoords(
+    showMultiCoords: boolean,
+    multiGeolocation?: MultiGeolocation,
+  ): void {
+    // eslint-disable-next-line prettier/prettier
+    // console.log('updateMultiCoords', showMultiCoords, multiGeolocation?.[0]?.length);
+    if (this.multiCoordsStorage) {
+      this.multiCoordsStorage.removeFromMap(this.map);
+      this.multiCoordsStorage = undefined;
+    }
+
+    if (!showMultiCoords || !multiGeolocation?.length) return;
+
+    const geoObjects: any[] = [];
+
+    multiGeolocation.forEach((coords) => {
+      coords.forEach((coord, index) => {
+        const marker = new this.ymaps.Placemark(
+          coord,
+          {
+            // iconContent: index,
+          },
+          {
+            // preset: 'islands#blueCircleIcon',
+            iconLayout: 'default#image',
+            iconImageHref: this.appService.getAssetsUrl() + 'images/dot.svg',
+            iconImageSize: [12, 12],
+            iconImageOffset: [-6, -6],
+            zIndex: -1,
+          },
+        );
+
+        geoObjects.push(marker);
+      });
+
+      // const polygon = new this.ymaps.Polygon([coords.filter((v, i) => i > 0)]);
+      // geoObjects.push(polygon);
+    });
+
+    this.multiCoordsStorage = this.ymaps.geoQuery(geoObjects);
+    this.multiCoordsStorage.addToMap(this.map);
   }
 }

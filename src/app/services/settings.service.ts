@@ -91,12 +91,15 @@ export class SettingsService implements OnDestroy {
         sightsParamsLS = JSON.parse(filterParamsStr);
       } finally {
         if (sightsParamsLS) {
-          if (!filterParams) {
-            filterParams = { sightsFilterParams: sightsParamsLS };
+          if (!filterParams?.sightsFilterParams) {
+            filterParams = {
+              ...filterParams,
+              sightsFilterParams: sightsParamsLS,
+            };
           } else {
             // console.log('define... filterParams:', filterParams);
             // console.log('define... sightsParamsLS:', sightsParamsLS);
-            const sightsFilterParams = filterParams.sightsFilterParams || {};
+            const { sightsFilterParams } = filterParams;
 
             Object.keys(sightsFilterParams).forEach((key) => {
               const param = sightsParamsLS && sightsParamsLS[key];
@@ -112,6 +115,7 @@ export class SettingsService implements OnDestroy {
       }
     }
 
+    // console.log('getFilterParams result:', filterParams);
     return filterParams;
   }
 

@@ -31,12 +31,12 @@ export class ActiveSightsService {
   }
 
   private activeSightsAdd(sightId: SightId): void {
-    const ids = this.sightsService.getSightsIds(sightId);
+    const ids = this.sightsService.getTopSightIds(sightId);
     this.activeSights.push(...ids);
   }
 
   private activeSightsDelete(sightId: SightId): void {
-    const ids = this.sightsService.getSightsIds(sightId);
+    const ids = this.sightsService.getTopSightIds(sightId);
     ids.forEach((id) => {
       const index = this.activeSights.indexOf(id);
       if (index > -1) this.activeSights.splice(index, 1);

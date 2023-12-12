@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { environment } from 'src/environments/environment';
+import { ConfigService } from './config.service';
 import { LoggerService } from './logger.service';
 
 type RequestParams =
@@ -16,16 +16,16 @@ type RequestParams =
         | ReadonlyArray<string | number | boolean>;
     };
 
-const { API_URL } = environment;
-
 @Injectable({
   providedIn: 'root',
 })
 export class RequestService {
+  private readonly apiUrl = this.configService.config.API_URL;
   private mkrfOpendataApiKey = '';
 
   constructor(
     private readonly http: HttpClient,
+    private readonly configService: ConfigService,
     private readonly loggerService: LoggerService,
   ) {}
 
@@ -34,7 +34,7 @@ export class RequestService {
   }
 
   getApi<T>(path: string, params?: RequestParams): Observable<T> {
-    const url = API_URL + path;
+    const url = this.apiUrl + path;
     this.loggerService.log(`getApi ${url}`);
 
     return this.http.get<T>(url, { params }).pipe(

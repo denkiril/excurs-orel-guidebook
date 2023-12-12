@@ -1,6 +1,6 @@
 {
   "name": "orel-guidebook",
-  "version": "0.9.42",
+  "version": "0.9.5",
   "scripts": {
     "ng": "ng",
     "config": "ts-node ./scripts/setenv.ts",
@@ -31,6 +31,8 @@
     "@angular/platform-browser-dynamic": "16.2.8",
     "@angular/platform-server": "16.2.8",
     "@angular/router": "16.2.8",
+    "@ngrx/store": "^16.3.0",
+    "@ngrx/store-devtools": "^16.3.0",
     "@nguniversal/express-engine": "^16.2.0",
     "express": "^4.15.2",
     "rxjs": "~6.6.0",

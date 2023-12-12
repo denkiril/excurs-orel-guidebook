@@ -5,7 +5,10 @@ import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
+import { environment } from 'src/environments/environment';
 import { AppComponent } from './app.component';
 import { MainMapComponent } from './components/main-map/main-map.component';
 import { MainPanelComponent } from './components/main-panel/main-panel.component';
@@ -26,6 +29,7 @@ import { SightLinksDirective } from './directives/sight-links.directive';
 import { ParamsGuard } from './core/params.guard';
 import { StringTickerPipe } from './pipes/string-ticker.pipe';
 import { GeolocationPipe } from './pipes/geolocation.pipe';
+import { reducers } from './store/reducers';
 
 export const routes: Routes = [
   {
@@ -70,6 +74,11 @@ export const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
+    }),
+    StoreModule.forRoot(reducers),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      logOnly: environment.production, // Restrict extension to log-only mode
     }),
   ],
   providers: [{ provide: APP_BASE_HREF, useValue: '/guidebook/' }],

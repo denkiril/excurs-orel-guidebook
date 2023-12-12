@@ -43,6 +43,7 @@ export class SearchBarComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
+    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: any): void {

@@ -6,6 +6,7 @@ import {
   SightResponseItem,
 } from '../models/sights.models';
 import { EgrknResponse } from '../features/egrkn/egrkn.model';
+import { AppService } from './app.service';
 
 const SIGHTS_LIST_STATE_KEY = makeStateKey<SightData[]>('sights-list');
 const SIGHT_FOR_MORE_STATE_KEY = makeStateKey<SightDataExt>('sight-for-more');
@@ -16,7 +17,10 @@ const EGRKN_STATE_KEY = makeStateKey<EgrknResponse>('egrkn');
   providedIn: 'root',
 })
 export class TransferStateService {
-  constructor(private readonly transferState: TransferState) {}
+  constructor(
+    private readonly transferState: TransferState,
+    private readonly appService: AppService,
+  ) {}
 
   setSightsList(value: SightData[]): void {
     this.transferState.set(SIGHTS_LIST_STATE_KEY, value);
@@ -27,6 +31,8 @@ export class TransferStateService {
   }
 
   setSightForMore(value: SightDataExt): void {
+    if (!this.appService.isServer) return;
+
     this.transferState.set(SIGHT_FOR_MORE_STATE_KEY, value);
   }
 
@@ -43,6 +49,8 @@ export class TransferStateService {
   }
 
   setEgrkn(value: EgrknResponse): void {
+    if (!this.appService.isServer) return;
+
     this.transferState.set(EGRKN_STATE_KEY, value);
   }
 

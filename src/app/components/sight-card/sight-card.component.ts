@@ -1,12 +1,19 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  Input,
+  OnInit,
+} from '@angular/core';
 
-import { SightData, OknText } from 'src/app/models/sights.models';
+import { SightData, OknText, SightType } from 'src/app/models/sights.models';
 import { OKN_TYPES, OKN_CATEGORIES } from 'src/app/models/sights.constants';
 
 @Component({
   selector: 'exogb-sight-card',
   templateUrl: './sight-card.component.html',
   styleUrls: ['./sight-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SightCardComponent implements OnInit {
   @HostBinding('class.active') get isActive(): boolean {
@@ -16,16 +23,16 @@ export class SightCardComponent implements OnInit {
   @Input() sight!: SightData;
   @Input() index = 0;
   @Input() active = false;
-  // @Output() clickMore = new EventEmitter<SightData>();
 
   descriptionShort = '';
   descriptionFull = '';
   isMuseum = false;
-
-  // constructor() { }
+  nestedItems: SightData[] = [];
 
   ngOnInit(): void {
     this.isMuseum = !!this.sight.sets && this.sight.sets[0] === 'mus';
+    this.nestedItems =
+      this.sight.nested?.filter(({ type }) => type === SightType.DEFAULT) ?? [];
 
     if (this.isMuseum) {
       this.descriptionShort = 'Государственный музей';
@@ -53,8 +60,4 @@ export class SightCardComponent implements OnInit {
 
     return { short, full };
   }
-
-  // public onClickMore(sight: SightData): void {
-  //   this.clickMore.emit(sight);
-  // }
 }

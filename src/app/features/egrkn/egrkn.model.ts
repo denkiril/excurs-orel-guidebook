@@ -73,6 +73,6 @@ export interface EgrknSights {
 
 export interface EgrknData {
   egrknUrl: string;
-  photoUrl?: string;
+  photoUrl: string | undefined;
   // item: EgrknItem;
 }
