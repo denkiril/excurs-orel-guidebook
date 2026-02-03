@@ -90,10 +90,14 @@ export class EgrknService {
     url.searchParams.append('f', JSON.stringify(egrknFilter));
     url.searchParams.append('l', '500');
 
+    const startTime = Date.now();
     return this.appService.isServer
       ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
           map((resp) => {
-            this.loggerService.log('getMkrfOpendata resp.total:', resp.total);
+            const duration = Date.now() - startTime;
+            this.loggerService.log(
+              `getMkrfOpendata total=${resp.total}, duration=${duration}`,
+            );
             const items = this.prepareSightData(resp.data);
             this.transferStateService.setEgrkn(items);
             return items;
