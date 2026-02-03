@@ -20,7 +20,7 @@ export const DEFAULT_ADDRESS_PART = /Орловская область[, ]+г(.|
 
 export const DEFAULT_OKN_TITLE = 'Дом жилой';
 
-const EGRKN_VERSION = '51'; // https://opendata.mkrf.ru/item/api -> egrkn, $ - last version
+const EGRKN_VERSION = '$'; // https://opendata.mkrf.ru/item/api -> egrkn, $ - last version
 
 export const EGRKN_OBJECT_URL = `https://opendata.mkrf.ru/opendata/7705851331-egrkn/${EGRKN_VERSION}/`;
 

@@ -90,7 +90,11 @@ export class SightsService {
     );
   }
 
-  private requestSights$(): Observable<SightResponseItem[]> {
+  private requestSights$(fromApi = true): Observable<SightResponseItem[]> {
+    if (fromApi) {
+      return this.requestService.getApi<SightResponseItem[]>('sights');
+    }
+
     const transfered = this.transferStateService.getSights();
 
     return transfered.length
@@ -100,7 +104,6 @@ export class SightsService {
             this.transferStateService.setSights(sights);
           }),
         );
-    // return this.requestService.getApi<SightResponseItem[]>('sights');
   }
 
   private prepareExoSight(item: SightResponseItem): SightData {
@@ -245,10 +248,11 @@ export class SightsService {
     const sightsFilterParams = filterParams.sightsFilterParams || {};
     // console.log('filterSights sightsData:', sightsData);
     // console.log('filterSights sightsFilterParams:', sightsFilterParams);
-    const needSights = [
-      ...sightsData.exoItems,
-      ...(this.needEgrkn() ? sightsData.egrknItems : []),
-    ];
+    const needSights: SightDataExt[] = [...sightsData.exoItems];
+    if (this.needEgrkn()) {
+      needSights.push(...sightsData.egrknItems);
+    }
+
     let items: SightData[] = [];
 
     Object.keys(sightsFilterParams).forEach((blockName) => {

@@ -72,7 +72,7 @@ interface SightDataLocal extends SightData {
 export class MainPanelComponent implements OnInit, OnDestroy {
   @Output() searchInputFocused = new EventEmitter<void>();
 
-  getSights$ = new Subject();
+  private readonly getSights$ = new Subject();
   private readonly destroy$ = new Subject();
   private readonly tickerDestroy$ = new Subject();
 

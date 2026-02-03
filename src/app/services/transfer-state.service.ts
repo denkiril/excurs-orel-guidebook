@@ -11,7 +11,7 @@ import { AppService } from './app.service';
 const SIGHTS_LIST_STATE_KEY = makeStateKey<SightData[]>('sights-list');
 const SIGHT_FOR_MORE_STATE_KEY = makeStateKey<SightDataExt>('sight-for-more');
 const SIGHTS_STATE_KEY = makeStateKey<SightResponseItem[]>('sights');
-const EGRKN_STATE_KEY = makeStateKey<EgrknResponse>('egrkn');
+const EGRKN_STATE_KEY = makeStateKey<SightDataExt[]>('egrkn');
 
 @Injectable({
   providedIn: 'root',
@@ -48,13 +48,13 @@ export class TransferStateService {
     return this.transferState.get(SIGHTS_STATE_KEY, []);
   }
 
-  setEgrkn(value: EgrknResponse): void {
+  setEgrkn(value: SightDataExt[]): void {
     if (!this.appService.isServer) return;
 
     this.transferState.set(EGRKN_STATE_KEY, value);
   }
 
-  getEgrkn(): EgrknResponse | undefined {
+  getEgrkn(): SightDataExt[] | undefined {
     return this.transferState.get(EGRKN_STATE_KEY, undefined);
   }
 }

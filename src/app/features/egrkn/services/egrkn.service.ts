@@ -35,7 +35,7 @@ const showLogs = true;
   providedIn: 'root',
 })
 export class EgrknService {
-  private sightDataItems: SightDataExt[] = [];
+  private egrknItems?: SightDataExt[];
 
   constructor(
     private readonly appService: AppService,
@@ -45,12 +45,14 @@ export class EgrknService {
   ) {}
 
   getEgrknSights$(needEgrkn?: boolean): Observable<EgrknSights> {
-    this.loggerService.log('// getEgrknSights...', this.sightDataItems.length);
+    this.loggerService.log(`// getEgrknSights... ${this.egrknItems?.length}`);
 
-    return (
-      this.sightDataItems.length ? of(undefined) : this.fetchEgrknData$()
-    ).pipe(
-      map(() => ({ items: needEgrkn === false ? [] : this.sightDataItems })),
+    const items$: Observable<SightDataExt[]> = this.egrknItems
+      ? of(this.egrknItems)
+      : this.requestEgrknData$();
+
+    return items$.pipe(
+      map((items) => ({ items: needEgrkn === false ? [] : items })),
     );
     // FETCH_EGRKN_ERROR TODO ?
   }
@@ -76,18 +78,7 @@ export class EgrknService {
     };
   }
 
-  private fetchEgrknData$(): Observable<void> {
-    // console.log('fetchEgrknData...');
-    return this.requestEgrknData$().pipe(
-      tap(({ data }) => {
-        // console.log('fetchEgrknData data.length:', data.length);
-        this.sightDataItems = this.prepareSightData(data);
-      }),
-      map(() => undefined),
-    );
-  }
-
-  private requestEgrknData$(): Observable<EgrknResponse> {
+  private requestEgrknData$(): Observable<SightDataExt[]> {
     const transfered = this.transferStateService.getEgrkn();
     if (transfered) return of(transfered);
 
@@ -101,10 +92,11 @@ export class EgrknService {
 
     return this.appService.isServer
       ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
-          tap((resp) => {
+          map((resp) => {
             this.loggerService.log('getMkrfOpendata resp.total:', resp.total);
-            // TODO optimize response for transfer
-            this.transferStateService.setEgrkn(resp);
+            const items = this.prepareSightData(resp.data);
+            this.transferStateService.setEgrkn(items);
+            return items;
           }),
           catchError((err) => {
             // this.loggerService.error('getMkrfOpendata', err);
@@ -114,10 +106,12 @@ export class EgrknService {
       : this.requestLocalEgrknData$();
   }
 
-  private requestLocalEgrknData$(): Observable<EgrknResponse> {
-    return this.requestService.getUrl<EgrknResponse>(
-      this.appService.getAssetsUrl() + LOCAL_EGRKN_URL,
-    );
+  private requestLocalEgrknData$(): Observable<SightDataExt[]> {
+    const url = this.appService.getAssetsUrl() + LOCAL_EGRKN_URL;
+
+    return this.requestService
+      .getUrl<EgrknResponse>(url)
+      .pipe(map((resp) => this.prepareSightData(resp.data)));
   }
 
   private prepareSightData(egrknItems: EgrknItem[]): SightDataExt[] {
@@ -334,4 +328,9 @@ export class EgrknService {
       // item,
     };
   }
+
+  // private logItem(tag: string, items: SightDataExt[]) {
+  //   const item = items.find((i) => i.okn_id === '571410863010006');
+  //   this.loggerService.log(`>> item ${tag}:`, String(item?.location));
+  // }
 }
