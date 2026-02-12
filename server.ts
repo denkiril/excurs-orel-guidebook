@@ -5,7 +5,13 @@ import { CommonEngine } from '@angular/ssr';
 import * as express from 'express';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { config } from 'dotenv';
 import { AppServerModule } from './src/main.server';
+
+// read environment variables from .env file
+config({
+  path: join(process.cwd(), 'dist/exogb/server/server_assets/.env'),
+});
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
