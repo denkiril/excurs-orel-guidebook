@@ -50,17 +50,13 @@ export function app(): express.Express {
   return server;
 }
 
-function isRunningOnApachePassenger(): boolean {
-  return moduleFilename.includes('passenger');
-}
-
-function run(): void {
+function run(isRunningOnApachePassenger: boolean): void {
   const port = process.env['PORT'] || 4000;
 
   // Start up the Node server
   const server = app();
 
-  if (isRunningOnApachePassenger()) {
+  if (isRunningOnApachePassenger) {
     server.listen(() => {
       console.log('Node Express listening to Passenger Apache');
     });
@@ -78,11 +74,12 @@ function run(): void {
 declare const __non_webpack_require__: NodeRequire;
 const mainModule = __non_webpack_require__.main;
 const moduleFilename = (mainModule && mainModule.filename) || '';
+const isRunningOnApachePassenger = moduleFilename.includes('passenger');
 
 if (
   moduleFilename === __filename ||
   moduleFilename.includes('iisnode') ||
-  isRunningOnApachePassenger()
+  isRunningOnApachePassenger
 ) {
-  run();
+  run(isRunningOnApachePassenger);
 }
