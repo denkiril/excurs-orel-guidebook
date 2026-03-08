@@ -27,3 +27,11 @@ export const EGRKN_OBJECT_URL = `https://opendata.mkrf.ru/opendata/7705851331-eg
 export const GET_EGRKN_URL = `https://opendata.mkrf.ru/v2/egrkn/${EGRKN_VERSION}`;
 
 export const LOCAL_EGRKN_URL = 'data/egrkn.json'; // egrkn-10
+
+// const egrknFilter = {
+//   'data.general.address.fullAddress': { $search: 'орел' },
+//   'data.general.region.value': { $eq: 'Орловская область' },
+// };
+// const url = new URL(GET_EGRKN_URL);
+// url.searchParams.append('f', JSON.stringify(egrknFilter));
+// url.searchParams.append('l', '500');
