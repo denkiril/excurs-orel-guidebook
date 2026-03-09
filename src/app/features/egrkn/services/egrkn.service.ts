@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, ReplaySubject } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 
 import {
   ImageItem,
@@ -22,12 +22,12 @@ import {
   EGRKN_OKN_CATEGORIES,
   DEFAULT_ADDRESS_PART,
   EGRKN_OBJECT_URL,
-  GET_EGRKN_URL,
 } from '../egrkn.constants';
 import { AppService } from 'src/app/services/app.service';
 import { LoggerService } from 'src/app/services/logger.service';
 import { RequestService } from 'src/app/services/request.service';
 import { TransferStateService } from 'src/app/services/transfer-state.service';
+import { filterNullable } from 'src/app/core/rxjs';
 
 const showLogs = true;
 
@@ -35,26 +35,31 @@ const showLogs = true;
   providedIn: 'root',
 })
 export class EgrknService {
-  private egrknItems?: SightDataExt[];
+  private egrknItems$ = new BehaviorSubject<SightDataExt[] | undefined>(
+    undefined,
+  );
+  private needLoadEgrkn$ = new ReplaySubject<void>(1);
 
   constructor(
     private readonly appService: AppService,
     private readonly loggerService: LoggerService,
     private readonly requestService: RequestService,
     private readonly transferStateService: TransferStateService,
-  ) {}
+  ) {
+    this.init();
+  }
 
   getEgrknSights$(needEgrkn?: boolean): Observable<EgrknSights> {
-    this.loggerService.log(`// getEgrknSights... ${this.egrknItems?.length}`);
-
-    const items$: Observable<SightDataExt[]> = this.egrknItems
-      ? of(this.egrknItems)
-      : this.requestEgrknData$();
-
-    return items$.pipe(
-      map((items) => ({ items: needEgrkn === false ? [] : items })),
+    this.loggerService.log(
+      `// getEgrknSights... ${this.egrknItems$.value?.length}`,
     );
-    // FETCH_EGRKN_ERROR TODO ?
+
+    return this.egrknItems$.pipe(
+      tap((value) => !value && this.needLoadEgrkn$.next()),
+      filterNullable(),
+      map((items) => ({ items: needEgrkn === false ? [] : items })),
+      take(1),
+    );
   }
 
   getSightById$(id: string): Observable<SightDataExt | undefined> {
@@ -78,56 +83,42 @@ export class EgrknService {
     };
   }
 
+  private init(): void {
+    this.needLoadEgrkn$
+      .pipe(
+        take(1),
+        switchMap(() => this.requestEgrknData$()),
+      )
+      .subscribe((items) => this.egrknItems$.next(items));
+  }
+
   private requestEgrknData$(): Observable<SightDataExt[]> {
     const transfered = this.transferStateService.getEgrkn();
     if (transfered) return of(transfered);
 
-    const egrknFilter = {
-      'data.general.address.fullAddress': { $search: 'орел' },
-      'data.general.region.value': { $eq: 'Орловская область' },
-    };
-    const url = new URL(GET_EGRKN_URL);
-    url.searchParams.append('f', JSON.stringify(egrknFilter));
-    url.searchParams.append('l', '500');
-
     const startTime = Date.now();
-    return this.appService.isServer
-      ? this.requestService.getMkrfOpendata<EgrknResponse>(url.toString()).pipe(
-          map((resp) => {
-            const duration = Date.now() - startTime;
-            this.loggerService.log(
-              `getMkrfOpendata total=${resp.total}, duration=${duration}`,
-            );
-            const items = this.prepareSightData(resp.data);
-            this.transferStateService.setEgrkn(items);
-            return items;
-          }),
-          catchError((err) => {
-            // this.loggerService.error('getMkrfOpendata', err);
-            return this.requestLocalEgrknData$();
-          }),
-        )
-      : this.requestLocalEgrknData$();
+    return this.requestService.getApi<EgrknResponse>('egrkn').pipe(
+      map((resp) => {
+        const duration = Date.now() - startTime;
+        this.loggerService.log(
+          `get_egrkn total=${resp.total}, duration=${duration}`,
+        );
+        const items = this.prepareSightData(resp.data);
+        this.transferStateService.setEgrkn(items);
+        return items;
+      }),
+    );
   }
 
-  private requestLocalEgrknData$(): Observable<SightDataExt[]> {
-    const url = this.appService.getAssetsUrl() + LOCAL_EGRKN_URL;
+  // private requestLocalEgrknData$(): Observable<SightDataExt[]> {
+  //   const url = this.appService.getAssetsUrl() + LOCAL_EGRKN_URL;
 
-    return this.requestService
-      .getUrl<EgrknResponse>(url)
-      .pipe(map((resp) => this.prepareSightData(resp.data)));
-  }
+  //   return this.requestService
+  //     .getUrl<EgrknResponse>(url)
+  //     .pipe(map((resp) => this.prepareSightData(resp.data)));
+  // }
 
   private prepareSightData(egrknItems: EgrknItem[]): SightDataExt[] {
-    // eslint-disable-next-line prettier/prettier
-    // console.log('objectType:', egrknItems.map((item) => item.data.general.objectType));
-    // eslint-disable-next-line prettier/prettier
-    // console.log('categoryType:', egrknItems.map((item) => item.data.general.categoryType));
-    // eslint-disable-next-line prettier/prettier
-    // console.log('typologies:', egrknItems.map((item) => JSON.stringify(item.data.general.typologies)));
-    // eslint-disable-next-line prettier/prettier
-    // console.log('additionalCoords:', egrknItems.map((item) => item.data.general.additionalCoordinates).filter(Boolean));
-
     if (this.appService.isDev) {
       const warnItems = egrknItems.filter(
         (item) =>
@@ -150,7 +141,7 @@ export class EgrknService {
         id: `${SightType.EGRKN}${general.regNumber}`,
         type: SightType.EGRKN,
         okn_id: general.regNumber,
-        title: general.name, // this.prepareTitle(general.name, address),
+        title: general.name,
         okn_title: general.name,
         okn_date: general.createDate,
         okn_type: general.typologies.map(({ id }) => EGRKN_OKN_TYPES[id]),
@@ -158,7 +149,7 @@ export class EgrknService {
         location: address,
         geolocation: this.prepareSightGeolocation(general),
         multiGeolocation: this.prepareMultiGeolocation(general),
-        registry_date: general.documents.find((doc) => doc.date)?.date,
+        registry_date: general.documents?.find((doc) => doc.date)?.date,
         images: egrknData.photoUrl
           ? [this.prepareImage(egrknData.photoUrl)]
           : undefined,
@@ -171,12 +162,6 @@ export class EgrknService {
   private prepareAdress(address: string): string {
     return (address?.replace(DEFAULT_ADDRESS_PART, '') || '').trim();
   }
-
-  // private prepareTitle(title: string, address: string): string {
-  //   return title === DEFAULT_OKN_TITLE && address
-  //     ? `${title}, ${address}`
-  //     : title;
-  // }
 
   private prepareSightGeolocation(
     general: EgrknItemGeneral,

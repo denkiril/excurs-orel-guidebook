@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +11,10 @@ import { SpinnerComponent } from '../controls/spinner/spinner.component';
 import { ToggleComponent } from '../controls/toggle/toggle.component';
 import { CheckboxComponent } from '../controls/checkbox/checkbox.component';
 import { MainPanelComponent } from './main-panel.component';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 describe('MainPanelComponent', () => {
   let component: MainPanelComponent;
@@ -18,13 +22,6 @@ describe('MainPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        BrowserAnimationsModule,
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([]),
-        FormsModule,
-        ReactiveFormsModule,
-      ],
       declarations: [
         MainPanelComponent,
         FilterBlockComponent,
@@ -33,6 +30,16 @@ describe('MainPanelComponent', () => {
         ToggleComponent,
         SpinnerComponent,
         CheckboxComponent,
+      ],
+      imports: [
+        BrowserAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+        FormsModule,
+        ReactiveFormsModule,
+      ],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
   });

@@ -4,7 +4,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
@@ -71,7 +74,6 @@ export const routes: Routes = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
     }),
@@ -81,7 +83,10 @@ export const routes: Routes = [
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
   ],
-  providers: [{ provide: APP_BASE_HREF, useValue: '/guidebook/' }],
+  providers: [
+    { provide: APP_BASE_HREF, useValue: '/guidebook/' },
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

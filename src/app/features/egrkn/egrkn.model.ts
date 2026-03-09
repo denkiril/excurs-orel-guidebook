@@ -30,7 +30,7 @@ export interface EgrknItemGeneral {
   };
   categoryType: IdValue; // EGRKN_OKN_CATEGORIES
   createDate: string;
-  documents: EgrknItemDocument[];
+  documents: EgrknItemDocument[] | null;
   id: number;
   isActual: boolean;
   name: string;
