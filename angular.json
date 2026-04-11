@@ -26,7 +26,11 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -42,7 +46,9 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "development": {
@@ -110,7 +116,11 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
             ],
             "styles": [
               "src/styles.scss"

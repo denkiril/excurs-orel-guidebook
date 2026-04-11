@@ -5,6 +5,14 @@
   ],
   "overrides": [
     {
+      "files": [
+        "*.js"
+      ],
+      "env": {
+        "es2022": true
+      }
+    },
+    {
       "files": ["*.ts"],
       "parserOptions": {
         "project": [
