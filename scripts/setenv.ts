@@ -36,6 +36,7 @@ export const environment = {
 writeFile(environmentFilePath, environmentFileContent, (err: any) => {
   if (err) console.log(err);
   console.log(`Wrote variables to ${environmentFilePath}`);
+  // console.log(environmentFileContent);
 });
 
 // server env vars
@@ -55,6 +56,7 @@ mkdir(dirname(envVarsForServerFilePath), { recursive: true }, (err: any) => {
     (err: any) => {
       if (err) console.log(err);
       console.log(`Wrote variables to ${envVarsForServerFilePath}`);
+      // console.log(envVarsForServerFileContent);
       // console.log('env:', process.env);
     },
   );
