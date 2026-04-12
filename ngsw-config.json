@@ -26,5 +26,17 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api",
+      "urls": [
+        "https://excurs-orel.ru/wp-json/api/*"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "3d"
+      }
+    }
   ]
 }
