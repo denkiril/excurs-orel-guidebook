@@ -13,9 +13,6 @@
           "/*.css",
           "/*.js",
           "/assets/**"
-        ],
-        "urls": [
-          "https://excurs-orel.ru/files/*"
         ]
       }
     },
@@ -34,7 +31,8 @@
     {
       "name": "api",
       "urls": [
-        "https://excurs-orel.ru/wp-json/api/*"
+        "https://excurs-orel.ru/wp-json/api/*",
+        "https://excurs-orel.ru/files/*"
       ],
       "cacheConfig": {
         "maxSize": 100,
