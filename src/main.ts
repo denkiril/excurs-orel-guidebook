@@ -18,6 +18,12 @@ platformBrowserDynamic()
   // eslint-disable-next-line no-console
   .catch((err) => console.error(err));
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then((val) => {
+    console.log('SW ready', val);
+  });
+}
+
 // TODO
 // Sights sorting. Default (+) Manual?
 // Справка (большой тултип?)
