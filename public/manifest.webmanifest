@@ -1,7 +1,7 @@
 {
   "name": "Путеводитель по Орлу",
   "short_name": "Путеводитель по Орлу",
-  "theme_color": "#1976d2",
+  "theme_color": "#185476",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
