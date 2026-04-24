@@ -101,7 +101,7 @@ export class SightsService {
       ? of(transfered)
       : this.requestService.getApi<SightResponseItem[]>('sights').pipe(
           tap((sights) => {
-            this.transferStateService.setSights(sights);
+            // this.transferStateService.setSights(sights);
           }),
         );
   }

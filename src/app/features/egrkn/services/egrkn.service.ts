@@ -104,7 +104,7 @@ export class EgrknService {
           `get_egrkn total=${resp.total}, duration=${duration}`,
         );
         const items = this.prepareSightData(resp.data);
-        this.transferStateService.setEgrkn(items);
+        // this.transferStateService.setEgrkn(items);
         return items;
       }),
     );

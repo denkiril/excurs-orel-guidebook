@@ -310,7 +310,7 @@ export class MainPanelComponent implements OnInit, OnDestroy {
             ...item,
             active: this.activeSights.includes(item.id),
           }));
-          this.transferStateService.setSightsList(items);
+          // this.transferStateService.setSightsList(items);
           // this.updateSightsActive();
 
           this.sightsFetched = true;

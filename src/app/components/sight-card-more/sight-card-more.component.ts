@@ -206,7 +206,7 @@ export class SightCardMoreComponent implements OnInit, OnDestroy {
         (data) => {
           // console.log('getSightDataExt data:', data);
           if (data) {
-            this.transferStateService.setSightForMore(data);
+            // this.transferStateService.setSightForMore(data);
             this.initSight(data);
           } else {
             this.close();
