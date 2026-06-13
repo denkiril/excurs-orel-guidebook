@@ -30,10 +30,7 @@
   "dataGroups": [
     {
       "name": "api",
-      "urls": [
-        "https://excurs-orel.ru/wp-json/api/*",
-        "https://excurs-orel.ru/files/*"
-      ],
+      "urls": [],
       "cacheConfig": {
         "maxSize": 100,
         "maxAge": "3d"
